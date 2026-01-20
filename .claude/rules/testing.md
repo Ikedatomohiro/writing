@@ -1,5 +1,33 @@
 # Testing Rules
 
+## テストファイル配置
+
+### Next.js / TypeScript
+
+テストファイルはテスト対象のファイルと同じディレクトリに配置する。
+
+```
+app/
+  components/
+    Button.tsx
+    Button.test.tsx    # Buttonのテスト
+  hooks/
+    useAuth.ts
+    useAuth.test.ts    # useAuthのテスト
+```
+
+### Python
+
+`tests/` ディレクトリに配置する。
+
+```
+tools/
+  src/
+    calculator.py
+  tests/
+    test_calculator.py
+```
+
 ## テストカバレッジ目標
 
 - **最低**: 80%
