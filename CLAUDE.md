@@ -4,48 +4,46 @@
 
 ## プロジェクト概要
 
-エージェント開発のためのPythonプロジェクト。
+記事作成支援のためのWebアプリ（Next.js）とツール群（Python）。
 
 ## 技術スタック
 
+### Webアプリ
+- **フレームワーク**: Next.js 15 (App Router)
+- **言語**: TypeScript
+- **UI**: React 19
+
+### ツール (tools/)
 - **言語**: Python 3.13
 - **パッケージ管理**: uv
 - **リンター/フォーマッター**: ruff
 - **テスト**: pytest
 - **エージェントフレームワーク**: LangChain, LangGraph
 
-## ディレクトリ構造
+## ディレクトリ構成
 
-```
-writing/
-├── .claude/           # Claude Code設定
-│   ├── agents/        # サブエージェント定義
-│   ├── commands/      # スラッシュコマンド
-│   ├── rules/         # コーディングガイドライン
-│   └── hooks.json     # 自動化フック
-├── spec/              # エージェントスペック
-├── main.py            # エントリーポイント
-└── pyproject.toml     # プロジェクト設定
-```
+<!-- ディレクトリ構成やセットアップ手順を確認したい場合は README.md を参照 -->
+詳細は [README.md](./README.md) を参照。
 
 ## 開発ワークフロー
 
-**重要**: すべてのPythonコマンドは `uv run` を使用して仮想環境内で実行すること。
-
-### コマンド
+### Next.js
 
 ```bash
-# 実行
-uv run python main.py
+npm run dev      # 開発サーバー
+npm run build    # ビルド
+```
 
-# テスト
-uv run pytest
+### Python (tools/ ディレクトリ内で実行)
 
-# リント
-uv run ruff check .
+**重要**: すべてのPythonコマンドは `uv run` を使用して仮想環境内で実行すること。
 
-# フォーマット
-uv run ruff format .
+```bash
+cd tools
+uv run python main.py     # 実行
+uv run pytest             # テスト
+uv run ruff check .       # リント
+uv run ruff format .      # フォーマット
 ```
 
 ### Claude Codeコマンド
@@ -57,6 +55,11 @@ uv run ruff format .
 - `/push [メッセージ]` - git add, commit, push
 
 ## コーディング規約
+
+### TypeScript/React
+
+- 関数コンポーネントを使用
+- Server Components優先
 
 ### Python
 
