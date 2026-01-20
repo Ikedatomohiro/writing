@@ -12,6 +12,120 @@
 
 ---
 
+## 認証・認可
+
+### 認証方式
+
+- **Googleログイン** (OAuth 2.0)
+- NextAuth.js (Auth.js) を使用
+
+### アクセス制御
+
+- **ホワイトリスト方式**: 許可されたメールアドレスのみアクセス可能
+- ホワイトリストは環境変数で管理
+
+### 認証フロー
+
+```
+[未認証ユーザー]
+       ↓
+  /login にリダイレクト
+       ↓
+  [Googleでログイン]
+       ↓
+  メールアドレスをホワイトリストと照合
+       ↓
+  ┌─────────────────┬─────────────────┐
+  │ 許可されている   │ 許可されていない │
+  │       ↓         │        ↓        │
+  │ /articles へ    │ エラー表示      │
+  │ リダイレクト    │ ログアウト      │
+  └─────────────────┴─────────────────┘
+```
+
+### 画面構成（認証関連）
+
+```
+/login              # ログイン画面
+/api/auth/[...nextauth]  # NextAuth.js エンドポイント
+```
+
+### ログイン画面 (`/login`)
+
+```
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│                   記事管理システム                   │
+│                                                     │
+│            ┌─────────────────────────┐             │
+│            │  🔐 Googleでログイン    │             │
+│            └─────────────────────────┘             │
+│                                                     │
+│         許可されたユーザーのみアクセス可能           │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+```
+
+### 環境変数
+
+```bash
+# Google OAuth
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+
+# NextAuth.js
+NEXTAUTH_URL=https://writing-taupe.vercel.app
+NEXTAUTH_SECRET=xxx  # openssl rand -base64 32 で生成
+
+# ホワイトリスト（カンマ区切り）
+ALLOWED_EMAILS=user1@gmail.com,user2@gmail.com
+```
+
+### 技術選定
+
+- **NextAuth.js v5 (Auth.js)**: Next.js App Router対応
+- **Google Provider**: OAuth 2.0認証
+
+### コンポーネント構成（認証関連）
+
+```
+app/
+├── login/
+│   └── page.tsx          # ログイン画面
+├── api/
+│   └── auth/
+│       └── [...nextauth]/
+│           └── route.ts  # NextAuth.js API
+│
+lib/
+├── auth/
+│   ├── config.ts         # NextAuth.js設定
+│   ├── whitelist.ts      # ホワイトリスト検証
+│   └── middleware.ts     # 認証ミドルウェア
+│
+middleware.ts             # ルート保護
+```
+
+### ミドルウェア（ルート保護）
+
+```typescript
+// middleware.ts
+export { auth as middleware } from "@/lib/auth/config";
+
+export const config = {
+  matcher: ["/articles/:path*"],
+};
+```
+
+### セキュリティ考慮事項
+
+- セッションはHTTP Only Cookieで管理
+- CSRF対策はNextAuth.jsが自動で処理
+- ホワイトリストは環境変数で管理（コードにハードコードしない）
+- 本番環境ではHTTPS必須
+
+---
+
 ## 機能一覧
 
 ### 1. 記事一覧
@@ -187,6 +301,14 @@ lib/
 ---
 
 ## 実装ステップ
+
+### Phase 0: 認証基盤
+
+1. [ ] NextAuth.js のセットアップ
+2. [ ] Google OAuth の設定（Google Cloud Console）
+3. [ ] ログイン画面の実装
+4. [ ] ホワイトリスト検証の実装
+5. [ ] ミドルウェアによるルート保護
 
 ### Phase 1: 基本機能（MVP）
 
