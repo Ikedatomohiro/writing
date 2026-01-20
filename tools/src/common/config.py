@@ -1,6 +1,5 @@
 """設定管理モジュール"""
 
-import os
 from pathlib import Path
 
 from pydantic import Field

@@ -1,6 +1,5 @@
 """エントリーポイント"""
 
-import json
 
 from src.agents.keyword_finder import (
     KeywordSearchInput,

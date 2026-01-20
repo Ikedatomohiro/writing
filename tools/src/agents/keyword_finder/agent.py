@@ -2,7 +2,6 @@
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import END, StateGraph
-from langgraph.prebuilt import ToolNode
 
 from src.agents.keyword_finder.prompts import (
     INTEGRATOR_SYSTEM_PROMPT,
@@ -14,7 +13,6 @@ from src.agents.keyword_finder.prompts import (
 )
 from src.agents.keyword_finder.schemas import (
     AgentState,
-    KeywordResult,
     KeywordSearchInput,
     KeywordSearchOutput,
     Plan,
