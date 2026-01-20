@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "description": "git push前に確認を促す",
+        "command": "if echo \"$TOOL_INPUT\" | grep -q 'git push'; then echo 'PAUSE: git pushの前に変更内容を確認してください。続行するには承認してください。'; fi"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "description": "Pythonファイル編集後にruffでフォーマット",
+        "command": "FILE=$(echo \"$TOOL_INPUT\" | jq -r '.file_path // empty'); if [ -n \"$FILE\" ] && [[ \"$FILE\" == *.py ]]; then uv run ruff format \"$FILE\" 2>/dev/null || true; fi"
+      },
+      {
+        "matcher": "Edit",
+        "description": "Pythonファイル編集後にruffでリント",
+        "command": "FILE=$(echo \"$TOOL_INPUT\" | jq -r '.file_path // empty'); if [ -n \"$FILE\" ] && [[ \"$FILE\" == *.py ]]; then uv run ruff check \"$FILE\" --fix 2>/dev/null || true; fi"
+      }
+    ],
+    "Stop": [
+      {
+        "description": "セッション終了前にデバッグコードをチェック",
+        "command": "git diff --name-only 2>/dev/null | grep '\\.py$' | xargs -I {} grep -l 'print(' {} 2>/dev/null | head -5 | while read f; do echo \"WARNING: $f にprint文が残っています\"; done"
+      }
+    ]
+  }
+}
