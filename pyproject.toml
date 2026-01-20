@@ -1,10 +1,20 @@
 [project]
 name = "writing"
 version = "0.1.0"
-description = "Add your description here"
+description = "エージェント開発プロジェクト"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "httpx",
     "langchain",
+    "langchain-openai",
     "langgraph",
+    "pydantic-settings",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
 ]
