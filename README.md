@@ -1,5 +1,8 @@
 # Writing
 
+[![CI](https://github.com/Ikedatomohiro/writing/actions/workflows/ci.yml/badge.svg)](https://github.com/Ikedatomohiro/writing/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Ikedatomohiro/writing/branch/main/graph/badge.svg)](https://codecov.io/gh/Ikedatomohiro/writing)
+
 記事作成支援のためのWebアプリとツール群。
 
 **URL**: https://writing-taupe.vercel.app/
