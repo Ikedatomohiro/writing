@@ -1,7 +1,10 @@
 ---
 name: architect
 description: システム設計とスケーラビリティを専門とするソフトウェアアーキテクト。新機能の設計、技術的トレードオフの分析、スケーラビリティの検討に使用されます。
-tools: Read, Grep, Glob
+tools:
+  - Read
+  - Grep
+  - Glob
 model: opus
 ---
 

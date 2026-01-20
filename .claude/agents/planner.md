@@ -1,7 +1,10 @@
 ---
 name: planner
 description: 複雑な機能実装やリファクタリングの計画スペシャリスト。機能実装、アーキテクチャ変更、複雑なリファクタリングの際に自動的に使用されます。
-tools: Read, Grep, Glob
+tools:
+  - Read
+  - Grep
+  - Glob
 model: opus
 ---
 

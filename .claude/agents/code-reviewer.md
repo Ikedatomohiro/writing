@@ -1,7 +1,11 @@
 ---
 name: code-reviewer
 description: コード品質、セキュリティ、保守性を専門とするコードレビュースペシャリスト。コード変更時に自動的にレビューを実行します。
-tools: Read, Grep, Glob, Bash
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
 model: sonnet
 ---
 
