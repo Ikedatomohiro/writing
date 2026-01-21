@@ -15,6 +15,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment == 'production' && 'Production' || 'Preview' }}
     steps:
       - uses: actions/checkout@v4
 
