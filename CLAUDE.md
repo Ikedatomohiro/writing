@@ -88,6 +88,7 @@ uv run ruff format .      # フォーマット
 - `.claude/rules/security.md` - セキュリティ
 - `.claude/rules/coding-style.md` - コーディングスタイル
 - `.claude/rules/testing.md` - テスト
+- `.claude/rules/implementation-workflow.md` - 実装ワークフロー
 
 ## エージェント
 
