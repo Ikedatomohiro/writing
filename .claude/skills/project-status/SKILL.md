@@ -1,5 +1,5 @@
 ---
-name: status
+name: project-status
 description: 現在の実装状態を確認する。PLAN.mdから対象フェーズとタスクを確認し、spec.mdの仕様、実装ディレクトリの状態、task.mdの進捗を報告する。次に実装すべきタスクを提案する。ユーザーが「/status」「状態確認」「次のタスクは？」と言った時に使用する。
 ---
 
