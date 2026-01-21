@@ -44,10 +44,15 @@ def _get_google_suggestions(keyword: str) -> list[str]:
         "client": "firefox",
         "hl": "ja",
     }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+        "Accept": "application/json, text/javascript, */*",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+    }
 
     try:
         with httpx.Client(timeout=10.0) as client:
-            response = client.get(url, params=params)
+            response = client.get(url, params=params, headers=headers)
             response.raise_for_status()
             data = response.json()
 
