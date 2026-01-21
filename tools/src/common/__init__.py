@@ -1,6 +1,11 @@
 """共通モジュール"""
 
 from src.common.config import settings
+from src.common.keyword_config import (
+    CategoryConfig,
+    KeywordConfig,
+    load_keyword_config,
+)
 from src.common.errors import (
     APIError,
     BaseAgentError,
@@ -16,6 +21,9 @@ from src.common.logging import get_logger
 __all__ = [
     "settings",
     "get_logger",
+    "CategoryConfig",
+    "KeywordConfig",
+    "load_keyword_config",
     "BaseAgentError",
     "ConfigurationError",
     "APIError",

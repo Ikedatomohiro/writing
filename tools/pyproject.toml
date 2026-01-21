@@ -10,6 +10,7 @@ dependencies = [
     "langchain-openai",
     "langgraph",
     "pydantic-settings",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
