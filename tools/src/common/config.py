@@ -1,5 +1,6 @@
 """設定管理モジュール"""
 
+import os
 from pathlib import Path
 
 from pydantic import Field
@@ -17,6 +18,7 @@ class Settings(BaseSettings):
     # API Keys
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
     serpapi_api_key: str = Field(default="", alias="SERPAPI_API_KEY")
+    vercel_blob_token: str = Field(default="", alias="BLOB_READ_WRITE_TOKEN")
 
     # LLM設定
     default_model: str = "gpt-4o-mini"
@@ -30,6 +32,12 @@ class Settings(BaseSettings):
     # パス設定
     project_root: Path = Path(__file__).parent.parent.parent
     data_dir: Path = project_root / "data"
+    keywords_file: Path = data_dir / "keywords" / "keywords.json"
+
+    @property
+    def is_github_actions(self) -> bool:
+        """GitHub Actions環境かどうか"""
+        return os.environ.get("GITHUB_ACTIONS") == "true"
 
 
 # シングルトンインスタンス
