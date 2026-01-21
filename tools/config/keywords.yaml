@@ -1,0 +1,33 @@
+# キーワード検索設定
+version: "1.0"
+
+categories:
+  資産形成:
+    description: "資産形成・投資関連"
+    seed_keywords:
+      - iDeCo
+      - 新NISA
+      - 投資信託
+      - 家計管理
+    depth: 2
+
+  健康:
+    description: "健康・ウェルネス関連"
+    seed_keywords:
+      - 健康管理
+      - 睡眠
+      - 運動
+      - メンタルヘルス
+    depth: 2
+
+  エンジニア:
+    description: "技術・エンジニアリング関連"
+    seed_keywords:
+      - AI
+      - バックエンド
+      - クラウド
+      - DevOps
+    depth: 2
+
+defaults:
+  depth: 2
