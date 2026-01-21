@@ -89,6 +89,7 @@ uv run ruff format .      # フォーマット
 - `.claude/rules/coding-style.md` - コーディングスタイル
 - `.claude/rules/testing.md` - テスト
 - `.claude/rules/implementation-workflow.md` - 実装ワークフロー
+- `.claude/rules/task-start.md` - タスク開始手順
 
 ## エージェント
 
