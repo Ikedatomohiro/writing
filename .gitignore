@@ -21,3 +21,6 @@ coverage/
 .vercel/
 .vercel
 .env*.local
+
+# Data files
+tools/data/keywords/
