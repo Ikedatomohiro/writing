@@ -278,11 +278,79 @@ KeywordSearchOutput(
 
 ---
 
+## ストレージ
+
+### 出力先
+
+| 環境 | 保存先 | 判定方法 |
+|------|--------|----------|
+| ローカル | `tools/data/keywords/keywords.json` | デフォルト |
+| GitHub Actions | Vercel Blob | `GITHUB_ACTIONS` 環境変数 |
+
+### 保存スキーマ
+
+```json
+{
+  "version": "1.0",
+  "updated_at": "2024-01-21T10:30:00Z",
+  "keywords": [
+    {
+      "keyword": "iDeCo 始め方 2024",
+      "category": "資産形成",
+      "search_volume": 5400,
+      "competition": "中",
+      "relevance_score": 0.92,
+      "suggested_topics": ["iDeCoの始め方完全ガイド"],
+      "discovery_history": [
+        {
+          "discovered_at": "2024-01-15T09:00:00Z",
+          "seed_keywords": ["iDeCo", "積立NISA"],
+          "source_run_id": "run_abc123"
+        }
+      ],
+      "usage": {
+        "used_at": "2024-01-20T14:00:00Z",
+        "article_id": "article_xyz",
+        "status": "published"
+      }
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "run_abc123",
+      "executed_at": "2024-01-15T09:00:00Z",
+      "input": {
+        "category": "資産形成",
+        "seed_keywords": ["iDeCo", "積立NISA"],
+        "depth": 2
+      },
+      "keywords_found": 15,
+      "summary": "iDeCoと積立NISAの併用に関するキーワードが狙い目。"
+    }
+  ]
+}
+```
+
+### 設計ポイント
+
+- **discovery_history**: 同じキーワードが複数回発見された場合、履歴を追加
+- **usage.status**: `unused` / `in_progress` / `published` で使用状況を追跡
+- **runs**: 実行履歴を保持
+
+### 追加環境変数
+
+```bash
+BLOB_READ_WRITE_TOKEN=xxx   # Vercel Blob アクセストークン（GitHub Actions用）
+```
+
+---
+
 ## 次のステップ
 
-1. [ ] 基本的なディレクトリ構成を作成
-2. [ ] データモデルを実装
-3. [ ] ツールを実装（まずはWeb検索から）
-4. [ ] LangGraphでワークフローを構築
-5. [ ] プロンプトを調整
-6. [ ] テストを作成
+1. [x] 基本的なディレクトリ構成を作成
+2. [x] データモデルを実装
+3. [x] ツールを実装（まずはWeb検索から）
+4. [x] LangGraphでワークフローを構築
+5. [x] プロンプトを調整
+6. [x] テストを作成
+7. [x] ストレージ機能を実装

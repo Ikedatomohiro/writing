@@ -6,6 +6,8 @@ from src.agents.keyword_finder import (
     run_keyword_finder,
 )
 from src.common import get_logger
+from src.common.config import settings
+from src.storage import KeywordStorageService, get_storage_backend
 
 logger = get_logger(__name__)
 
@@ -43,6 +45,17 @@ def main():
     print("\n" + "-" * 40)
     print(f"サマリー: {result.summary}")
     print("=" * 60)
+
+    # ストレージに保存
+    backend = get_storage_backend()
+    service = KeywordStorageService(backend)
+    run_id = service.save_search_result(result)
+
+    storage_type = "Vercel Blob" if settings.is_github_actions else "ローカルファイル"
+    print(f"\n保存先: {storage_type}")
+    print(f"実行ID: {run_id}")
+    if not settings.is_github_actions:
+        print(f"ファイル: {settings.keywords_file}")
 
 
 if __name__ == "__main__":
