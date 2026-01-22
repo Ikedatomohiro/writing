@@ -95,4 +95,3 @@ uv run ruff format .      # フォーマット
 
 - `.claude/agents/planner.md` - 計画作成
 - `.claude/agents/architect.md` - アーキテクチャ設計
-- `.claude/agents/code-reviewer.md` - コードレビュー
