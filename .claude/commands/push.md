@@ -32,6 +32,23 @@ PRのフォーマット:
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
+## GitHub CIテストの確認（必須）
+
+PR作成後、GitHubのCIテストが完了するまで待機し、結果を確認すること。
+
+```bash
+# PRのチェック状態を監視（完了まで待機）
+gh pr checks --watch
+
+# または特定のPR番号を指定
+gh pr checks <PR番号> --watch
+```
+
+**テストが失敗した場合**:
+- 失敗したテストの内容を確認
+- 修正してコミット・pushし、再度テストが通ることを確認
+- テストが通るまでコマンドを完了としない
+
 ## 事前確認
 
 以下が完了していることを確認してからpushしてください。
