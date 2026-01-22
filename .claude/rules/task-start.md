@@ -4,15 +4,29 @@
 
 新しいタスクを開始する際は、必ず以下の手順を実行すること。
 
-### 1. mainブランチからブランチを作成
+### 1. mainブランチを最新にする
 
-タスクは必ずmainブランチを起点として新しいブランチを作成する。
+worktree作成前に、必ずmainブランチを最新の状態にする。
 
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feature/タスク名
 ```
+
+### 2. worktreeを作成してブランチを作成
+
+`/using-git-worktrees` スキルを使用してworktreeを作成する。
+
+```
+/using-git-worktrees
+```
+
+これにより以下が自動化される:
+- mainブランチを起点とした新しいブランチの作成
+- `.worktrees/` ディレクトリへのworktree配置
+- 環境変数ファイルのコピー
+- 依存関係のインストール
+- ベースラインテストの実行
 
 **ブランチ命名規則**:
 - `feature/機能名` - 新機能
@@ -20,29 +34,7 @@ git checkout -b feature/タスク名
 - `refactor/対象` - リファクタリング
 - `docs/対象` - ドキュメント
 
-### 2. git worktree の活用
-
-以下の場合はgit worktreeを使用する:
-
-- 複数のタスクを並行して進める場合
-- 現在の作業を中断せずに別ブランチで作業したい場合
-- レビュー用に別ブランチを確認したい場合
-
-詳細は `/using-git-worktrees` スキルを使用。
-
-**クイックリファレンス:**
-```bash
-# worktreeの作成（.worktrees/ディレクトリに配置）
-git worktree add .worktrees/<名前> -b <ブランチ名>
-
-# worktreeの一覧
-git worktree list
-
-# worktreeの削除
-git worktree remove .worktrees/<名前>
-```
-
-### 3. 環境変数の確認
+### 3. 環境変数の確認（追加設定が必要な場合）
 
 タスクに必要な環境変数を確認し、不足があればユーザーに尋ねる。
 
@@ -104,8 +96,8 @@ mainブランチにタスク開始に必要なプログラムやモジュール�
 
 ### タスク開始前
 
-- [ ] mainブランチが最新か
-- [ ] 新しいブランチを作成したか
+- [ ] mainブランチを最新にしたか
+- [ ] `/using-git-worktrees` でworktreeを作成したか
 - [ ] 必要な環境変数を確認したか
 - [ ] 依存プログラムがmainに存在するか
 - [ ] 不足があればPRを確認したか

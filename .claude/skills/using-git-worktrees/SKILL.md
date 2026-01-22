@@ -216,4 +216,4 @@ rm -rf .worktrees/feature-xxx  # NG!
 
 ### task-start.mdとの関係
 
-このスキルは `.claude/rules/task-start.md` の「git worktree の活用」セクションの詳細実装。タスク開始時に隔離環境が必要な場合はこのスキルを使用する。
+`.claude/rules/task-start.md` では、タスク開始時に本スキルの使用が必須化されている。すべてのタスクはworktreeで隔離された環境で作業する。
