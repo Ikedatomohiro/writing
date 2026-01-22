@@ -1,25 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Button, Container, Flex, Heading } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { LuPlus } from "react-icons/lu";
-import { ArticleList } from "@/components/articles";
+import { ArticleList, SearchInput } from "@/components/articles";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const loadArticles = () => {
-      const data = getArticles();
+      const data = getArticles({ searchQuery: searchQuery || undefined });
       setArticles(data);
       setIsLoading(false);
     };
     loadArticles();
-  }, []);
+  }, [searchQuery]);
 
   if (isLoading) {
     return (
@@ -42,7 +43,18 @@ export default function ArticlesPage() {
           </Button>
         </Link>
       </Flex>
-      <ArticleList articles={articles} />
+      <Box mb={4}>
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="タイトル、本文、キーワードで検索..."
+        />
+      </Box>
+      {articles.length === 0 && searchQuery ? (
+        <Text color="gray.500">検索結果が見つかりませんでした</Text>
+      ) : (
+        <ArticleList articles={articles} />
+      )}
     </Container>
   );
 }

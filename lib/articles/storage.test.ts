@@ -156,6 +156,93 @@ describe("storage", () => {
       expect(articles[0].title).toBe("古い記事");
       expect(articles[1].title).toBe("新しい記事");
     });
+
+    describe("検索機能", () => {
+      const searchTestData = [
+        {
+          id: "1",
+          title: "TypeScript入門",
+          content: "TypeScriptは静的型付け言語です",
+          keywords: ["programming", "typescript"],
+          status: "published",
+          createdAt: "2024-01-01T00:00:00.000Z",
+          updatedAt: "2024-01-01T00:00:00.000Z",
+          publishedAt: "2024-01-01T00:00:00.000Z",
+        },
+        {
+          id: "2",
+          title: "React実践ガイド",
+          content: "Reactはコンポーネントベースのライブラリです",
+          keywords: ["frontend", "react"],
+          status: "draft",
+          createdAt: "2024-01-02T00:00:00.000Z",
+          updatedAt: "2024-01-02T00:00:00.000Z",
+          publishedAt: null,
+        },
+        {
+          id: "3",
+          title: "Next.js完全ガイド",
+          content: "Next.jsはReactフレームワークです",
+          keywords: ["frontend", "nextjs"],
+          status: "published",
+          createdAt: "2024-01-03T00:00:00.000Z",
+          updatedAt: "2024-01-03T00:00:00.000Z",
+          publishedAt: "2024-01-03T00:00:00.000Z",
+        },
+      ];
+
+      beforeEach(() => {
+        mockLocalStorage.setItem("articles", JSON.stringify(searchTestData));
+      });
+
+      it("タイトルで検索できる", () => {
+        const articles = getArticles({ searchQuery: "TypeScript" });
+        expect(articles).toHaveLength(1);
+        expect(articles[0].id).toBe("1");
+      });
+
+      it("本文で検索できる", () => {
+        const articles = getArticles({ searchQuery: "コンポーネント" });
+        expect(articles).toHaveLength(1);
+        expect(articles[0].id).toBe("2");
+      });
+
+      it("キーワードで検索できる", () => {
+        const articles = getArticles({ searchQuery: "frontend" });
+        expect(articles).toHaveLength(2);
+        expect(articles.map((a) => a.id)).toContain("2");
+        expect(articles.map((a) => a.id)).toContain("3");
+      });
+
+      it("大文字小文字を区別しない", () => {
+        const articles = getArticles({ searchQuery: "typescript" });
+        expect(articles).toHaveLength(1);
+        expect(articles[0].id).toBe("1");
+
+        const articlesUpper = getArticles({ searchQuery: "TYPESCRIPT" });
+        expect(articlesUpper).toHaveLength(1);
+        expect(articlesUpper[0].id).toBe("1");
+      });
+
+      it("空のクエリは全件を返す", () => {
+        const articles = getArticles({ searchQuery: "" });
+        expect(articles).toHaveLength(3);
+      });
+
+      it("検索とステータスフィルタを併用できる", () => {
+        const articles = getArticles({
+          searchQuery: "ガイド",
+          status: "published",
+        });
+        expect(articles).toHaveLength(1);
+        expect(articles[0].id).toBe("3");
+      });
+
+      it("検索結果がない場合は空配列を返す", () => {
+        const articles = getArticles({ searchQuery: "存在しないキーワード" });
+        expect(articles).toHaveLength(0);
+      });
+    });
   });
 
   describe("getArticle", () => {
