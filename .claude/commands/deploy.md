@@ -1,5 +1,14 @@
 Vercelにデプロイを実行してください。
 
+## デプロイ対象
+
+デフォルトでは **mainブランチ** を対象にデプロイします。
+
+`gh workflow run` の `-r` オプションでブランチやタグを指定できます:
+- `-r` 省略: mainブランチ
+- `-r ブランチ名`: 指定したブランチをデプロイ
+- `-r タグ名`: 指定したタグをデプロイ
+
 ## デプロイ環境
 
 引数で環境を指定できます:
@@ -12,6 +21,7 @@ Vercelにデプロイを実行してください。
 
 デプロイ前に以下を確認してください:
 
+- [ ] デプロイ対象のブランチ/タグがリモートにプッシュされていること
 - [ ] ビルドが成功すること (`npm run build`)
 - [ ] テストが全てパスすること (`npm test`)
 - [ ] 未コミットの変更がないこと (`git status`)
@@ -21,11 +31,17 @@ Vercelにデプロイを実行してください。
 GitHub Actionsのワークフローを手動でトリガーします:
 
 ```bash
-# プレビューデプロイ
+# プレビューデプロイ（mainブランチ）
 gh workflow run deploy.yml -f environment=preview
 
-# 本番デプロイ
+# 本番デプロイ（mainブランチ）
 gh workflow run deploy.yml -f environment=production
+
+# 特定のブランチをデプロイ
+gh workflow run deploy.yml -r feature/my-branch -f environment=preview
+
+# 特定のタグをデプロイ
+gh workflow run deploy.yml -r v1.0.0 -f environment=production
 ```
 
 ### 3. デプロイ状況の確認
