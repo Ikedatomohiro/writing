@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: 機能実装やバグ修正の際に使用する。実装コードを書く前にテストを先に書く。ユーザーが「/tdd」「TDDで実装して」「テスト駆動で」と言った時に使用する。
+description: 新しいコードを実装する際に自動的に適用する。機能追加、バグ修正、リファクタリングでコードを書く前にテストを先に書く。
 ---
 
 # Test-Driven Development (TDD)
