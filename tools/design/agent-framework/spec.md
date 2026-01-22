@@ -119,13 +119,24 @@ tools/src/
 │       └── ...
 ```
 
-## 参考: PERIパターン
+## 採用パターン
+
+本フレームワークは以下のエージェントデザインパターンを組み合わせて構成:
+
+- **ReAct（Reasoning + Acting）**: 思考→行動→観察のループ構造
+- **Goal Creator**: 目標・評価基準の自律的策定（evaluatorで使用）
+- **Planner**: タスク分解と実行計画の立案
+- **Reflection**: 結果の自己評価とフィードバックループ
+
+### ワークフロー構造
 
 ```
-Plan → Execute → Reflect ⟳ → Integrate
-  │                  │
-  │                  ├─ is_sufficient=True → Integrate
-  │                  └─ is_sufficient=False → Execute（リトライ）
-  │
-  └─ max_retry到達 → Integrate（強制終了）
+[Goal Create] → Plan → Execute → Reflect ⟳ → Integrate
+                         ↑         │
+                         └─────────┘ (is_sufficient=False)
 ```
+
+- `is_sufficient=True` → Integrate へ進む
+- `max_retry` 到達 → Integrate（強制終了）
+
+参考: [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
