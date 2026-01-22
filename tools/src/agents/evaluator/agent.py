@@ -25,6 +25,7 @@ from src.agents.evaluator.schemas import (
     ReflectionResult,
     ToolResult,
 )
+from src.tools import SearchResult
 from src.common import get_logger
 from src.models import get_chat_model, get_structured_model
 from src.tools import search_web
@@ -182,7 +183,7 @@ def create_executor_node():
             relevant_info = []
             for tr in tool_results:
                 for result in tr.results[:3]:
-                    if hasattr(result, "snippet"):
+                    if isinstance(result, SearchResult):
                         relevant_info.append(f"- {result.title}: {result.snippet}")
 
             eval_messages = [
@@ -314,7 +315,7 @@ def create_integrator_node():
         collected_info = []
         for tr in tool_results:
             for result in tr.results[:3]:
-                if hasattr(result, "snippet"):
+                if isinstance(result, SearchResult):
                     collected_info.append(f"- {result.title}: {result.snippet}")
 
         model = get_structured_model(EvaluationOutput)

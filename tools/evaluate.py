@@ -113,7 +113,10 @@ def main() -> None:
         except FileNotFoundError:
             print(f"エラー: ファイルが見つかりません: {args.file}", file=sys.stderr)
             sys.exit(1)
-        except Exception as e:
+        except PermissionError:
+            print(f"エラー: ファイルへのアクセス権限がありません: {args.file}", file=sys.stderr)
+            sys.exit(1)
+        except (OSError, IOError) as e:
             print(f"エラー: ファイル読み込みに失敗: {e}", file=sys.stderr)
             sys.exit(1)
     else:
@@ -128,8 +131,8 @@ def main() -> None:
     )
 
     logger.info(f"評価開始: {args.type}")
-    logger.info(f"対象: {target[:100]}...")
-    logger.info(f"リクエスト: {args.request}")
+    logger.debug(f"対象: {target[:100]}...")
+    logger.debug(f"リクエスト: {args.request}")
 
     # エージェントを実行
     try:
