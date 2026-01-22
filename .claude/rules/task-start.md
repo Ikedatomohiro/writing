@@ -57,21 +57,25 @@ git pull origin main
 
 既存のブランチを使用してworktreeを作成する。
 
+**注意**: worktreeディレクトリ名には`/`を使用できないため、ブランチ名の`/`を`-`に置換する。
+
 ```bash
 # リモートブランチを取得
 git fetch origin
 
 # 既存ブランチでworktreeを作成
-git worktree add .worktrees/<ブランチ名> <ブランチ名>
+# ディレクトリ名: ブランチ名の `/` を `-` に置換
+git worktree add .worktrees/<ディレクトリ名> <ブランチ名>
 
 # 例: PR #18のfeature/evaluator-agentブランチに対応する場合
+# feature/evaluator-agent → feature-evaluator-agent
 git worktree add .worktrees/feature-evaluator-agent feature/evaluator-agent
 ```
 
 作成後、環境変数のコピーと依存関係のインストールを手動で実行:
 
 ```bash
-cd .worktrees/<ブランチ名>
+cd .worktrees/<ディレクトリ名>
 
 # 環境変数のコピー（メインリポジトリから）
 cp ../../.env .env 2>/dev/null || true
@@ -79,7 +83,7 @@ cp ../../tools/.env tools/.env 2>/dev/null || true
 
 # 依存関係のインストール
 npm install
-cd tools && uv sync
+(cd tools && uv sync)  # サブシェルで実行
 ```
 
 ### 3. 環境変数の確認（追加設定が必要な場合）
