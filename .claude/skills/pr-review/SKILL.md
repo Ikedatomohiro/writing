@@ -135,4 +135,4 @@ gh pr review --comment --body "レビュー内容"
 
 - 長文の場合はHEREDOCを使用する
 - Critical/Highの指摘がある場合は `--request-changes` を使用
-- 指摘がない場合は `--approve` を使用
+- 指摘がない場合は `--approve` または `--comment` を使用（自身のPRの場合はapproveできないため `--comment` を使用）
