@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Box, Button, Container, Flex, Heading } from "@chakra-ui/react";
+import { useEffect, useState, useCallback } from "react";
+import { Box, Button, Container, Flex, Heading, Text, Input } from "@chakra-ui/react";
 import Link from "next/link";
-import { LuPlus } from "react-icons/lu";
+import { LuPlus, LuSearch } from "react-icons/lu";
 import { ArticleList } from "@/components/articles";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
@@ -11,15 +11,34 @@ import type { Article } from "@/lib/articles/types";
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const loadArticles = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getArticles({ searchQuery: searchQuery || undefined });
+      setArticles(data);
+    } catch (err) {
+      setError("記事の読み込みに失敗しました");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
-    const loadArticles = () => {
-      const data = getArticles();
-      setArticles(data);
-      setIsLoading(false);
-    };
     loadArticles();
-  }, []);
+  }, [loadArticles]);
+
+  if (error) {
+    return (
+      <Container maxW="container.xl" py={8}>
+        <Box color="red.500">{error}</Box>
+      </Container>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -42,7 +61,22 @@ export default function ArticlesPage() {
           </Button>
         </Link>
       </Flex>
-      <ArticleList articles={articles} />
+      <Box mb={4} position="relative">
+        <Box position="absolute" left="3" top="50%" transform="translateY(-50%)" color="gray.400">
+          <LuSearch />
+        </Box>
+        <Input
+          pl="10"
+          placeholder="タイトル、本文、キーワードで検索..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Box>
+      {articles.length === 0 && searchQuery ? (
+        <Text color="gray.500">検索結果が見つかりませんでした</Text>
+      ) : (
+        <ArticleList articles={articles} />
+      )}
     </Container>
   );
 }

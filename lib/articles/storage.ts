@@ -5,112 +5,80 @@ import type {
   ArticleListOptions,
 } from "./types";
 
-const STORAGE_KEY = "articles";
+const API_BASE = "/api/articles";
 
-function generateId(): string {
-  return crypto.randomUUID();
+function buildQueryString(options: ArticleListOptions): string {
+  const params = new URLSearchParams();
+  if (options.status) params.set("status", options.status);
+  if (options.sortBy) params.set("sortBy", options.sortBy);
+  if (options.sortOrder) params.set("sortOrder", options.sortOrder);
+  if (options.searchQuery) params.set("searchQuery", options.searchQuery);
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : "";
 }
 
-function getStoredArticles(): Article[] {
-  if (typeof window === "undefined") {
-    return [];
+export async function getArticles(
+  options: ArticleListOptions = {}
+): Promise<Article[]> {
+  const response = await fetch(`${API_BASE}${buildQueryString(options)}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch articles");
   }
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+  return response.json();
 }
 
-function saveArticles(articles: Article[]): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
-}
-
-export function getArticles(options: ArticleListOptions = {}): Article[] {
-  const { status, sortBy = "createdAt", sortOrder = "desc" } = options;
-  let articles = getStoredArticles();
-
-  if (status) {
-    articles = articles.filter((article) => article.status === status);
-  }
-
-  articles.sort((a, b) => {
-    let comparison = 0;
-    if (sortBy === "title") {
-      comparison = a.title.localeCompare(b.title);
-    } else {
-      comparison = new Date(a[sortBy]).getTime() - new Date(b[sortBy]).getTime();
-    }
-    return sortOrder === "asc" ? comparison : -comparison;
-  });
-
-  return articles;
-}
-
-export function getArticle(id: string): Article | null {
-  const articles = getStoredArticles();
-  return articles.find((article) => article.id === id) ?? null;
-}
-
-export function createArticle(input: ArticleCreateInput): Article {
-  const articles = getStoredArticles();
-  const now = new Date().toISOString();
-
-  const article: Article = {
-    id: generateId(),
-    title: input.title,
-    content: input.content,
-    keywords: input.keywords ?? [],
-    status: input.status ?? "draft",
-    createdAt: now,
-    updatedAt: now,
-    publishedAt: null,
-  };
-
-  saveArticles([...articles, article]);
-  return article;
-}
-
-export function updateArticle(
-  id: string,
-  input: ArticleUpdateInput
-): Article | null {
-  const articles = getStoredArticles();
-  const index = articles.findIndex((article) => article.id === id);
-
-  if (index === -1) {
+export async function getArticle(id: string): Promise<Article | null> {
+  const response = await fetch(`${API_BASE}/${id}`);
+  if (response.status === 404) {
     return null;
   }
-
-  const existing = articles[index];
-  const now = new Date().toISOString();
-
-  const updated: Article = {
-    ...existing,
-    ...input,
-    updatedAt: now,
-    publishedAt:
-      input.status === "published" && existing.status !== "published"
-        ? now
-        : existing.publishedAt,
-  };
-
-  const newArticles = [...articles];
-  newArticles[index] = updated;
-  saveArticles(newArticles);
-
-  return updated;
+  if (!response.ok) {
+    throw new Error("Failed to fetch article");
+  }
+  return response.json();
 }
 
-export function deleteArticle(id: string): boolean {
-  const articles = getStoredArticles();
-  const index = articles.findIndex((article) => article.id === id);
+export async function createArticle(
+  input: ArticleCreateInput
+): Promise<Article> {
+  const response = await fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create article");
+  }
+  return response.json();
+}
 
-  if (index === -1) {
+export async function updateArticle(
+  id: string,
+  input: ArticleUpdateInput
+): Promise<Article | null> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error("Failed to update article");
+  }
+  return response.json();
+}
+
+export async function deleteArticle(id: string): Promise<boolean> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: "DELETE",
+  });
+  if (response.status === 404) {
     return false;
   }
-
-  const newArticles = articles.filter((article) => article.id !== id);
-  saveArticles(newArticles);
+  if (!response.ok) {
+    throw new Error("Failed to delete article");
+  }
   return true;
 }

@@ -29,4 +29,5 @@ export interface ArticleListOptions {
   status?: ArticleStatus;
   sortBy?: "createdAt" | "updatedAt" | "title";
   sortOrder?: "asc" | "desc";
+  searchQuery?: string;
 }
