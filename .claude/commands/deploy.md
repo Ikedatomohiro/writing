@@ -12,8 +12,8 @@ Vercelにデプロイを実行してください。
 ## デプロイ環境
 
 引数で環境を指定できます:
-- `preview` (デフォルト): プレビュー環境にデプロイ
-- `production`: 本番環境にデプロイ
+- `production` (デフォルト): 本番環境にデプロイ
+- `preview`: プレビュー環境にデプロイ
 
 ## 実行手順
 
@@ -31,16 +31,16 @@ Vercelにデプロイを実行してください。
 GitHub Actionsのワークフローを手動でトリガーします:
 
 ```bash
+# 本番デプロイ（mainブランチ、デフォルト）
+gh workflow run deploy.yml -f environment=production
+
 # プレビューデプロイ（mainブランチ）
 gh workflow run deploy.yml -f environment=preview
 
-# 本番デプロイ（mainブランチ）
-gh workflow run deploy.yml -f environment=production
+# 特定のブランチを本番デプロイ
+gh workflow run deploy.yml -r feature/my-branch -f environment=production
 
-# 特定のブランチをデプロイ
-gh workflow run deploy.yml -r feature/my-branch -f environment=preview
-
-# 特定のタグをデプロイ
+# 特定のタグを本番デプロイ
 gh workflow run deploy.yml -r v1.0.0 -f environment=production
 ```
 
