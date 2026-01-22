@@ -113,3 +113,26 @@ spec.mdが見つからない場合はスキップし、その旨を報告する�
 - [ ] Approve（Critical/Highなし）
 - [ ] Request Changes（Critical/Highあり）
 ```
+
+## GitHubへのコメント投稿
+
+レビュー完了後、以下のコマンドでGitHubにコメントを投稿する。
+
+### PRレビューとして投稿
+
+```bash
+# Approve（承認）
+gh pr review --approve --body "レビュー内容"
+
+# Request Changes（修正依頼）
+gh pr review --request-changes --body "レビュー内容"
+
+# Comment（コメントのみ）
+gh pr review --comment --body "レビュー内容"
+```
+
+### 投稿時の注意
+
+- 長文の場合はHEREDOCを使用する
+- Critical/Highの指摘がある場合は `--request-changes` を使用
+- 指摘がない場合は `--approve` を使用
