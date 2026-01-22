@@ -24,3 +24,6 @@ coverage/
 
 # Data files
 tools/data/keywords/
+
+# Git worktrees
+.worktrees/

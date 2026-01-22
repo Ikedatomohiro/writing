@@ -28,15 +28,18 @@ git checkout -b feature/タスク名
 - 現在の作業を中断せずに別ブランチで作業したい場合
 - レビュー用に別ブランチを確認したい場合
 
+詳細は `/using-git-worktrees` スキルを使用。
+
+**クイックリファレンス:**
 ```bash
-# worktreeの作成
-git worktree add ../writing-feature-xxx feature/xxx
+# worktreeの作成（.worktrees/ディレクトリに配置）
+git worktree add .worktrees/<名前> -b <ブランチ名>
 
 # worktreeの一覧
 git worktree list
 
 # worktreeの削除
-git worktree remove ../writing-feature-xxx
+git worktree remove .worktrees/<名前>
 ```
 
 ### 3. 環境変数の確認
