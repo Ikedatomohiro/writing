@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Box,
@@ -39,22 +39,33 @@ export default function ArticleDetailPage() {
 
   const id = params.id as string;
 
-  useEffect(() => {
-    const loadArticle = () => {
-      const data = getArticle(id);
+  const loadArticle = useCallback(async () => {
+    try {
+      const data = await getArticle(id);
       setArticle(data);
+    } catch (error) {
+      console.error("Failed to load article:", error);
+    } finally {
       setIsLoading(false);
-    };
-    loadArticle();
+    }
   }, [id]);
 
-  const handleDelete = () => {
+  useEffect(() => {
+    loadArticle();
+  }, [loadArticle]);
+
+  const handleDelete = async () => {
     if (!confirm("この記事を削除しますか？")) {
       return;
     }
     setIsDeleting(true);
-    deleteArticle(id);
-    router.push("/articles");
+    try {
+      await deleteArticle(id);
+      router.push("/articles");
+    } catch (error) {
+      console.error("Failed to delete article:", error);
+      setIsDeleting(false);
+    }
   };
 
   if (isLoading) {

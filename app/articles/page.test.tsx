@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import ArticlesPage from "./page";
@@ -42,7 +42,7 @@ const renderWithChakra = (ui: React.ReactElement) => {
 describe("ArticlesPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetArticles.mockReturnValue(mockArticles);
+    mockGetArticles.mockResolvedValue(mockArticles);
   });
 
   afterEach(() => {
@@ -87,7 +87,6 @@ describe("ArticlesPage", () => {
   });
 
   it("検索クエリを入力するとgetArticlesが呼ばれる", async () => {
-    const user = userEvent.setup();
     renderWithChakra(<ArticlesPage />);
 
     await waitFor(() => {
@@ -95,7 +94,7 @@ describe("ArticlesPage", () => {
     });
 
     const searchInput = screen.getByLabelText("検索");
-    await user.type(searchInput, "TypeScript");
+    fireEvent.change(searchInput, { target: { value: "TypeScript" } });
 
     await waitFor(() => {
       expect(mockGetArticles).toHaveBeenCalledWith({
@@ -107,8 +106,8 @@ describe("ArticlesPage", () => {
   it("検索結果が0件の場合メッセージを表示する", async () => {
     const user = userEvent.setup();
     mockGetArticles
-      .mockReturnValueOnce(mockArticles)
-      .mockReturnValue([]);
+      .mockResolvedValueOnce(mockArticles)
+      .mockResolvedValue([]);
 
     renderWithChakra(<ArticlesPage />);
 

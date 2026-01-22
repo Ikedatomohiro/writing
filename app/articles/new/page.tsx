@@ -11,15 +11,20 @@ export default function NewArticlePage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     title: string;
     content: string;
     keywords: string[];
     status: ArticleStatus;
   }) => {
     setIsSubmitting(true);
-    const article = createArticle(data);
-    router.push(`/articles/${article.id}`);
+    try {
+      const article = await createArticle(data);
+      router.push(`/articles/${article.id}`);
+    } catch (error) {
+      console.error("Failed to create article:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {

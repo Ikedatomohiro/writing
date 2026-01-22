@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { LuPlus } from "react-icons/lu";
@@ -12,15 +12,33 @@ export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const loadArticles = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getArticles({ searchQuery: searchQuery || undefined });
+      setArticles(data);
+    } catch (err) {
+      setError("記事の読み込みに失敗しました");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
-    const loadArticles = () => {
-      const data = getArticles({ searchQuery });
-      setArticles(data);
-      setIsLoading(false);
-    };
     loadArticles();
-  }, [searchQuery]);
+  }, [loadArticles]);
+
+  if (error) {
+    return (
+      <Container maxW="container.xl" py={8}>
+        <Box color="red.500">{error}</Box>
+      </Container>
+    );
+  }
 
   if (isLoading) {
     return (

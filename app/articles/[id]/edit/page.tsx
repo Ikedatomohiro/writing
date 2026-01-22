@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Box, Button, Container, Heading, VStack } from "@chakra-ui/react";
 import Link from "next/link";
@@ -18,24 +18,35 @@ export default function EditArticlePage() {
 
   const id = params.id as string;
 
-  useEffect(() => {
-    const loadArticle = () => {
-      const data = getArticle(id);
+  const loadArticle = useCallback(async () => {
+    try {
+      const data = await getArticle(id);
       setArticle(data);
+    } catch (error) {
+      console.error("Failed to load article:", error);
+    } finally {
       setIsLoading(false);
-    };
-    loadArticle();
+    }
   }, [id]);
 
-  const handleSubmit = (data: {
+  useEffect(() => {
+    loadArticle();
+  }, [loadArticle]);
+
+  const handleSubmit = async (data: {
     title: string;
     content: string;
     keywords: string[];
     status: ArticleStatus;
   }) => {
     setIsSubmitting(true);
-    updateArticle(id, data);
-    router.push(`/articles/${id}`);
+    try {
+      await updateArticle(id, data);
+      router.push(`/articles/${id}`);
+    } catch (error) {
+      console.error("Failed to update article:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
