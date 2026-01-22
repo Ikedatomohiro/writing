@@ -27,6 +27,16 @@
 
 ## 開発ワークフロー
 
+### 重要: worktree必須
+
+**リポジトリ内のファイルを変更する際は、必ずworktreeを使用すること。**
+
+- 新機能実装、バグ修正、既存PRへの対応、ドキュメント修正など、すべてのファイル変更作業が対象
+- `gh pr checkout`や`git checkout <branch>`でブランチに直接チェックアウトしない
+- 必ず`/using-git-worktrees`スキルを使用してworktreeを作成する
+
+詳細は `.claude/rules/task-start.md` を参照。
+
 ### Next.js
 
 ```bash

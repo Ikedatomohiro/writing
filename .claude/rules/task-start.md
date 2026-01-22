@@ -2,7 +2,24 @@
 
 ## タスク開始前の必須確認
 
-新しいタスクを開始する際は、必ず以下の手順を実行すること。
+**リポジトリ内のファイルを変更する際は、必ず以下の手順を実行すること。**
+
+### 適用範囲
+
+以下のすべての作業が対象:
+- 新機能の実装
+- バグ修正
+- 既存PRへのレビュー対応・修正
+- リファクタリング
+- ドキュメント修正
+- 設定ファイルの変更
+
+### 禁止事項
+
+以下の操作は禁止:
+- `gh pr checkout <PR番号>` でブランチに直接チェックアウト
+- `git checkout <ブランチ名>` で作業ブランチに直接チェックアウト
+- mainブランチで直接ファイルを編集
 
 ### 1. mainブランチを最新にする
 
@@ -13,7 +30,9 @@ git checkout main
 git pull origin main
 ```
 
-### 2. worktreeを作成してブランチを作成
+### 2. worktreeを作成
+
+#### 新規タスクの場合
 
 `/using-git-worktrees` スキルを使用してworktreeを作成する。
 
@@ -33,6 +52,39 @@ git pull origin main
 - `fix/バグ名` - バグ修正
 - `refactor/対象` - リファクタリング
 - `docs/対象` - ドキュメント
+
+#### 既存PRへの対応の場合
+
+既存のブランチを使用してworktreeを作成する。
+
+**注意**: worktreeディレクトリ名には`/`を使用できないため、ブランチ名の`/`を`-`に置換する。
+
+```bash
+# リモートブランチを取得
+git fetch origin
+
+# 既存ブランチでworktreeを作成
+# ディレクトリ名: ブランチ名の `/` を `-` に置換
+git worktree add .worktrees/<ディレクトリ名> <ブランチ名>
+
+# 例: PR #18のfeature/evaluator-agentブランチに対応する場合
+# feature/evaluator-agent → feature-evaluator-agent
+git worktree add .worktrees/feature-evaluator-agent feature/evaluator-agent
+```
+
+作成後、環境変数のコピーと依存関係のインストールを手動で実行:
+
+```bash
+cd .worktrees/<ディレクトリ名>
+
+# 環境変数のコピー（メインリポジトリから）
+cp ../../.env .env 2>/dev/null || true
+cp ../../tools/.env tools/.env 2>/dev/null || true
+
+# 依存関係のインストール
+npm install
+(cd tools && uv sync)  # サブシェルで実行
+```
 
 ### 3. 環境変数の確認（追加設定が必要な場合）
 
@@ -97,7 +149,8 @@ mainブランチにタスク開始に必要なプログラムやモジュール�
 ### タスク開始前
 
 - [ ] mainブランチを最新にしたか
-- [ ] `/using-git-worktrees` でworktreeを作成したか
+- [ ] worktreeを作成したか（`/using-git-worktrees`または手動）
+- [ ] `gh pr checkout`や`git checkout <branch>`を使っていないか
 - [ ] 必要な環境変数を確認したか
 - [ ] 依存プログラムがmainに存在するか
 - [ ] 不足があればPRを確認したか
