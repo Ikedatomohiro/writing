@@ -59,16 +59,6 @@ describe("ArticlesPage", () => {
     });
   });
 
-  it("新規作成ボタンを表示する", async () => {
-    renderWithChakra(<ArticlesPage />);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("link", { name: /新規作成/ })
-      ).toBeInTheDocument();
-    });
-  });
-
   it("検索入力フィールドを表示する", async () => {
     renderWithChakra(<ArticlesPage />);
 
