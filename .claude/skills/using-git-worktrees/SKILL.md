@@ -95,7 +95,28 @@ git worktree add .worktrees/<名前> -b <ブランチ名>
 git worktree add .worktrees/<名前> <ブランチ名>
 ```
 
-### 3. 依存関係のインストール
+### 3. 環境変数のコピー
+
+`.env`ファイルは`.gitignore`に含まれているため、worktreeには自動でコピーされない。メインリポジトリからコピーする:
+
+```bash
+# メインリポジトリのルートパスを取得
+MAIN_REPO=$(git -C .worktrees/<名前> rev-parse --path-format=absolute --git-common-dir | sed 's|/.git$||')
+
+# .envファイルをコピー
+if [ -f "$MAIN_REPO/.env" ]; then
+    cp "$MAIN_REPO/.env" .worktrees/<名前>/.env
+fi
+
+# .env.localファイルをコピー（存在する場合）
+if [ -f "$MAIN_REPO/.env.local" ]; then
+    cp "$MAIN_REPO/.env.local" .worktrees/<名前>/.env.local
+fi
+```
+
+**注意**: 環境変数ファイルが見つからない場合は、ユーザーに確認する。
+
+### 4. 依存関係のインストール
 
 worktree内で依存関係を自動検出してインストール:
 
@@ -119,7 +140,7 @@ if [ -f pyproject.toml ]; then
 fi
 ```
 
-### 4. ベースラインテストの実行
+### 6. ベースラインテストの実行
 
 環境が正常に構築されたことを確認:
 
@@ -131,7 +152,7 @@ npm run build 2>&1 | head -20
 cd tools && uv run pytest --co -q 2>&1 | head -10
 ```
 
-### 5. 結果報告
+### 7. 結果報告
 
 作成完了後、以下を報告:
 
@@ -142,6 +163,7 @@ cd tools && uv run pytest --co -q 2>&1 | head -10
 |------|-----|
 | パス | `.worktrees/<名前>` |
 | ブランチ | `<ブランチ名>` |
+| 環境変数 | コピー済み / 未設定 |
 | 依存関係 | インストール済み |
 | テスト | PASS / FAIL |
 
