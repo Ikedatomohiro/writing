@@ -28,18 +28,40 @@
 - `BaseReflection`: 内省結果の共通スキーマ（is_sufficient, feedback）
 - `BaseToolResult`: ツール実行結果の共通スキーマ
 
+**差異吸収方針**:
+
+既存エージェント間でスキーマに差異がある場合（例: `ReflectionResult`）:
+- 共通フィールド（`is_sufficient`, `feedback`）は基底クラスに定義
+- エージェント固有フィールド（`additional_queries`, `missing_criteria`等）は継承クラスで追加
+- 継承パターンを採用し、基底クラスの型で受け取れるようにする
+
+```python
+# 基底クラス
+class BaseReflection(BaseModel):
+    is_sufficient: bool
+    feedback: str
+
+# エージェント固有の継承クラス
+class KeywordReflection(BaseReflection):
+    additional_queries: list[str] = []
+
+class EvaluatorReflection(BaseReflection):
+    missing_criteria: list[str] = []
+    additional_research: list[str] = []
+```
+
 ### FR-3: 共通ロジック
 
 - `should_continue()`: リトライ制御の共通ロジック
 - 最大リトライ回数の設定可能
 
-### FR-4: エージェント基底クラス（Phase 2）
+### FR-4: エージェント基底クラス（Phase 4）
 
 - グラフ構築の共通化
 - 初期状態生成の抽象化
 - 実行フローの統一
 
-### FR-5: オーケストレーター（Phase 4）
+### FR-5: オーケストレーター（Phase 6）
 
 - 複数エージェントの連携制御
 - エージェント間のコンテキスト受け渡し
@@ -82,8 +104,8 @@ tools/src/
 │   ├── __init__.py
 │   ├── base_node.py               # ノード基底クラス
 │   ├── base_state.py              # 共通スキーマ
-│   ├── base_agent.py              # エージェント基底クラス（Phase 2）
-│   └── orchestrator.py            # オーケストレーター（Phase 4）
+│   ├── base_agent.py              # エージェント基底クラス（Phase 4）
+│   └── orchestrator.py            # オーケストレーター（Phase 6）
 │
 ├── agents/
 │   ├── keyword_finder/

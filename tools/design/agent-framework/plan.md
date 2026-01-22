@@ -104,16 +104,21 @@ class KeywordPlannerNode(PlannerNode):
 
 #### 2.2 プロンプト整理
 
-プロンプトを設定ファイルに集約：
+既存の `prompts/` ディレクトリ構造を維持しつつ、ノード設定を集約：
 
 ```python
-# prompts.py
+# prompts/__init__.py に追加
+from .planner import PLANNER_SYSTEM_PROMPT, PLANNER_USER_PROMPT
+from ..schemas import Plan
+
 PLANNER_CONFIG = {
     "system_prompt": PLANNER_SYSTEM_PROMPT,
     "user_prompt_template": PLANNER_USER_PROMPT,
     "output_schema": Plan,
 }
 ```
+
+注: 既存の `prompts/planner.py`, `prompts/executor.py` 等はそのまま維持する。
 
 #### 2.3 agent.py 簡素化
 
