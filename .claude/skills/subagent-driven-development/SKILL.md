@@ -66,7 +66,7 @@ Read plan, extract all tasks with full text, note context, create TodoWrite
             |
             no
             v
-    Dispatch final code reviewer subagent for entire implementation
+    Dispatch final pr-review for entire implementation
             |
             v
     Use finishing-a-development-branch skill
@@ -115,7 +115,7 @@ Task 2: Recovery modes
 ...
 
 [After all tasks]
-[Dispatch final code-reviewer]
+[Dispatch final pr-review]
 Final reviewer: All requirements met, ready to merge
 
 Done!
@@ -176,7 +176,7 @@ Done!
 
 **Required workflow skills:**
 - **writing-plans** - Creates the plan this skill executes
-- **requesting-code-review** - Code review template for reviewer subagents
+- **pr-review** - Code review template for reviewer subagents
 - **finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**

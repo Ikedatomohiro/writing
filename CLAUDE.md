@@ -49,7 +49,7 @@ uv run ruff format .      # フォーマット
 ### Claude Codeコマンド
 
 - `/plan [機能]` - 実装計画を作成
-- `/review` - コード変更をレビュー
+- `/pr-review` - PRをレビュー
 - `/architect [課題]` - アーキテクチャ設計
 - `/test` - テスト実行
 - `/push [メッセージ]` - git add, commit, push
@@ -95,4 +95,3 @@ uv run ruff format .      # フォーマット
 
 - `.claude/agents/planner.md` - 計画作成
 - `.claude/agents/architect.md` - アーキテクチャ設計
-- `.claude/agents/code-reviewer.md` - コードレビュー

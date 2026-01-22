@@ -9,10 +9,9 @@
 - descriptionを日本語化
 - プロジェクト構造に合わせた調整
 
-#### Step 1.2: requesting-code-review スキルの追加
-- `.claude/skills/requesting-code-review/SKILL.md` を作成
-- `.claude/skills/requesting-code-review/code-reviewer.md` を作成
-- 既存の `code-reviewer` エージェントとの連携を考慮
+#### Step 1.2: pr-review スキルの活用
+- 既存の `.claude/skills/pr-review/skill.md` を使用
+- コードレビュー機能はpr-reviewスキルに統合済み
 
 #### Step 1.3: finishing-a-development-branch スキルの追加
 - `.claude/skills/finishing-a-development-branch/SKILL.md` を作成
@@ -36,25 +35,21 @@
 
 ### 新規作成
 - `.claude/skills/writing-plans/SKILL.md`
-- `.claude/skills/requesting-code-review/SKILL.md`
-- `.claude/skills/requesting-code-review/code-reviewer.md`
 - `.claude/skills/finishing-a-development-branch/SKILL.md`
 - `.claude/skills/subagent-driven-development/SKILL.md`
 - `.claude/skills/subagent-driven-development/implementer-prompt.md`
 - `.claude/skills/subagent-driven-development/spec-reviewer-prompt.md`
 - `.claude/skills/subagent-driven-development/code-quality-reviewer-prompt.md`
 
-### 変更なし
-- `.claude/agents/code-reviewer.md` - 既存エージェントはそのまま維持
-- `.claude/skills/pr-review/` - 既存スキルはそのまま維持
+### 既存活用
+- `.claude/skills/pr-review/skill.md` - コードレビュー機能として使用
 
 ## 依存関係
 
 ```
 subagent-driven-development
 ├── writing-plans
-├── requesting-code-review
-│   └── code-reviewer.md
+├── pr-review (既存)
 └── finishing-a-development-branch
 ```
 
