@@ -112,6 +112,11 @@ fi
 if [ -f "$MAIN_REPO/.env.local" ]; then
     cp "$MAIN_REPO/.env.local" .worktrees/<名前>/.env.local
 fi
+
+# tools/.envファイルをコピー（存在する場合）
+if [ -f "$MAIN_REPO/tools/.env" ]; then
+    cp "$MAIN_REPO/tools/.env" .worktrees/<名前>/tools/.env
+fi
 ```
 
 **注意**: 環境変数ファイルが見つからない場合は、ユーザーに確認する。
