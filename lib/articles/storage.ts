@@ -26,12 +26,25 @@ function saveArticles(articles: Article[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
 }
 
+function matchesSearchQuery(article: Article, query: string): boolean {
+  const lowerQuery = query.toLowerCase();
+  return (
+    article.title.toLowerCase().includes(lowerQuery) ||
+    article.content.toLowerCase().includes(lowerQuery) ||
+    article.keywords.some((k) => k.toLowerCase().includes(lowerQuery))
+  );
+}
+
 export function getArticles(options: ArticleListOptions = {}): Article[] {
-  const { status, sortBy = "createdAt", sortOrder = "desc" } = options;
+  const { status, sortBy = "createdAt", sortOrder = "desc", searchQuery } = options;
   let articles = getStoredArticles();
 
   if (status) {
     articles = articles.filter((article) => article.status === status);
+  }
+
+  if (searchQuery) {
+    articles = articles.filter((article) => matchesSearchQuery(article, searchQuery));
   }
 
   articles.sort((a, b) => {
