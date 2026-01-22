@@ -9,11 +9,10 @@
   - `SKILL.md` 作成（日本語description付き）
   - 完了条件: ファイルが存在し、YAML frontmatterが正しい
 
-- [ ] **Task 1.2**: requesting-code-review スキルを追加
-  - ディレクトリ作成: `.claude/skills/requesting-code-review/`
-  - `SKILL.md` 作成（日本語description付き）
-  - `code-reviewer.md` 作成
-  - 完了条件: 両ファイルが存在し、YAML frontmatterが正しい
+- [x] **Task 1.2**: pr-review スキルを活用
+  - 既存の `.claude/skills/pr-review/skill.md` を使用
+  - コードレビュー機能はpr-reviewスキルに統合済み
+  - 完了条件: pr-reviewスキルが存在し、レビュー機能が動作する
 
 - [ ] **Task 1.3**: finishing-a-development-branch スキルを追加
   - ディレクトリ作成: `.claude/skills/finishing-a-development-branch/`

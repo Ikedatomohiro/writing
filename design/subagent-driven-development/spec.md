@@ -29,13 +29,12 @@ obra/superpowersリポジトリのsubagent-driven-developmentスキルと、そ�
 **構成ファイル**:
 - `SKILL.md` - スキル定義
 
-### 3. requesting-code-review（依存）
+### 3. pr-review（依存）
 
 コードレビューを依頼するスキル。
 
 **構成ファイル**:
-- `SKILL.md` - スキル定義
-- `code-reviewer.md` - コードレビューエージェント用プロンプト
+- `skill.md` - スキル定義（コードレビューガイドライン含む）
 
 ### 4. finishing-a-development-branch（依存）
 
@@ -54,7 +53,7 @@ obra/superpowersリポジトリのsubagent-driven-developmentスキルと、そ�
 |--------|--------|
 | subagent-driven-development | `.claude/skills/subagent-driven-development/` |
 | writing-plans | `.claude/skills/writing-plans/` |
-| requesting-code-review | `.claude/skills/requesting-code-review/` |
+| pr-review | `.claude/skills/pr-review/` |
 | finishing-a-development-branch | `.claude/skills/finishing-a-development-branch/` |
 
 ### FR-2: 日本語ローカライゼーション
@@ -64,7 +63,7 @@ obra/superpowersリポジトリのsubagent-driven-developmentスキルと、そ�
 ### FR-3: プロジェクト固有の調整
 
 - ファイルパス参照をプロジェクト構造に合わせる
-- 既存のcode-reviewerエージェント（`.claude/agents/code-reviewer.md`）との整合性を確保
+- 既存のpr-reviewスキル（`.claude/skills/pr-review/skill.md`）との整合性を確保
 
 ### FR-4: スキル間の連携
 
@@ -97,5 +96,5 @@ obra/superpowersリポジトリのsubagent-driven-developmentスキルと、そ�
 
 - https://github.com/obra/superpowers/tree/main/skills/subagent-driven-development
 - https://github.com/obra/superpowers/tree/main/skills/writing-plans
-- https://github.com/obra/superpowers/tree/main/skills/requesting-code-review
+- pr-review: `.claude/skills/pr-review/` (プロジェクト固有)
 - https://github.com/obra/superpowers/tree/main/skills/finishing-a-development-branch
