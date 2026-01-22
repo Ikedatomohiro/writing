@@ -47,6 +47,11 @@ gh pr list --state merged --head <ブランチ名>
 git branch -r --contains HEAD | grep "origin/main"
 ```
 
+**結果の判定**:
+- `gh pr list` の出力が空の場合: PRがマージされていない
+- `gh pr list` の出力にPR情報が表示された場合: PRがマージ済み
+- `git branch -r --contains HEAD` で `origin/main` が表示された場合: マージ済み
+
 ### 3. メインリポジトリに移動
 
 worktree内にいる場合、メインリポジトリに移動する:
