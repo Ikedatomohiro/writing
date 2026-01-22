@@ -15,6 +15,7 @@ export function SearchInput({
 }: SearchInputProps) {
   return (
     <Input
+      type="search"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}

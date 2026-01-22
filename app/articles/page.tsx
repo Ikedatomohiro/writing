@@ -15,7 +15,7 @@ export default function ArticlesPage() {
 
   useEffect(() => {
     const loadArticles = () => {
-      const data = getArticles({ searchQuery: searchQuery || undefined });
+      const data = getArticles({ searchQuery });
       setArticles(data);
       setIsLoading(false);
     };

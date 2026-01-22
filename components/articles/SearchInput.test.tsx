@@ -17,7 +17,7 @@ describe("SearchInput", () => {
   it("入力フィールドを表示する", () => {
     renderWithProviders(<SearchInput value="" onChange={() => {}} />);
 
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toBeInTheDocument();
   });
 
   it("プレースホルダーを表示する", () => {
@@ -48,7 +48,7 @@ describe("SearchInput", () => {
     const handleChange = vi.fn();
     renderWithProviders(<SearchInput value="" onChange={handleChange} />);
 
-    const input = screen.getByRole("textbox");
+    const input = screen.getByRole("searchbox");
     fireEvent.change(input, { target: { value: "React" } });
 
     expect(handleChange).toHaveBeenCalledWith("React");
