@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Box, Button, Container, Flex, Heading, Text, Input } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { LuPlus, LuSearch } from "react-icons/lu";
-import { ArticleList } from "@/components/articles";
+import { LuPlus } from "react-icons/lu";
+import { ArticleList, SearchInput } from "@/components/articles";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
 
@@ -61,15 +61,11 @@ export default function ArticlesPage() {
           </Button>
         </Link>
       </Flex>
-      <Box mb={4} position="relative">
-        <Box position="absolute" left="3" top="50%" transform="translateY(-50%)" color="gray.400">
-          <LuSearch />
-        </Box>
-        <Input
-          pl="10"
-          placeholder="タイトル、本文、キーワードで検索..."
+      <Box mb={4}>
+        <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={setSearchQuery}
+          placeholder="タイトル、本文、キーワードで検索..."
         />
       </Box>
       {articles.length === 0 && searchQuery ? (
