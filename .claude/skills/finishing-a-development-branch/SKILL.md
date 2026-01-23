@@ -199,19 +199,19 @@ git worktree remove <worktree-path>
 **連携:**
 - **using-git-worktrees** - このスキルで作成したworktreeをクリーンアップ
 - **merge** - Option 1の詳細な手順（既存スキル）
-- **cleanup** - 不要なブランチの一括クリーンアップ（既存スキル）
+- **prune** - 不要なブランチの一括クリーンアップ（既存スキル）
 
 ## 既存スキルとの関係
 
-このプロジェクトには `merge` と `cleanup` スキルが存在する:
+このプロジェクトには `merge` と `prune` スキルが存在する:
 
 | スキル | 用途 |
 |--------|------|
 | **merge** | PRがマージされた後のクリーンアップに特化 |
-| **cleanup** | 不要なブランチとworktreeの一括削除 |
+| **prune** | 不要なブランチとworktreeの一括削除 |
 | **finishing-a-development-branch** | 開発完了時の4択ワークフロー |
 
 **使い分け:**
 - subagent-driven-developmentから呼び出される場合 → このスキル
 - PRマージ後の片付け → `merge` スキル
-- 複数の不要ブランチを整理 → `cleanup` スキル
+- 複数の不要ブランチを整理 → `prune` スキル
