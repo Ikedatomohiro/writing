@@ -1,5 +1,7 @@
 """計画立案プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 PLANNER_SYSTEM_PROMPT = """あなたはキーワードリサーチの専門家です。
 与えられた分野とシードキーワードから、記事執筆に適したキーワードを見つける計画を立ててください。
 
@@ -27,3 +29,8 @@ PLANNER_USER_PROMPT = """# 入力情報
 
 上記の情報に基づいて、キーワード調査の計画を立ててください。
 """
+
+PLANNER_PROMPT_CONFIG = PromptConfig(
+    system_prompt=PLANNER_SYSTEM_PROMPT,
+    user_prompt_template=PLANNER_USER_PROMPT,
+)

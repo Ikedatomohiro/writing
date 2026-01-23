@@ -1,5 +1,7 @@
 """評価十分性検証プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 REFLECTOR_SYSTEM_PROMPT = """あなたは評価結果を検証する専門家です。
 実行された評価が十分かどうかを判定してください。
 
@@ -46,3 +48,8 @@ REFLECTOR_USER_PROMPT = """# 評価目標
 上記の評価結果を検証し、十分かどうか判定してください。
 不十分な場合は、改善点を提案してください。
 """
+
+REFLECTOR_PROMPT_CONFIG = PromptConfig(
+    system_prompt=REFLECTOR_SYSTEM_PROMPT,
+    user_prompt_template=REFLECTOR_USER_PROMPT,
+)

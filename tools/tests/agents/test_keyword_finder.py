@@ -202,11 +202,10 @@ class TestShouldContinue:
 class TestCreatePlannerNode:
     """create_planner_node のテスト"""
 
-    @patch("src.agents.keyword_finder.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_planner_creates_plan(self, mock_get_model):
         mock_plan = Plan(
             subtasks=["サブタスク1", "サブタスク2"],
-            reasoning="計画の理由",
         )
         mock_model = MagicMock()
         mock_model.invoke.return_value = mock_plan
@@ -250,9 +249,9 @@ class TestCreateExecutorNode:
 
         assert result == {}
 
-    @patch("src.agents.keyword_finder.agent.get_related_keywords")
-    @patch("src.agents.keyword_finder.agent.search_web")
-    @patch("src.agents.keyword_finder.agent.get_chat_model")
+    @patch("src.agents.keyword_finder.nodes.get_related_keywords")
+    @patch("src.agents.keyword_finder.nodes.search_web")
+    @patch("src.agents.keyword_finder.nodes.get_chat_model")
     def test_executor_processes_tool_calls(
         self, mock_get_chat_model, mock_search_web, mock_get_related
     ):
@@ -273,7 +272,7 @@ class TestCreateExecutorNode:
         state: AgentState = {
             "input": KeywordSearchInput(category="資産形成", seed_keywords=["iDeCo"]),
             "messages": [],
-            "plan": Plan(subtasks=["関連キーワードを取得"], reasoning="test"),
+            "plan": Plan(subtasks=["関連キーワードを取得"]),
             "tool_results": [],
             "discovered_keywords": [],
             "reflection": None,
@@ -290,7 +289,7 @@ class TestCreateExecutorNode:
 class TestCreateReflectorNode:
     """create_reflector_node のテスト"""
 
-    @patch("src.agents.keyword_finder.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_reflector_evaluates_results(self, mock_get_model):
         mock_reflection = ReflectionResult(
             is_sufficient=True,
@@ -324,7 +323,7 @@ class TestCreateReflectorNode:
 class TestCreateIntegratorNode:
     """create_integrator_node のテスト"""
 
-    @patch("src.agents.keyword_finder.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_integrator_creates_output(self, mock_get_model):
         mock_output = KeywordSearchOutput(
             category="資産形成",

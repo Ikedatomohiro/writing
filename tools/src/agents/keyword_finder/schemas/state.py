@@ -8,6 +8,7 @@ from typing_extensions import TypedDict
 
 from src.agents.keyword_finder.schemas.input import KeywordSearchInput
 from src.agents.keyword_finder.schemas.output import KeywordSearchOutput
+from src.core.schemas import BaseReflection
 from src.tools.web_search import SearchResult
 
 
@@ -29,15 +30,12 @@ class ToolResult(BaseModel):
     )
 
 
-class ReflectionResult(BaseModel):
-    """内省結果"""
+class ReflectionResult(BaseReflection):
+    """内省結果
 
-    is_sufficient: bool = Field(
-        description="結果が十分かどうか",
-    )
-    feedback: str = Field(
-        description="フィードバック・改善提案",
-    )
+    BaseReflectionを継承し、追加で検索すべきクエリを持つ。
+    """
+
     additional_queries: list[str] = Field(
         default_factory=list,
         description="追加で検索すべきクエリ",

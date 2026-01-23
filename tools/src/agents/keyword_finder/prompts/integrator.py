@@ -1,5 +1,7 @@
 """結果統合プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 INTEGRATOR_SYSTEM_PROMPT = """あなたはキーワード調査結果を整理・分析する専門家です。
 収集されたキーワードを分析し、記事執筆に適したキーワードを選定してください。
 
@@ -35,3 +37,8 @@ INTEGRATOR_USER_PROMPT = """# 調査対象
 
 上記の情報を分析し、記事執筆に適したキーワードを選定・評価してください。
 """
+
+INTEGRATOR_PROMPT_CONFIG = PromptConfig(
+    system_prompt=INTEGRATOR_SYSTEM_PROMPT,
+    user_prompt_template=INTEGRATOR_USER_PROMPT,
+)

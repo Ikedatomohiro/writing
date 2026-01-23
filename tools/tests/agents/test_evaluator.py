@@ -244,7 +244,7 @@ class TestShouldContinue:
 class TestCreateGoalCreatorNode:
     """create_goal_creator_node のテスト"""
 
-    @patch("src.agents.evaluator.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_goal_creator_creates_goal(self, mock_get_model):
         mock_goal_output = GoalCreatorOutput(
             evaluation_goal="記事の品質を評価する",
@@ -282,7 +282,7 @@ class TestCreateGoalCreatorNode:
 class TestCreatePlannerNode:
     """create_planner_node のテスト"""
 
-    @patch("src.agents.evaluator.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_planner_creates_plan(self, mock_get_model):
         mock_plan = EvaluationPlan(
             steps=["正確性を評価", "読みやすさを評価"],
@@ -400,7 +400,7 @@ class TestCreateReflectorNode:
         assert result["reflection"].is_sufficient is True
         assert result["retry_count"] == 1
 
-    @patch("src.agents.evaluator.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_reflector_calls_llm_when_criteria_missing(self, mock_get_model):
         """未評価の基準がある場合、LLMに判定を委ねる"""
         mock_reflection = ReflectionResult(
@@ -472,7 +472,7 @@ class TestCreateReflectorNode:
 class TestCreateIntegratorNode:
     """create_integrator_node のテスト"""
 
-    @patch("src.agents.evaluator.agent.get_structured_model")
+    @patch("src.models.get_structured_model")
     def test_integrator_creates_output(self, mock_get_model):
         mock_output = EvaluationOutput(
             target_summary="テスト記事の要約",
