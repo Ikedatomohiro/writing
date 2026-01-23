@@ -35,7 +35,7 @@ gh pr list --head "$BRANCH" --state all --json number,state --jq '.[0]'
 ### 3. クリーンアップスクリプトを実行
 
 ```bash
-./scripts/merge-cleanup.sh <PR番号>
+.claude/skills/merge/merge-cleanup.sh <PR番号>
 ```
 
 スクリプトが自動的に以下を実行:
@@ -55,7 +55,7 @@ gh pr list --head "$BRANCH" --state all --json number,state --jq '.[0]'
 gh pr merge <PR番号> --merge --delete-branch
 
 # その後、クリーンアップスクリプトを再実行
-./scripts/merge-cleanup.sh <PR番号>
+.claude/skills/merge/merge-cleanup.sh <PR番号>
 ```
 
 ## 安全対策
@@ -72,6 +72,6 @@ gh pr merge <PR番号> --merge --delete-branch
 
 | 操作 | コマンド |
 |------|----------|
-| クリーンアップ実行 | `./scripts/merge-cleanup.sh <PR番号>` |
+| クリーンアップ実行 | `.claude/skills/merge/merge-cleanup.sh <PR番号>` |
 | PRマージ | `gh pr merge <PR番号> --merge --delete-branch` |
 | PR状態確認 | `gh pr view <PR番号> --json state` |
