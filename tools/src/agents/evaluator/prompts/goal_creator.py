@@ -1,5 +1,7 @@
 """評価目標・基準策定プロンプト（プロアクティブゴールクリエイター）"""
 
+from src.core.nodes import PromptConfig
+
 GOAL_CREATOR_SYSTEM_PROMPT = """あなたはプロアクティブゴールクリエイターです。
 評価依頼を受け取り、評価目標と評価基準を明確化してください。
 
@@ -63,3 +65,8 @@ GOAL_CREATOR_USER_PROMPT = """# 評価依頼
 上記の情報に基づいて、評価目標と評価基準を策定してください。
 不明点があれば質問を生成してください（最大3つ）。
 """
+
+GOAL_CREATOR_PROMPT_CONFIG = PromptConfig(
+    system_prompt=GOAL_CREATOR_SYSTEM_PROMPT,
+    user_prompt_template=GOAL_CREATOR_USER_PROMPT,
+)

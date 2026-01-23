@@ -1,5 +1,7 @@
 """結果統合プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 INTEGRATOR_SYSTEM_PROMPT = """あなたは評価結果を統合・整理する専門家です。
 すべての評価結果を統合し、最終的な評価レポートを作成してください。
 
@@ -56,3 +58,8 @@ INTEGRATOR_USER_PROMPT = """# 評価対象
 
 上記の情報を統合し、最終的な評価レポートを作成してください。
 """
+
+INTEGRATOR_PROMPT_CONFIG = PromptConfig(
+    system_prompt=INTEGRATOR_SYSTEM_PROMPT,
+    user_prompt_template=INTEGRATOR_USER_PROMPT,
+)

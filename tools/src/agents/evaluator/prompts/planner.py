@@ -1,5 +1,7 @@
 """評価計画立案プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 PLANNER_SYSTEM_PROMPT = """あなたは評価計画の立案者です。
 評価目標と評価基準に基づいて、具体的な評価計画を立ててください。
 
@@ -35,3 +37,8 @@ PLANNER_USER_PROMPT = """# 評価目標
 
 上記の情報に基づいて、評価計画を立ててください。
 """
+
+PLANNER_PROMPT_CONFIG = PromptConfig(
+    system_prompt=PLANNER_SYSTEM_PROMPT,
+    user_prompt_template=PLANNER_USER_PROMPT,
+)

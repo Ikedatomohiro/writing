@@ -1,5 +1,7 @@
 """内省プロンプト"""
 
+from src.core.nodes import PromptConfig
+
 REFLECTOR_SYSTEM_PROMPT = """あなたはキーワード調査結果を評価する専門家です。
 収集されたキーワードが記事執筆に十分かどうかを評価してください。
 
@@ -32,3 +34,8 @@ REFLECTOR_USER_PROMPT = """# 調査対象
 上記の結果を評価し、十分かどうか判定してください。
 不十分な場合は、追加で検索すべきクエリを提案してください。
 """
+
+REFLECTOR_PROMPT_CONFIG = PromptConfig(
+    system_prompt=REFLECTOR_SYSTEM_PROMPT,
+    user_prompt_template=REFLECTOR_USER_PROMPT,
+)

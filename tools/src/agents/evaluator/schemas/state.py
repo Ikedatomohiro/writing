@@ -11,6 +11,7 @@ from src.agents.evaluator.schemas.output import (
     EvaluationOutput,
     GoalCreatorOutput,
 )
+from src.core.schemas import BaseReflection
 from src.tools.web_search import SearchResult
 
 
@@ -67,15 +68,12 @@ class EvaluationResult(BaseModel):
     )
 
 
-class ReflectionResult(BaseModel):
-    """内省結果"""
+class ReflectionResult(BaseReflection):
+    """内省結果
 
-    is_sufficient: bool = Field(
-        description="評価が十分かどうか",
-    )
-    feedback: str = Field(
-        description="フィードバック・改善提案",
-    )
+    BaseReflectionを継承し、評価エージェント固有のフィールドを追加。
+    """
+
     missing_criteria: list[str] = Field(
         default_factory=list,
         description="不足している評価基準",
