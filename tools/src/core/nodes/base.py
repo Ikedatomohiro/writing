@@ -4,15 +4,17 @@ Provides an abstract base class for creating nodes in a LangGraph workflow.
 """
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from typing import Any, Generic, TypeVar
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
-from src.models import get_structured_model
-
 TState = TypeVar("TState")
 TOutput = TypeVar("TOutput", bound=BaseModel)
+
+# Type alias for model factory function
+ModelFactory = Callable[[type[BaseModel]], Any]
 
 
 class PromptConfig(BaseModel):
@@ -38,15 +40,23 @@ class BaseNode(ABC, Generic[TState, TOutput]):
         TOutput: The Pydantic model for structured output
     """
 
-    def __init__(self, prompt_config: PromptConfig, output_schema: type[TOutput]):
+    def __init__(
+        self,
+        prompt_config: PromptConfig,
+        output_schema: type[TOutput],
+        model_factory: ModelFactory | None = None,
+    ):
         """Initialize the node.
 
         Args:
             prompt_config: Configuration for system and user prompts
             output_schema: Pydantic model class for structured output
+            model_factory: Optional factory function to create structured LLM.
+                If not provided, defaults to src.models.get_structured_model.
         """
         self.prompt_config = prompt_config
         self.output_schema = output_schema
+        self._model_factory = model_factory
 
     @abstractmethod
     def extract_prompt_variables(self, state: TState) -> dict[str, Any]:
@@ -106,7 +116,18 @@ class BaseNode(ABC, Generic[TState, TOutput]):
             HumanMessage(content=user_prompt),
         ]
 
-        model = get_structured_model(self.output_schema)
+        model_factory = self._get_model_factory()
+        model = model_factory(self.output_schema)
         output = model.invoke(messages)
 
         return self.update_state(state, output)
+
+    def _get_model_factory(self) -> ModelFactory:
+        """Get the model factory, lazily importing default if needed."""
+        if self._model_factory is not None:
+            return self._model_factory
+
+        # Lazy import to avoid hard dependency on src.models
+        from src.models import get_structured_model
+
+        return get_structured_model

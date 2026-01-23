@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
 from langgraph.graph import StateGraph
+from langgraph.graph.state import CompiledStateGraph
 
 TState = TypeVar("TState")
 TInput = TypeVar("TInput")
@@ -48,7 +49,7 @@ class BaseAgent(ABC, Generic[TState, TInput, TOutput]):
         ...
 
     @abstractmethod
-    def define_graph_edges(self, graph: StateGraph) -> None:
+    def define_graph_edges(self, graph: StateGraph[TState]) -> None:
         """Define edges for the agent graph.
 
         This method should call graph methods like:
@@ -85,7 +86,7 @@ class BaseAgent(ABC, Generic[TState, TInput, TOutput]):
         """
         ...
 
-    def build_graph(self) -> Any:
+    def build_graph(self) -> CompiledStateGraph:
         """Build and compile the agent graph.
 
         Returns:
