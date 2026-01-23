@@ -52,7 +52,70 @@ git branch -r --contains HEAD | grep "origin/main"
 - `gh pr list` の出力にPR情報が表示された場合: PRがマージ済み
 - `git branch -r --contains HEAD` で `origin/main` が表示された場合: マージ済み
 
-### 3. メインリポジトリに移動
+### 3. 関連Issueの検出とクローズ
+
+PRのdescriptionから関連issueを検出し、`Ikedatomohiro/writing-task`リポジトリのissueをクローズする。
+
+```bash
+# PRの情報を取得（descriptionを含む）
+gh pr view <ブランチ名> --json body,number
+
+# PRのdescriptionからissue番号を抽出
+# 対象キーワード: Close/Closed/Closes, Fix/Fixed/Fixes, Resolve/Resolved/Resolves
+# 例: "Closes #123", "Fixed #45", "Resolves #789"
+```
+
+**issue番号の抽出パターン**（GitHub標準キーワード対応）:
+- `[Cc]lose[sd]?\s*#(\d+)` （Close, Closed, Closes）
+- `[Ff]ix(e[sd])?\s*#(\d+)` （Fix, Fixed, Fixes）
+- `[Rr]esolve[sd]?\s*#(\d+)` （Resolve, Resolved, Resolves）
+
+**具体的な抽出コマンド例**:
+
+```bash
+# PRのbodyを取得してissue番号を抽出
+BODY=$(gh pr view <ブランチ名> --json body -q '.body')
+ISSUE_NUMBERS=$(echo "$BODY" | grep -oEi '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' | grep -oE '[0-9]+')
+
+# 抽出結果を確認
+echo "$ISSUE_NUMBERS"
+```
+
+**issueをクローズ**:
+
+```bash
+# 検出したissue番号をwriting-taskリポジトリでクローズ
+gh issue close <issue番号> --repo Ikedatomohiro/writing-task
+
+# 例: Issue #5 をクローズ
+gh issue close 5 --repo Ikedatomohiro/writing-task
+```
+
+**注意事項**:
+- 複数のissue番号が検出された場合、すべてをクローズする
+- issueが既にクローズされている場合はスキップ（エラーにならない）
+- issueが存在しない場合はエラーメッセージを表示し、続行する
+
+**エラー時の挙動例**:
+
+```bash
+# Issue番号が検出されなかった場合
+$ echo "$ISSUE_NUMBERS"
+（空出力）
+→ 「関連Issueは検出されませんでした」と報告し、次のステップへ進む
+
+# Issueが既にクローズされている場合
+$ gh issue close 5 --repo Ikedatomohiro/writing-task
+Issue #5 is already closed
+→ 警告を表示し、続行する
+
+# Issueが存在しない場合
+$ gh issue close 999 --repo Ikedatomohiro/writing-task
+GraphQL: Could not resolve to an issue or pull request with the number of 999.
+→ エラーを表示し、続行する（他のissueがあれば処理を継続）
+```
+
+### 4. メインリポジトリに移動
 
 worktree内にいる場合、メインリポジトリに移動する:
 
@@ -64,14 +127,14 @@ MAIN_REPO=$(git rev-parse --path-format=absolute --git-common-dir | sed 's|/.git
 cd "$MAIN_REPO"
 ```
 
-### 4. mainブランチを更新
+### 5. mainブランチを更新
 
 ```bash
 git checkout main
 git pull origin main
 ```
 
-### 5. ローカルマージの確認（PRがまだマージされていない場合）
+### 6. ローカルマージの確認（PRがまだマージされていない場合）
 
 PRがまだマージされていない場合、ユーザーに確認:
 
@@ -84,7 +147,7 @@ git merge <ブランチ名>
 git push origin main
 ```
 
-### 6. worktreeを削除
+### 7. worktreeを削除
 
 ```bash
 # worktreeを削除
@@ -94,7 +157,7 @@ git worktree remove .worktrees/<名前>
 git worktree prune
 ```
 
-### 7. ローカルブランチを削除
+### 8. ローカルブランチを削除
 
 ```bash
 # マージ済みブランチを安全に削除
@@ -105,7 +168,7 @@ git branch -d <ブランチ名>
 - `git branch -d` が失敗した場合、ブランチがマージされていない可能性がある
 - 強制削除 `git branch -D` は、ユーザーの明示的な確認後のみ実行
 
-### 8. リモートブランチを削除（オプション）
+### 9. リモートブランチを削除（オプション）
 
 PRがマージされた後、リモートブランチを削除:
 
@@ -116,7 +179,7 @@ git push origin --delete <ブランチ名>
 
 **注意**: GitHubの設定でマージ時に自動削除される場合がある。その場合はスキップ。
 
-### 9. 結果報告
+### 10. 結果報告
 
 ```markdown
 ## Merge and Cleanup 完了
@@ -125,6 +188,7 @@ git push origin --delete <ブランチ名>
 |------|------|
 | ブランチ | `<ブランチ名>` |
 | PRマージ | 完了 |
+| 関連Issue | #<番号> クローズ済み / なし |
 | worktree削除 | `.worktrees/<名前>` 削除済み |
 | ローカルブランチ | 削除済み |
 | リモートブランチ | 削除済み / 既に削除済み |
@@ -155,6 +219,8 @@ git push origin --delete <ブランチ名>
 | 操作 | コマンド |
 |------|----------|
 | PRマージ確認 | `gh pr list --state merged --head <ブランチ>` |
+| PR詳細取得 | `gh pr view <ブランチ> --json body,number` |
+| Issueクローズ | `gh issue close <番号> --repo Ikedatomohiro/writing-task` |
 | メインリポジトリパス | `git rev-parse --path-format=absolute --git-common-dir` |
 | worktree削除 | `git worktree remove .worktrees/<名前>` |
 | ブランチ削除（安全） | `git branch -d <ブランチ>` |
