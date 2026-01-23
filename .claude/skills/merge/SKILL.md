@@ -61,14 +61,25 @@ PRのdescriptionから関連issueを検出し、`Ikedatomohiro/writing-task`リ�
 gh pr view <ブランチ名> --json body,number
 
 # PRのdescriptionからissue番号を抽出
-# 対象キーワード: Closes, closes, Fixes, fixes, Resolves, resolves
-# 例: "Closes #123", "fixes #45", "Resolves #789"
+# 対象キーワード: Close/Closed/Closes, Fix/Fixed/Fixes, Resolve/Resolved/Resolves
+# 例: "Closes #123", "Fixed #45", "Resolves #789"
 ```
 
-**issue番号の抽出パターン**:
-- `[Cc]loses?\s*#(\d+)`
-- `[Ff]ixes?\s*#(\d+)`
-- `[Rr]esolves?\s*#(\d+)`
+**issue番号の抽出パターン**（GitHub標準キーワード対応）:
+- `[Cc]lose[sd]?\s*#(\d+)` （Close, Closed, Closes）
+- `[Ff]ix(e[sd])?\s*#(\d+)` （Fix, Fixed, Fixes）
+- `[Rr]esolve[sd]?\s*#(\d+)` （Resolve, Resolved, Resolves）
+
+**具体的な抽出コマンド例**:
+
+```bash
+# PRのbodyを取得してissue番号を抽出
+BODY=$(gh pr view <ブランチ名> --json body -q '.body')
+ISSUE_NUMBERS=$(echo "$BODY" | grep -oEi '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' | grep -oE '[0-9]+')
+
+# 抽出結果を確認
+echo "$ISSUE_NUMBERS"
+```
 
 **issueをクローズ**:
 
@@ -84,6 +95,25 @@ gh issue close 5 --repo Ikedatomohiro/writing-task
 - 複数のissue番号が検出された場合、すべてをクローズする
 - issueが既にクローズされている場合はスキップ（エラーにならない）
 - issueが存在しない場合はエラーメッセージを表示し、続行する
+
+**エラー時の挙動例**:
+
+```bash
+# Issue番号が検出されなかった場合
+$ echo "$ISSUE_NUMBERS"
+（空出力）
+→ 「関連Issueは検出されませんでした」と報告し、次のステップへ進む
+
+# Issueが既にクローズされている場合
+$ gh issue close 5 --repo Ikedatomohiro/writing-task
+Issue #5 is already closed
+→ 警告を表示し、続行する
+
+# Issueが存在しない場合
+$ gh issue close 999 --repo Ikedatomohiro/writing-task
+GraphQL: Could not resolve to an issue or pull request with the number of 999.
+→ エラーを表示し、続行する（他のissueがあれば処理を継続）
+```
 
 ### 4. メインリポジトリに移動
 
