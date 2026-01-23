@@ -21,6 +21,29 @@
 - `git checkout <ブランチ名>` で作業ブランチに直接チェックアウト
 - mainブランチで直接ファイルを編集
 
+### 0. GitHub Issueの確認（Issueが指定された場合）
+
+ユーザーから `https://github.com/Ikedatomohiro/writing-task/issues` のURLが指定された場合、まずIssueの内容を確認する。
+
+```bash
+# Issue番号を指定して内容を取得
+gh issue view <Issue番号> --repo Ikedatomohiro/writing-task
+
+# 例: Issue #5 の内容を確認
+gh issue view 5 --repo Ikedatomohiro/writing-task
+```
+
+**確認事項**:
+- [ ] Issueのタイトルと説明を読み、タスクの目的を理解する
+- [ ] 受け入れ条件（Acceptance Criteria）があれば確認する
+- [ ] 関連するIssueやPRへのリンクがあれば確認する
+- [ ] ラベルや優先度を確認する
+
+**Issueの内容に基づいて**:
+- タスクの範囲を明確にする
+- 不明点があればユーザーに質問する
+- ブランチ名にIssue番号を含める（例: `feature/123-機能名`）
+
 ### 1. mainブランチを最新にする
 
 worktree作成前に、必ずmainブランチを最新の状態にする。
@@ -148,6 +171,7 @@ mainブランチにタスク開始に必要なプログラムやモジュール�
 
 ### タスク開始前
 
+- [ ] GitHub Issueが指定されていれば内容を確認したか
 - [ ] mainブランチを最新にしたか
 - [ ] worktreeを作成したか（`/using-git-worktrees`または手動）
 - [ ] `gh pr checkout`や`git checkout <branch>`を使っていないか
