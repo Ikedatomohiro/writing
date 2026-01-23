@@ -26,6 +26,10 @@ logger = get_logger(__name__)
 # 最大リトライ回数（評価エージェント用）
 MAX_EVALUATION_RETRY = 5
 
+# フォールバック出力用のメッセージ
+FALLBACK_SUMMARY = "評価の実行に失敗しました。"
+FALLBACK_IMPROVEMENT = "評価を再実行してください"
+
 
 class EvaluatorAgent(BaseAgent[AgentState, EvaluationInput, EvaluationOutput]):
     """評価エージェント
@@ -95,9 +99,9 @@ class EvaluatorAgent(BaseAgent[AgentState, EvaluationInput, EvaluationOutput]):
             criterion_scores=[],
             strengths=[],
             weaknesses=[],
-            improvements=["評価を再実行してください"],
+            improvements=[FALLBACK_IMPROVEMENT],
             evaluation_criteria=[],
-            summary="評価の実行に失敗しました。",
+            summary=FALLBACK_SUMMARY,
         )
 
 
@@ -191,7 +195,7 @@ def run_evaluator(input_data: EvaluationInput) -> EvaluationOutput:
         criterion_scores=[],
         strengths=[],
         weaknesses=[],
-        improvements=["評価を再実行してください"],
+        improvements=[FALLBACK_IMPROVEMENT],
         evaluation_criteria=[],
-        summary="評価の実行に失敗しました。",
+        summary=FALLBACK_SUMMARY,
     )

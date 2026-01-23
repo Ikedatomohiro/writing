@@ -22,8 +22,13 @@ from src.core.utils import RetryConfig, create_should_continue
 
 logger = get_logger(__name__)
 
+# フォールバック出力用のメッセージ
+FALLBACK_SUMMARY = "キーワードの検索に失敗しました。"
 
-class KeywordFinderAgent(BaseAgent[AgentState, KeywordSearchInput, KeywordSearchOutput]):
+
+class KeywordFinderAgent(
+    BaseAgent[AgentState, KeywordSearchInput, KeywordSearchOutput]
+):
     """キーワード検索エージェント
 
     BaseAgentを継承し、キーワード調査のワークフローを実行する。
@@ -84,7 +89,7 @@ class KeywordFinderAgent(BaseAgent[AgentState, KeywordSearchInput, KeywordSearch
             category=input_data.category,
             seed_keywords=input_data.seed_keywords,
             results=[],
-            summary="キーワードの検索に失敗しました。",
+            summary=FALLBACK_SUMMARY,
         )
 
 
@@ -168,5 +173,5 @@ def run_keyword_finder(input_data: KeywordSearchInput) -> KeywordSearchOutput:
         category=input_data.category,
         seed_keywords=input_data.seed_keywords,
         results=[],
-        summary="キーワードの検索に失敗しました。",
+        summary=FALLBACK_SUMMARY,
     )

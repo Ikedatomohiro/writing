@@ -69,7 +69,11 @@ class PlannerNode(BaseNode[AgentState, Plan]):
 class ExecutorNode:
     """ツール実行ノード
 
-    ツール呼び出しを含むため、BaseNodeを継承せず独自実装する。
+    BaseNodeを継承しない理由:
+    - BaseNodeは単一のLLM呼び出しで構造化出力を返す設計
+    - 本ノードは複数のツール呼び出し（Web検索、関連キーワード取得）を動的に実行
+    - サブタスクごとの反復処理とツール結果の蓄積が必要
+    - これらの要件はBaseNodeの抽象化に適さないため、独自実装とする
     """
 
     def __call__(self, state: AgentState) -> dict[str, Any]:

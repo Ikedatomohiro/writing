@@ -105,9 +105,7 @@ class PlannerNode(BaseNode[AgentState, EvaluationPlan]):
             "target_type": input_data.target_type,
         }
 
-    def update_state(
-        self, state: AgentState, output: EvaluationPlan
-    ) -> dict[str, Any]:
+    def update_state(self, state: AgentState, output: EvaluationPlan) -> dict[str, Any]:
         logger.info(f"評価計画立案完了: {len(output.steps)}個のステップ")
         return {"plan": output}
 
@@ -122,7 +120,11 @@ class PlannerNode(BaseNode[AgentState, EvaluationPlan]):
 class ExecutorNode:
     """情報収集・評価実行ノード
 
-    ツール呼び出しを含むため、BaseNodeを継承せず独自実装する。
+    BaseNodeを継承しない理由:
+    - BaseNodeは単一のLLM呼び出しで構造化出力を返す設計
+    - 本ノードは複数のツール呼び出し（Web検索など）を動的に実行
+    - ツール呼び出しの結果に応じた反復処理が必要
+    - これらの要件はBaseNodeの抽象化に適さないため、独自実装とする
     """
 
     def __call__(self, state: AgentState) -> dict[str, Any]:
@@ -150,7 +152,9 @@ class ExecutorNode:
             logger.info(f"調査実行: {research_item}")
 
             messages = [
-                SystemMessage(content="以下のトピックについてWeb検索を実行してください。"),
+                SystemMessage(
+                    content="以下のトピックについてWeb検索を実行してください。"
+                ),
                 HumanMessage(content=research_item),
             ]
 
@@ -182,10 +186,13 @@ class ExecutorNode:
             logger.info(f"評価基準を評価: {criterion}")
 
             relevant_info = []
+
             for tr in tool_results:
                 for result in tr.results[:3]:
                     if isinstance(result, SearchResult):
                         relevant_info.append(f"- {result.title}: {result.snippet}")
+
+            relevant_info_text = "\n".join(relevant_info[:10]) or "なし"
 
             eval_messages = [
                 SystemMessage(content=EXECUTOR_SYSTEM_PROMPT),
@@ -197,7 +204,7 @@ class ExecutorNode:
 {criterion}
 
 # 参考情報
-{chr(10).join(relevant_info[:10]) or "なし"}
+{relevant_info_text}
 
 上記の評価基準に基づいて評価してください。"""
                 ),
