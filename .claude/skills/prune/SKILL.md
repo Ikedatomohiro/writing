@@ -1,6 +1,6 @@
 ---
-name: cleanup
-description: 不要なブランチとworktreeを削除してリポジトリを整理する。マージ済みブランチの検出、worktreeの削除、リモート参照の更新を行う。ユーザーが「/cleanup」「ブランチを掃除して」「不要なブランチを削除」と言った時に使用する。
+name: prune
+description: 不要なブランチとworktreeを削除してリポジトリを整理する。マージ済みブランチの検出、worktreeの削除、リモート参照の更新を行う。ユーザーが「/prune」「ブランチを掃除して」「不要なブランチを削除」と言った時に使用する。
 ---
 
 # Cleanup Branches and Worktrees
