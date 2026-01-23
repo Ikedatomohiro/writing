@@ -1,9 +1,10 @@
 #!/bin/bash
 # Git Worktree作成スクリプト
-# 使用法: ./create-worktree.sh <worktree名> [ブランチ名] [-b]
+# 使用法: ./create-worktree.sh <worktree名> [ブランチ名] [-b] [-f]
 #   <worktree名>: .worktrees/配下に作成するディレクトリ名
 #   [ブランチ名]: 使用するブランチ名（省略時はworktree名と同じ）
 #   [-b]: 新規ブランチを作成する場合に指定
+#   [-f]: 確認プロンプトをスキップ（Claude Code等の非対話環境用）
 
 set -e
 
@@ -16,17 +17,19 @@ NC='\033[0m' # No Color
 
 # ヘルプ表示
 show_help() {
-    echo "Usage: $0 <worktree-name> [branch-name] [-b]"
+    echo "Usage: $0 <worktree-name> [branch-name] [-b] [-f]"
     echo ""
     echo "Arguments:"
     echo "  <worktree-name>  Name of the worktree directory (created under .worktrees/)"
     echo "  [branch-name]    Branch name to use (defaults to worktree-name)"
     echo "  -b               Create a new branch"
+    echo "  -f, --force      Skip confirmation prompts (for non-interactive environments)"
     echo ""
     echo "Examples:"
     echo "  $0 feature-auth                    # Use existing branch 'feature-auth'"
     echo "  $0 feature-auth -b                 # Create new branch 'feature-auth'"
     echo "  $0 my-worktree feature/auth -b    # Create new branch 'feature/auth'"
+    echo "  $0 feature-auth -b -f             # Create with force (skip prompts)"
     exit 0
 }
 
@@ -34,11 +37,16 @@ show_help() {
 WORKTREE_NAME=""
 BRANCH_NAME=""
 CREATE_NEW_BRANCH=false
+FORCE_MODE=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         -b)
             CREATE_NEW_BRANCH=true
+            shift
+            ;;
+        -f|--force)
+            FORCE_MODE=true
             shift
             ;;
         -h|--help)
@@ -86,11 +94,15 @@ UNCOMMITTED=$(git status --porcelain)
 if [ -n "$UNCOMMITTED" ]; then
     echo -e "${YELLOW}Warning: Uncommitted changes detected:${NC}"
     echo "$UNCOMMITTED"
-    read -p "Continue anyway? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "${RED}Aborted.${NC}"
-        exit 1
+    if [ "$FORCE_MODE" = true ]; then
+        echo -e "${YELLOW}Force mode enabled, continuing...${NC}"
+    else
+        read -p "Continue anyway? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${RED}Aborted.${NC}"
+            exit 1
+        fi
     fi
 fi
 
@@ -138,7 +150,7 @@ if [ -f ".env.local" ]; then
     echo "  .env.local -> $WORKTREE_PATH/.env.local"
 fi
 
-if [ -f "tools/.env" ]; then
+if [ -f "tools/.env" ] && [ -d "$WORKTREE_PATH/tools" ]; then
     cp "tools/.env" "$WORKTREE_PATH/tools/.env"
     echo "  tools/.env -> $WORKTREE_PATH/tools/.env"
 fi
@@ -152,24 +164,36 @@ echo -e "${YELLOW}[4/6] Installing dependencies...${NC}"
 
 cd "$WORKTREE_PATH"
 
-DEP_STATUS="None"
+DEP_STATUS=""
 
 if [ -f "package.json" ]; then
     echo "  Installing npm packages..."
-    npm install --silent
+    npm install --loglevel=error
     DEP_STATUS="npm"
 fi
 
 if [ -f "pyproject.toml" ]; then
     echo "  Installing Python packages with uv..."
     uv sync --quiet
-    DEP_STATUS="${DEP_STATUS}, uv"
+    if [ -n "$DEP_STATUS" ]; then
+        DEP_STATUS="${DEP_STATUS}, uv"
+    else
+        DEP_STATUS="uv"
+    fi
 fi
 
 if [ -f "tools/pyproject.toml" ]; then
     echo "  Installing tools Python packages with uv..."
     (cd tools && uv sync --quiet)
-    DEP_STATUS="${DEP_STATUS}, tools/uv"
+    if [ -n "$DEP_STATUS" ]; then
+        DEP_STATUS="${DEP_STATUS}, tools/uv"
+    else
+        DEP_STATUS="tools/uv"
+    fi
+fi
+
+if [ -z "$DEP_STATUS" ]; then
+    DEP_STATUS="None"
 fi
 
 echo -e "${GREEN}Dependencies installed.${NC}"

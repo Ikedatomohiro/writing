@@ -25,6 +25,7 @@ description: 機能開発時に隔離されたワークスペースを作成す�
 | `<worktree名>` | Yes | `.worktrees/`配下に作成するディレクトリ名 |
 | `[ブランチ名]` | No | 使用するブランチ名（省略時はworktree名と同じ） |
 | `-b` | No | 新規ブランチを作成する場合に指定 |
+| `-f` | No | 確認プロンプトをスキップ（Claude Code等の非対話環境用） |
 
 ### 実行例
 
@@ -37,6 +38,9 @@ bash .claude/skills/using-git-worktrees/create-worktree.sh my-worktree feature/a
 
 # 既存ブランチで作成
 bash .claude/skills/using-git-worktrees/create-worktree.sh feature-login feature/login
+
+# Claude Codeから実行（確認プロンプトをスキップ）
+bash .claude/skills/using-git-worktrees/create-worktree.sh feature-auth -b -f
 ```
 
 ## スクリプトの処理内容
