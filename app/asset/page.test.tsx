@@ -1,17 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { screen } from "@testing-library/react";
+import { renderWithChakra } from "@/app/test-utils";
 import AssetPage from "./page";
-
-function renderWithProviders(ui: React.ReactElement) {
-  return render(
-    <ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>
-  );
-}
 
 describe("AssetPage", () => {
   it("renders heading", () => {
-    renderWithProviders(<AssetPage />);
+    renderWithChakra(<AssetPage />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "資産形成"
     );

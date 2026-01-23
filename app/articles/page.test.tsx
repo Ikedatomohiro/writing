@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { cleanup, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { renderWithChakra } from "@/app/test-utils";
 import ArticlesPage from "./page";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
@@ -34,10 +34,6 @@ const mockArticles: Article[] = [
     publishedAt: null,
   },
 ];
-
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
 
 describe("ArticlesPage", () => {
   beforeEach(() => {
