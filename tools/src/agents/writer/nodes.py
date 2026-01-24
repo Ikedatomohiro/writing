@@ -5,6 +5,8 @@ BaseNode を継承したノードクラスの定義。
 
 from typing import Any
 
+from langchain_core.messages import HumanMessage, SystemMessage
+
 from src.agents.writer.prompts import (
     EXECUTOR_PROMPT_CONFIG,
     INTEGRATOR_PROMPT_CONFIG,
@@ -76,13 +78,13 @@ class ExecutorNode(BaseNode[AgentState, Section]):
         return {}
 
     def __call__(self, state: AgentState) -> dict[str, Any]:
-        logger.info("セクション執筆を開始")
-
-        plan = state.get("plan")
-        if not plan:
+        if self.should_skip(state):
             logger.warning("計画が設定されていません")
             return {}
 
+        logger.info("セクション執筆を開始")
+
+        plan = state["plan"]
         input_data = state["input"]
         existing_sections = list(state.get("sections", []))
 
@@ -111,8 +113,6 @@ class ExecutorNode(BaseNode[AgentState, Section]):
                 "keywords": ", ".join(input_data.keywords),
                 "tone": input_data.tone,
             }
-
-            from langchain_core.messages import HumanMessage, SystemMessage
 
             messages = [
                 SystemMessage(content=self.prompt_config.system_prompt),
