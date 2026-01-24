@@ -1,0 +1,4047 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "tgqbE",
+      "x": 0,
+      "y": 0,
+      "name": "Design System",
+      "width": 1600,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "gap": 64,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "2PfRy",
+          "name": "Color Palette",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "text",
+              "id": "Vpnkf",
+              "name": "colorTitle",
+              "fill": "$--text-primary",
+              "content": "Color Palette",
+              "fontFamily": "$--font-primary",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "rr0Eb",
+              "name": "Base Colors",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Q8FWp",
+                  "name": "colorBgPrimary",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--bg-primary",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "5uTt0",
+                      "name": "colorBgPrimaryLabel",
+                      "fill": "$--text-secondary",
+                      "content": "bg-primary",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LG3ke",
+                  "name": "colorBgSurface",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--bg-surface",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "J6RCA",
+                      "name": "colorBgSurfaceLabel",
+                      "fill": "$--text-secondary",
+                      "content": "bg-surface",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Js8nY",
+                  "name": "colorBgCard",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--bg-card",
+                  "cornerRadius": 8,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "vqBXB",
+                      "name": "colorBgCardLabel",
+                      "fill": "$--text-secondary",
+                      "content": "bg-card",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "I3ez9",
+                  "name": "colorTextPrimary",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--text-primary",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Vaa9H",
+                      "name": "colorTextPrimaryLabel",
+                      "fill": "#FFFFFF",
+                      "content": "text-primary",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "bPQJo",
+                  "name": "colorTextSecondary",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--text-secondary",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JmdpK",
+                      "name": "colorTextSecondaryLabel",
+                      "fill": "#FFFFFF",
+                      "content": "text-secondary",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RjyI3",
+                  "name": "colorBorder",
+                  "width": 120,
+                  "height": 100,
+                  "fill": "$--border",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "padding": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "H7cjo",
+                      "name": "colorBorderLabel",
+                      "fill": "$--text-secondary",
+                      "content": "border",
+                      "fontFamily": "$--font-secondary",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "CjRnU",
+              "name": "categoryColorTitle",
+              "fill": "$--text-primary",
+              "content": "Category Theme Colors",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "YH6rp",
+              "name": "Category Colors",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "hUUXu",
+                  "name": "investmentGroup",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "glIsh",
+                      "name": "investmentLabel",
+                      "fill": "$--text-primary",
+                      "content": "Investment",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qGFkR",
+                      "name": "investmentColors",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FLIr3",
+                          "name": "investmentAccent",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-investment",
+                          "cornerRadius": 8,
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KzDOv",
+                              "name": "investmentAccentLabel",
+                              "fill": "#FFFFFF",
+                              "content": "accent",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "KvsM5",
+                          "name": "investmentBg",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-investment-bg",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Kny9X",
+                              "name": "investmentBgLabel",
+                              "fill": "$--text-secondary",
+                              "content": "bg",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Eremp",
+                  "name": "programmingGroup",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OAIoR",
+                      "name": "programmingLabel",
+                      "fill": "$--text-primary",
+                      "content": "Programming",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "TOVf0",
+                      "name": "programmingColors",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "MV22E",
+                          "name": "programmingAccent",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-programming",
+                          "cornerRadius": 8,
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "IhZlD",
+                              "name": "programmingAccentLabel",
+                              "fill": "#FFFFFF",
+                              "content": "accent",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ASNSE",
+                          "name": "programmingBg",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-programming-bg",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "X6IFs",
+                              "name": "programmingBgLabel",
+                              "fill": "$--text-secondary",
+                              "content": "bg",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B48Ur",
+                  "name": "healthGroup",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "u9sON",
+                      "name": "healthLabel",
+                      "fill": "$--text-primary",
+                      "content": "Health",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fvo2S",
+                      "name": "healthColors",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Kd3Cs",
+                          "name": "healthAccent",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-health",
+                          "cornerRadius": 8,
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "fxWYY",
+                              "name": "healthAccentLabel",
+                              "fill": "#FFFFFF",
+                              "content": "accent",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "LKkU3",
+                          "name": "healthBg",
+                          "width": 80,
+                          "height": 80,
+                          "fill": "$--accent-health-bg",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "layout": "vertical",
+                          "padding": 8,
+                          "justifyContent": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "9EMs2",
+                              "name": "healthBgLabel",
+                              "fill": "$--text-secondary",
+                              "content": "bg",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "6C9i7",
+          "name": "Typography",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "text",
+              "id": "YRUqK",
+              "name": "typoTitle",
+              "fill": "$--text-primary",
+              "content": "Typography",
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "EBZP7",
+              "name": "Headings",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "9rjJF",
+                  "name": "h1Sample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OxwPz",
+                      "name": "h1Label",
+                      "fill": "$--text-muted",
+                      "content": "H1",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WRGFG",
+                      "name": "h1Text",
+                      "fill": "$--text-primary",
+                      "content": "見出し1 / Heading 1",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 32,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "4eHEw",
+                  "name": "h2Sample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "42sX0",
+                      "name": "h2Label",
+                      "fill": "$--text-muted",
+                      "content": "H2",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "f2jRe",
+                      "name": "h2Text",
+                      "fill": "$--text-primary",
+                      "content": "見出し2 / Heading 2",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "0q7XL",
+                  "name": "h3Sample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LEak3",
+                      "name": "h3Label",
+                      "fill": "$--text-muted",
+                      "content": "H3",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lTJyK",
+                      "name": "h3Text",
+                      "fill": "$--text-primary",
+                      "content": "見出し3 / Heading 3",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "60Id1",
+                  "name": "h4Sample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ws9Gg",
+                      "name": "h4Label",
+                      "fill": "$--text-muted",
+                      "content": "H4",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "8QLZm",
+                      "name": "h4Text",
+                      "fill": "$--text-primary",
+                      "content": "見出し4 / Heading 4",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 18,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mpewd",
+              "name": "Body Text",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Lk353",
+                  "name": "bodySample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "F89N8",
+                      "name": "bodyLabel",
+                      "fill": "$--text-muted",
+                      "content": "Body",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "sXv9R",
+                      "name": "bodyText",
+                      "fill": "$--text-primary",
+                      "content": "本文テキスト / Body text for articles and content.",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hoqff",
+                  "name": "captionSample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ZJOVF",
+                      "name": "captionLabel",
+                      "fill": "$--text-muted",
+                      "content": "Caption",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "vXUYs",
+                      "name": "captionText",
+                      "fill": "$--text-secondary",
+                      "content": "キャプション / Caption and meta information",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "f7jjL",
+                  "name": "smallSample",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Js55U",
+                      "name": "smallLabel",
+                      "fill": "$--text-muted",
+                      "content": "Small",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "k6Q2e",
+                      "name": "smallText",
+                      "fill": "$--text-muted",
+                      "content": "小さいテキスト / Small text for dates and tags",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 12
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JPINg",
+          "name": "Components",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 32,
+          "children": [
+            {
+              "type": "text",
+              "id": "dbfkY",
+              "name": "compTitle",
+              "fill": "$--text-primary",
+              "content": "Components",
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "Fj2iy",
+              "name": "Buttons",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uifIk",
+                  "name": "buttonTitle",
+                  "fill": "$--text-primary",
+                  "content": "Buttons",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "YFPJw",
+                  "name": "buttonRow",
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kSqO6",
+                      "name": "Button/Primary",
+                      "reusable": true,
+                      "fill": "$--accent-investment",
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        24
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "RTcZw",
+                          "name": "label",
+                          "fill": "#FFFFFF",
+                          "content": "Primary Button",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kJkfZ",
+                      "name": "Button/Secondary",
+                      "reusable": true,
+                      "fill": "$--bg-surface",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        24
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jIZ35",
+                          "name": "label",
+                          "fill": "$--text-primary",
+                          "content": "Secondary Button",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jwZRT",
+                      "name": "Button/Outline",
+                      "reusable": true,
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--accent-investment"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        24
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IlUxF",
+                          "name": "label",
+                          "fill": "$--accent-investment",
+                          "content": "Outline Button",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NY4RG",
+                      "name": "Button/Ghost",
+                      "reusable": true,
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        24
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "9Y2h8",
+                          "name": "label",
+                          "fill": "$--accent-investment",
+                          "content": "Ghost Button",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MK58d",
+              "name": "Article Cards",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "fYEwU",
+                  "name": "cardTitle",
+                  "fill": "$--text-primary",
+                  "content": "Article Card",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "tqKrD",
+                  "name": "cardRow",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "v54fK",
+                      "name": "Card/Article",
+                      "reusable": true,
+                      "clip": true,
+                      "width": 320,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "b0jeK",
+                          "name": "thumbnail",
+                          "width": "fill_container",
+                          "height": 180,
+                          "fill": "$--bg-surface"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "LMEJX",
+                          "name": "content",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "3GqaI",
+                              "name": "category",
+                              "fill": "$--accent-investment-bg",
+                              "cornerRadius": 4,
+                              "padding": [
+                                4,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "dA3g4",
+                                  "name": "categoryLabel",
+                                  "fill": "$--accent-investment",
+                                  "content": "Investment",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Bgcrp",
+                              "name": "title",
+                              "fill": "$--text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "記事タイトルがここに入ります",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 18,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "3egcv",
+                              "name": "excerpt",
+                              "fill": "$--text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "記事の概要文がここに表示されます。2行程度で切り詰められます。",
+                              "lineHeight": 1.6,
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "p8izX",
+                              "name": "meta",
+                              "gap": 12,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "I5nL7",
+                                  "name": "date",
+                                  "fill": "$--text-muted",
+                                  "content": "2024.01.15",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "mk9s9",
+                                  "name": "readTime",
+                                  "fill": "$--text-muted",
+                                  "content": "5 min read",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rgUjW",
+              "name": "Header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "5M2JM",
+                  "name": "headerTitle",
+                  "fill": "$--text-primary",
+                  "content": "Header",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "aMLTx",
+                  "name": "Header/Main",
+                  "reusable": true,
+                  "width": "fill_container",
+                  "height": 64,
+                  "fill": "$--bg-card",
+                  "stroke": {
+                    "thickness": {
+                      "bottom": 1
+                    },
+                    "fill": "$--border"
+                  },
+                  "padding": [
+                    0,
+                    24
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Er5X0",
+                      "name": "left",
+                      "gap": 32,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "2hbRT",
+                          "name": "logo",
+                          "fill": "$--text-primary",
+                          "content": "BlogName",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 20,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Fw2Hv",
+                          "name": "nav",
+                          "gap": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wSOCD",
+                              "name": "navItem",
+                              "fill": "$--text-secondary",
+                              "content": "Investment",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "hLakw",
+                              "name": "navItem2",
+                              "fill": "$--text-secondary",
+                              "content": "Programming",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "SNs9f",
+                              "name": "navItem3",
+                              "fill": "$--text-secondary",
+                              "content": "Health",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fVCvP",
+                      "name": "right",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "tjw8X",
+                          "name": "searchButton",
+                          "width": 40,
+                          "height": 40,
+                          "fill": "$--bg-surface",
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "rt3AZ",
+                              "name": "searchIcon",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "search",
+                              "iconFontFamily": "lucide",
+                              "fill": "$--text-secondary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "KDX2v",
+              "name": "Footer",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "nJB9U",
+                  "name": "footerTitle",
+                  "fill": "$--text-primary",
+                  "content": "Footer",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "j7Biu",
+                  "name": "Footer/Main",
+                  "reusable": true,
+                  "width": "fill_container",
+                  "fill": "$--bg-surface",
+                  "layout": "vertical",
+                  "gap": 32,
+                  "padding": [
+                    48,
+                    24,
+                    24,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "tvjKI",
+                      "name": "top",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "8rllV",
+                          "name": "brand",
+                          "width": 300,
+                          "layout": "vertical",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ID9uS",
+                              "name": "logo",
+                              "fill": "$--text-primary",
+                              "content": "BlogName",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 20,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "741Oo",
+                              "name": "description",
+                              "fill": "$--text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "資産形成、プログラミング、健康に関する記事を発信しています。",
+                              "lineHeight": 1.6,
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dGprx",
+                          "name": "links",
+                          "gap": 48,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "tY4KL",
+                              "name": "col1",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "EsJQB",
+                                  "name": "footerCol1Title",
+                                  "fill": "$--text-primary",
+                                  "content": "Categories",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "tGhIQ",
+                                  "name": "footerCol1Link1",
+                                  "fill": "$--text-secondary",
+                                  "content": "Investment",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "7KDLP",
+                                  "name": "footerCol1Link2",
+                                  "fill": "$--text-secondary",
+                                  "content": "Programming",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Gq65U",
+                                  "name": "footerCol1Link3",
+                                  "fill": "$--text-secondary",
+                                  "content": "Health",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "n2Aw5",
+                              "name": "col2",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "rl6wD",
+                                  "name": "footerCol2Title",
+                                  "fill": "$--text-primary",
+                                  "content": "Links",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "xGTxv",
+                                  "name": "footerCol2Link1",
+                                  "fill": "$--text-secondary",
+                                  "content": "About",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "eQWku",
+                                  "name": "footerCol2Link2",
+                                  "fill": "$--text-secondary",
+                                  "content": "Privacy Policy",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ktHWh",
+                                  "name": "footerCol2Link3",
+                                  "fill": "$--text-secondary",
+                                  "content": "Contact",
+                                  "fontFamily": "Noto Sans JP",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wD8HI",
+                      "name": "bottom",
+                      "width": "fill_container",
+                      "stroke": {
+                        "thickness": {
+                          "top": 1
+                        },
+                        "fill": "$--border"
+                      },
+                      "padding": [
+                        16,
+                        0,
+                        0,
+                        0
+                      ],
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Vrm4f",
+                          "name": "copyright",
+                          "fill": "$--text-muted",
+                          "content": "© 2024 BlogName. All rights reserved.",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kI6CN",
+              "name": "Ad Slots",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GBS9A",
+                  "name": "adTitle",
+                  "fill": "$--text-primary",
+                  "content": "Ad Slots (Google Adsense)",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "BH22D",
+                  "name": "adRow",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DfaIY",
+                      "name": "Ad/Leaderboard",
+                      "reusable": true,
+                      "width": 728,
+                      "height": 90,
+                      "fill": "$--bg-surface",
+                      "cornerRadius": 4,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "layout": "vertical",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "1NLYV",
+                          "name": "label",
+                          "fill": "$--text-muted",
+                          "content": "Ad - Leaderboard (728×90)",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "99JpF",
+                      "name": "adSidebarGroup",
+                      "layout": "vertical",
+                      "gap": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "0C60w",
+                          "name": "Ad/Rectangle",
+                          "reusable": true,
+                          "width": 300,
+                          "height": 250,
+                          "fill": "$--bg-surface",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "layout": "vertical",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7BOzR",
+                              "name": "label",
+                              "fill": "$--text-muted",
+                              "content": "Ad - Rectangle (300×250)",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xxIn7",
+                          "name": "Ad/Skyscraper",
+                          "reusable": true,
+                          "width": 300,
+                          "height": 600,
+                          "fill": "$--bg-surface",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$--border"
+                          },
+                          "layout": "vertical",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wIhhG",
+                              "name": "label",
+                              "fill": "$--text-muted",
+                              "content": "Ad - Skyscraper (300×600)",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "SdVBq",
+      "x": 1700,
+      "y": 0,
+      "name": "Top Page",
+      "clip": true,
+      "width": 1280,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "KnKVS",
+          "type": "ref",
+          "ref": "aMLTx",
+          "name": "header"
+        },
+        {
+          "type": "frame",
+          "id": "IWphH",
+          "name": "adTop",
+          "width": "fill_container",
+          "fill": "$--bg-surface",
+          "padding": [
+            16,
+            0
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "id": "RQ3SJ",
+              "type": "ref",
+              "ref": "DfaIY",
+              "name": "adLeaderboard"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Z6bkG",
+          "name": "Hero Section",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            64,
+            40
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "rzyJL",
+              "name": "heroTitle",
+              "fill": "$--text-primary",
+              "content": "BlogName",
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 48,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "QCK6u",
+              "name": "heroSubtitle",
+              "fill": "$--text-secondary",
+              "content": "資産形成・プログラミング・健康に関する情報を発信",
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "8howR",
+              "name": "heroNav",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Kj3wg",
+                  "name": "heroNavInvestment",
+                  "fill": "$--accent-investment-bg",
+                  "cornerRadius": 8,
+                  "padding": [
+                    12,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Gkc7s",
+                      "name": "heroNavInvestmentLabel",
+                      "fill": "$--accent-investment",
+                      "content": "Investment",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FAepO",
+                  "name": "heroNavProgramming",
+                  "fill": "$--accent-programming-bg",
+                  "cornerRadius": 8,
+                  "padding": [
+                    12,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "9ZtUY",
+                      "name": "heroNavProgrammingLabel",
+                      "fill": "$--accent-programming",
+                      "content": "Programming",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "is9Ro",
+                  "name": "heroNavHealth",
+                  "fill": "$--accent-health-bg",
+                  "cornerRadius": 8,
+                  "padding": [
+                    12,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "1x2Bk",
+                      "name": "heroNavHealthLabel",
+                      "fill": "$--accent-health",
+                      "content": "Health",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TWUYN",
+          "name": "Main Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 64,
+          "padding": [
+            0,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "6wb8e",
+              "name": "Investment Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "29FkP",
+                  "name": "investHeader",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "cslYn",
+                      "name": "investTitle",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZOZSv",
+                          "name": "investBadge",
+                          "width": 4,
+                          "height": 24,
+                          "fill": "$--accent-investment",
+                          "cornerRadius": 2
+                        },
+                        {
+                          "type": "text",
+                          "id": "lF8va",
+                          "name": "investTitleText",
+                          "fill": "$--text-primary",
+                          "content": "Investment",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 24,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "vHxbN",
+                      "name": "investMore",
+                      "fill": "$--accent-investment",
+                      "content": "View All →",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "5BGi1",
+                  "name": "investCards",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "nrcHE",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "investCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "投資初心者が知っておくべき5つの基本原則"
+                        }
+                      }
+                    },
+                    {
+                      "id": "dhFQj",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "investCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "インデックス投資の始め方完全ガイド"
+                        }
+                      }
+                    },
+                    {
+                      "id": "orBLB",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "investCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "NISAとiDeCoの違いを徹底比較"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hOIua",
+              "name": "Programming Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "qiawj",
+                  "name": "progHeader",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "COUbf",
+                      "name": "progTitle",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hzDOD",
+                          "name": "progBadge",
+                          "width": 4,
+                          "height": 24,
+                          "fill": "$--accent-programming",
+                          "cornerRadius": 2
+                        },
+                        {
+                          "type": "text",
+                          "id": "OewzI",
+                          "name": "progTitleText",
+                          "fill": "$--text-primary",
+                          "content": "Programming",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 24,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "uEFj8",
+                      "name": "progMore",
+                      "fill": "$--accent-programming",
+                      "content": "View All →",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UDtAh",
+                  "name": "progCards",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "mK0Sn",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "progCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-programming-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Programming",
+                          "fill": "$--accent-programming"
+                        },
+                        "Bgcrp": {
+                          "content": "TypeScript入門：型安全なJavaScript開発"
+                        }
+                      }
+                    },
+                    {
+                      "id": "f6hnT",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "progCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-programming-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Programming",
+                          "fill": "$--accent-programming"
+                        },
+                        "Bgcrp": {
+                          "content": "Next.js 15の新機能まとめ"
+                        }
+                      }
+                    },
+                    {
+                      "id": "wSOuV",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "progCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-programming-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Programming",
+                          "fill": "$--accent-programming"
+                        },
+                        "Bgcrp": {
+                          "content": "Pythonで始める機械学習入門"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Sk8Pk",
+              "name": "adMid",
+              "width": "fill_container",
+              "padding": [
+                24,
+                0
+              ],
+              "justifyContent": "center",
+              "children": [
+                {
+                  "id": "uj1Sf",
+                  "type": "ref",
+                  "ref": "DfaIY",
+                  "name": "adMidLeaderboard"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bhej1",
+              "name": "Health Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "hOjtV",
+                  "name": "healthHeader",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "WuIBO",
+                      "name": "healthTitle",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "2UU76",
+                          "name": "healthBadge",
+                          "width": 4,
+                          "height": 24,
+                          "fill": "$--accent-health",
+                          "cornerRadius": 2
+                        },
+                        {
+                          "type": "text",
+                          "id": "BmWlh",
+                          "name": "healthTitleText",
+                          "fill": "$--text-primary",
+                          "content": "Health",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 24,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "H5jDH",
+                      "name": "healthMore",
+                      "fill": "$--accent-health",
+                      "content": "View All →",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Oc1QE",
+                  "name": "healthCards",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "pwHzf",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "healthCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-health-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Health",
+                          "fill": "$--accent-health"
+                        },
+                        "Bgcrp": {
+                          "content": "質の良い睡眠を取るための7つの習慣"
+                        }
+                      }
+                    },
+                    {
+                      "id": "y9dOy",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "healthCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-health-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Health",
+                          "fill": "$--accent-health"
+                        },
+                        "Bgcrp": {
+                          "content": "在宅ワーカーのための運動不足解消法"
+                        }
+                      }
+                    },
+                    {
+                      "id": "7rIUl",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "healthCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-health-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Health",
+                          "fill": "$--accent-health"
+                        },
+                        "Bgcrp": {
+                          "content": "ストレス軽減に効果的な食事とは"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "9VQGF",
+          "type": "ref",
+          "ref": "j7Biu",
+          "name": "footer"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "QAH6s",
+      "x": 3080,
+      "y": 0,
+      "name": "Category Page - Investment",
+      "clip": true,
+      "width": 1280,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "pAEEC",
+          "type": "ref",
+          "ref": "aMLTx",
+          "name": "catHeader"
+        },
+        {
+          "type": "frame",
+          "id": "rkumu",
+          "name": "Category Hero",
+          "width": "fill_container",
+          "fill": "$--accent-investment-bg",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            48,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "I2xRw",
+              "name": "catHeroTitle",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "vXuEw",
+                  "name": "catHeroBadge",
+                  "width": 6,
+                  "height": 40,
+                  "fill": "$--accent-investment",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "text",
+                  "id": "9WHCg",
+                  "name": "catHeroTitleText",
+                  "fill": "$--text-primary",
+                  "content": "Investment",
+                  "fontFamily": "Noto Sans JP",
+                  "fontSize": 36,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "McXnt",
+              "name": "catHeroDesc",
+              "fill": "$--text-secondary",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "資産形成に関する記事一覧。投資の基礎から応用まで幅広く解説します。",
+              "lineHeight": 1.6,
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JgDFx",
+          "name": "Content Area",
+          "width": "fill_container",
+          "gap": 32,
+          "padding": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "0wxjc",
+              "name": "Main",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HwPtN",
+                  "name": "Article Grid",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "7Ik54",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "投資初心者が知っておくべき5つの基本原則"
+                        }
+                      }
+                    },
+                    {
+                      "id": "su4YR",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "インデックス投資の始め方完全ガイド"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "jIk0g",
+                  "name": "Article Grid Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "BrVaC",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "NISAとiDeCoの違いを徹底比較"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Z1qUg",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard4",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "配当金生活を目指すための戦略"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "zSGvd",
+                  "name": "Pagination",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    24,
+                    0
+                  ],
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "VF4a8",
+                      "name": "pageBtn1",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--accent-investment",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "W7Pym",
+                          "name": "pageBtn1Text",
+                          "fill": "#FFFFFF",
+                          "content": "1",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "U67CN",
+                      "name": "pageBtn2",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wM9nr",
+                          "name": "pageBtn2Text",
+                          "fill": "$--text-secondary",
+                          "content": "2",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bYC23",
+                      "name": "pageBtn3",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "gMprW",
+                          "name": "pageBtn3Text",
+                          "fill": "$--text-secondary",
+                          "content": "3",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a6w9k",
+                      "name": "pageBtnNext",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "Q6WA4",
+                          "name": "pageBtnNextIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "chevron-right",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--text-secondary"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dEjng",
+              "name": "Sidebar",
+              "width": 300,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "vwKmO",
+                  "name": "Popular Articles",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "o5rwS",
+                      "name": "sidebarPopularTitle",
+                      "fill": "$--text-primary",
+                      "content": "人気記事",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "xsyCY",
+                      "name": "sidebarItem1",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "1. 投資初心者が知っておくべき5つの基本原則",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "qLYSO",
+                      "name": "sidebarItem2",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "2. インデックス投資の始め方完全ガイド",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yhXM3",
+                      "name": "sidebarItem3",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "3. NISAとiDeCoの違いを徹底比較",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "OINqa",
+                  "type": "ref",
+                  "ref": "0C60w",
+                  "name": "sidebarAd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "7Jh8U",
+          "type": "ref",
+          "ref": "j7Biu",
+          "name": "catFooter"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "SaMKr",
+      "x": 3080,
+      "y": 1656,
+      "name": "Category Page - Programming",
+      "clip": true,
+      "width": 1280,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "B1KKp",
+          "type": "ref",
+          "ref": "aMLTx",
+          "name": "catHeader"
+        },
+        {
+          "type": "frame",
+          "id": "FxMRW",
+          "name": "Category Hero",
+          "width": "fill_container",
+          "fill": "$--accent-programming-bg",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            48,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "oSdo7",
+              "name": "catHeroTitle",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HblmG",
+                  "name": "catHeroBadge",
+                  "width": 6,
+                  "height": 40,
+                  "fill": "$--accent-programming",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "text",
+                  "id": "e9Q0l",
+                  "name": "catHeroTitleText",
+                  "fill": "$--text-primary",
+                  "content": "Programming",
+                  "fontFamily": "Noto Sans JP",
+                  "fontSize": 36,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "ILWGT",
+              "name": "catHeroDesc",
+              "fill": "$--text-secondary",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "プログラミングに関する記事一覧。初心者向けから上級者向けまで。",
+              "lineHeight": 1.6,
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JcXlI",
+          "name": "Content Area",
+          "width": "fill_container",
+          "gap": 32,
+          "padding": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "hcDpO",
+              "name": "Main",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "8lrJL",
+                  "name": "Article Grid",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "1WWNx",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "投資初心者が知っておくべき5つの基本原則"
+                        }
+                      }
+                    },
+                    {
+                      "id": "McFjp",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "インデックス投資の始め方完全ガイド"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qMQr4",
+                  "name": "Article Grid Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "tkEnW",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "NISAとiDeCoの違いを徹底比較"
+                        }
+                      }
+                    },
+                    {
+                      "id": "flTWW",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard4",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "配当金生活を目指すための戦略"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AKJTz",
+                  "name": "Pagination",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    24,
+                    0
+                  ],
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "7tuju",
+                      "name": "pageBtn1",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--accent-programming",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "q1o4A",
+                          "name": "pageBtn1Text",
+                          "fill": "#FFFFFF",
+                          "content": "1",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "6383W",
+                      "name": "pageBtn2",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "0AJtX",
+                          "name": "pageBtn2Text",
+                          "fill": "$--text-secondary",
+                          "content": "2",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UjrTh",
+                      "name": "pageBtn3",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "o9jU0",
+                          "name": "pageBtn3Text",
+                          "fill": "$--text-secondary",
+                          "content": "3",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qiWwq",
+                      "name": "pageBtnNext",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "9dv6F",
+                          "name": "pageBtnNextIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "chevron-right",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--text-secondary"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "x8Qvu",
+              "name": "Sidebar",
+              "width": 300,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "l3Cea",
+                  "name": "Popular Articles",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WuvyA",
+                      "name": "sidebarPopularTitle",
+                      "fill": "$--text-primary",
+                      "content": "人気記事",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "t5ohu",
+                      "name": "sidebarItem1",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "1. 投資初心者が知っておくべき5つの基本原則",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "KhF7R",
+                      "name": "sidebarItem2",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "2. インデックス投資の始め方完全ガイド",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dNkyS",
+                      "name": "sidebarItem3",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "3. NISAとiDeCoの違いを徹底比較",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "gIadm",
+                  "type": "ref",
+                  "ref": "0C60w",
+                  "name": "sidebarAd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GkZqP",
+          "type": "ref",
+          "ref": "j7Biu",
+          "name": "catFooter"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "EZHPH",
+      "x": 3080,
+      "y": 3212,
+      "name": "Category Page - Health",
+      "clip": true,
+      "width": 1280,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "fEvw8",
+          "type": "ref",
+          "ref": "aMLTx",
+          "name": "catHeader"
+        },
+        {
+          "type": "frame",
+          "id": "M3mDB",
+          "name": "Category Hero",
+          "width": "fill_container",
+          "fill": "$--accent-health-bg",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            48,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "RsYJL",
+              "name": "catHeroTitle",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tMp1i",
+                  "name": "catHeroBadge",
+                  "width": 6,
+                  "height": 40,
+                  "fill": "$--accent-health",
+                  "cornerRadius": 3
+                },
+                {
+                  "type": "text",
+                  "id": "lIjtl",
+                  "name": "catHeroTitleText",
+                  "fill": "$--text-primary",
+                  "content": "Health",
+                  "fontFamily": "Noto Sans JP",
+                  "fontSize": 36,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "AylSk",
+              "name": "catHeroDesc",
+              "fill": "$--text-secondary",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "健康に関する記事一覧。心身の健康維持に役立つ情報を発信。",
+              "lineHeight": 1.6,
+              "fontFamily": "Noto Sans JP",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "wjKvx",
+          "name": "Content Area",
+          "width": "fill_container",
+          "gap": 32,
+          "padding": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "7fLSK",
+              "name": "Main",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oLxq0",
+                  "name": "Article Grid",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "BVbGb",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard1",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "投資初心者が知っておくべき5つの基本原則"
+                        }
+                      }
+                    },
+                    {
+                      "id": "UP7MR",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard2",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "インデックス投資の始め方完全ガイド"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "h3pKC",
+                  "name": "Article Grid Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "hYxcm",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard3",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "NISAとiDeCoの違いを徹底比較"
+                        }
+                      }
+                    },
+                    {
+                      "id": "mrp0E",
+                      "type": "ref",
+                      "ref": "v54fK",
+                      "name": "catCard4",
+                      "descendants": {
+                        "3GqaI": {
+                          "fill": "$--accent-investment-bg"
+                        },
+                        "dA3g4": {
+                          "content": "Investment"
+                        },
+                        "Bgcrp": {
+                          "content": "配当金生活を目指すための戦略"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "47zeN",
+                  "name": "Pagination",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    24,
+                    0
+                  ],
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "n4tis",
+                      "name": "pageBtn1",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--accent-health",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xda6Y",
+                          "name": "pageBtn1Text",
+                          "fill": "#FFFFFF",
+                          "content": "1",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SpDIO",
+                      "name": "pageBtn2",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lwPdl",
+                          "name": "pageBtn2Text",
+                          "fill": "$--text-secondary",
+                          "content": "2",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "8pP2z",
+                      "name": "pageBtn3",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jgnuA",
+                          "name": "pageBtn3Text",
+                          "fill": "$--text-secondary",
+                          "content": "3",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "1jBQo",
+                      "name": "pageBtnNext",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-card",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "WwVjT",
+                          "name": "pageBtnNextIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "chevron-right",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--text-secondary"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yO3Rs",
+              "name": "Sidebar",
+              "width": 300,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QdZ2S",
+                  "name": "Popular Articles",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rQb88",
+                      "name": "sidebarPopularTitle",
+                      "fill": "$--text-primary",
+                      "content": "人気記事",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zRRmG",
+                      "name": "sidebarItem1",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "1. 投資初心者が知っておくべき5つの基本原則",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "7cjSt",
+                      "name": "sidebarItem2",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "2. インデックス投資の始め方完全ガイド",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "UM3K7",
+                      "name": "sidebarItem3",
+                      "fill": "$--text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "3. NISAとiDeCoの違いを徹底比較",
+                      "lineHeight": 1.5,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "QkQKR",
+                  "type": "ref",
+                  "ref": "0C60w",
+                  "name": "sidebarAd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "uqPuV",
+          "type": "ref",
+          "ref": "j7Biu",
+          "name": "catFooter"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "0Bri5",
+      "x": 4460,
+      "y": 0,
+      "name": "Article Detail Page",
+      "clip": true,
+      "width": 1280,
+      "fill": "$--bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "kxlwe",
+          "type": "ref",
+          "ref": "aMLTx",
+          "name": "articleHeader"
+        },
+        {
+          "type": "frame",
+          "id": "Ud6d0",
+          "name": "Content Area",
+          "width": "fill_container",
+          "gap": 32,
+          "padding": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "VzGmi",
+              "name": "Main",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 32,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "POk4J",
+                  "name": "Article Meta",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "5dpRJ",
+                      "name": "articleCategory",
+                      "fill": "$--accent-investment-bg",
+                      "cornerRadius": 4,
+                      "padding": [
+                        6,
+                        12
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "OCvCO",
+                          "name": "articleCategoryLabel",
+                          "fill": "$--accent-investment",
+                          "content": "Investment",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "vvXdc",
+                      "name": "articleTitle",
+                      "fill": "$--text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "投資初心者が知っておくべき5つの基本原則",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 32,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NqiN7",
+                      "name": "articleDateRow",
+                      "gap": 16,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vSCXn",
+                          "name": "articleDate",
+                          "fill": "$--text-muted",
+                          "content": "2024年1月15日",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "LMDmk",
+                          "name": "articleUpdate",
+                          "fill": "$--text-muted",
+                          "content": "更新: 2024年1月20日",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "QTRQQ",
+                          "name": "articleReadTime",
+                          "fill": "$--text-muted",
+                          "content": "5 min read",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vLvQZ",
+                  "name": "Featured Image",
+                  "width": "fill_container",
+                  "height": 400,
+                  "fill": "$--bg-surface",
+                  "cornerRadius": 12
+                },
+                {
+                  "id": "5RSa4",
+                  "type": "ref",
+                  "ref": "DfaIY",
+                  "name": "adTop"
+                },
+                {
+                  "type": "frame",
+                  "id": "4uWYO",
+                  "name": "Article Body",
+                  "width": "fill_container",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 24,
+                  "padding": 32,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "NatIW",
+                      "name": "bodyH2",
+                      "fill": "$--text-primary",
+                      "content": "はじめに",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "UT9jY",
+                      "name": "bodyP1",
+                      "fill": "$--text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "投資を始めようと思っている方、あるいは始めたばかりの方にとって、最初に知っておくべき基本原則があります。これらの原則を理解することで、長期的な資産形成の成功確率を高めることができます。",
+                      "lineHeight": 1.8,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zXNCF",
+                      "name": "bodyH3",
+                      "fill": "$--text-primary",
+                      "content": "1. 分散投資の重要性",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "EPtSn",
+                      "name": "bodyP2",
+                      "fill": "$--text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "「卵は一つのカゴに盛るな」という格言があるように、投資においても分散は非常に重要です。特定の資産に集中投資すると、その資産が下落した際に大きな損失を被る可能性があります。",
+                      "lineHeight": 1.8,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "LD6Tf",
+                      "name": "bodyList",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "kgqeF",
+                          "name": "bodyListItem1",
+                          "fill": "$--text-primary",
+                          "content": "• 株式と債券のバランス",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "TzQq3",
+                          "name": "bodyListItem2",
+                          "fill": "$--text-primary",
+                          "content": "• 国内と海外の分散",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "EqXFu",
+                          "name": "bodyListItem3",
+                          "fill": "$--text-primary",
+                          "content": "• 業種や企業の分散",
+                          "fontFamily": "Noto Sans JP",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "pZ69Z",
+                  "type": "ref",
+                  "ref": "DfaIY",
+                  "name": "adMid"
+                },
+                {
+                  "type": "frame",
+                  "id": "UmT5V",
+                  "name": "Article Body 2",
+                  "width": "fill_container",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 24,
+                  "padding": 32,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "X2DqJ",
+                      "name": "bodyH3_2",
+                      "fill": "$--text-primary",
+                      "content": "2. 長期投資のメリット",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "B1Q92",
+                      "name": "bodyP3",
+                      "fill": "$--text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "短期的な市場の変動に一喜一憂せず、長期的な視点で投資を続けることが重要です。歴史的に見ると、長期投資は短期売買よりも高いリターンを得られる傾向があります。",
+                      "lineHeight": 1.8,
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W9EXo",
+                      "name": "Simulation Table",
+                      "clip": true,
+                      "width": "fill_container",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "OpSLb",
+                          "name": "tableHeader",
+                          "width": "fill_container",
+                          "fill": "$--bg-surface",
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "5Fn2H",
+                              "name": "th1",
+                              "fill": "$--text-primary",
+                              "content": "運用年数",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "OujDs",
+                              "name": "th2",
+                              "fill": "$--text-primary",
+                              "content": "元本",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "EsNuA",
+                              "name": "th3",
+                              "fill": "$--text-primary",
+                              "content": "年利5%複利",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "PYX5N",
+                              "name": "th4",
+                              "fill": "$--text-primary",
+                              "content": "増加額",
+                              "fontFamily": "Noto Sans JP",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FbcUb",
+                          "name": "row1",
+                          "width": "fill_container",
+                          "stroke": {
+                            "thickness": {
+                              "bottom": 1
+                            },
+                            "fill": "$--border"
+                          },
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "hzXHI",
+                              "name": "r1c1",
+                              "fill": "$--text-primary",
+                              "content": "5年",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "NC4G3",
+                              "name": "r1c2",
+                              "fill": "$--text-secondary",
+                              "content": "100万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "CxbWV",
+                              "name": "r1c3",
+                              "fill": "$--accent-investment",
+                              "content": "127.6万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "A3yJb",
+                              "name": "r1c4",
+                              "fill": "$--accent-investment",
+                              "content": "+27.6万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "62uw4",
+                          "name": "row2",
+                          "width": "fill_container",
+                          "stroke": {
+                            "thickness": {
+                              "bottom": 1
+                            },
+                            "fill": "$--border"
+                          },
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QHSIT",
+                              "name": "r2c1",
+                              "fill": "$--text-primary",
+                              "content": "10年",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "NI6si",
+                              "name": "r2c2",
+                              "fill": "$--text-secondary",
+                              "content": "100万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yo5U7",
+                              "name": "r2c3",
+                              "fill": "$--accent-investment",
+                              "content": "162.9万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "9ghTw",
+                              "name": "r2c4",
+                              "fill": "$--accent-investment",
+                              "content": "+62.9万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "d9ZTp",
+                          "name": "row3",
+                          "width": "fill_container",
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pUUB4",
+                              "name": "r3c1",
+                              "fill": "$--text-primary",
+                              "content": "20年",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "fhBGJ",
+                              "name": "r3c2",
+                              "fill": "$--text-secondary",
+                              "content": "100万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "p5BRG",
+                              "name": "r3c3",
+                              "fill": "$--accent-investment",
+                              "content": "265.3万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "RJ6oX",
+                              "name": "r3c4",
+                              "fill": "$--accent-investment",
+                              "content": "+165.3万円",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "vB8gi",
+                  "type": "ref",
+                  "ref": "DfaIY",
+                  "name": "adBottom"
+                },
+                {
+                  "type": "frame",
+                  "id": "5H0Si",
+                  "name": "Share Section",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Vmbgf",
+                      "name": "shareLabel",
+                      "fill": "$--text-secondary",
+                      "content": "Share:",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DluYZ",
+                      "name": "shareTwitter",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "#1DA1F2",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "mQFRx",
+                          "name": "shareTwitterIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "twitter",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFF"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XIeMj",
+                      "name": "shareFacebook",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "#1877F2",
+                      "cornerRadius": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "4MoBP",
+                          "name": "shareFacebookIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "facebook",
+                          "iconFontFamily": "lucide",
+                          "fill": "#FFFFFF"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UB4gC",
+                      "name": "shareLink",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$--bg-surface",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "$--border"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "1399Z",
+                          "name": "shareLinkIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "link",
+                          "iconFontFamily": "lucide",
+                          "fill": "$--text-secondary"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "00Mu6",
+                  "name": "Related Articles",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "l2ZAP",
+                      "name": "relatedTitle",
+                      "fill": "$--text-primary",
+                      "content": "関連記事",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kB7tu",
+                      "name": "relatedCards",
+                      "gap": 24,
+                      "children": [
+                        {
+                          "id": "2juPJ",
+                          "type": "ref",
+                          "ref": "v54fK",
+                          "name": "relatedCard1",
+                          "descendants": {
+                            "3GqaI": {
+                              "fill": "$--accent-investment-bg"
+                            },
+                            "dA3g4": {
+                              "content": "Investment"
+                            },
+                            "Bgcrp": {
+                              "content": "インデックス投資の始め方完全ガイド"
+                            }
+                          }
+                        },
+                        {
+                          "id": "ZNLLp",
+                          "type": "ref",
+                          "ref": "v54fK",
+                          "name": "relatedCard2",
+                          "descendants": {
+                            "3GqaI": {
+                              "fill": "$--accent-investment-bg"
+                            },
+                            "dA3g4": {
+                              "content": "Investment"
+                            },
+                            "Bgcrp": {
+                              "content": "NISAとiDeCoの違いを徹底比較"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "8TxkJ",
+              "name": "Sidebar",
+              "width": 300,
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "eceJJ",
+                  "name": "Table of Contents",
+                  "fill": "$--bg-card",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$--border"
+                  },
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Wndjh",
+                      "name": "tocTitle",
+                      "fill": "$--text-primary",
+                      "content": "目次",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "w2Fmd",
+                      "name": "tocItem1",
+                      "fill": "$--accent-investment",
+                      "content": "1. はじめに",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hD3xf",
+                      "name": "tocItem2",
+                      "fill": "$--text-secondary",
+                      "content": "2. 分散投資の重要性",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "2DvRP",
+                      "name": "tocItem3",
+                      "fill": "$--text-secondary",
+                      "content": "3. 長期投資のメリット",
+                      "fontFamily": "Noto Sans JP",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "Hgp3X",
+                  "type": "ref",
+                  "ref": "0C60w",
+                  "name": "sidebarAd"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Ku5Xq",
+          "type": "ref",
+          "ref": "j7Biu",
+          "name": "articleFooter"
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "--accent-health": {
+      "type": "color",
+      "value": "#16A34A"
+    },
+    "--accent-health-bg": {
+      "type": "color",
+      "value": "#F0FDF4"
+    },
+    "--accent-investment": {
+      "type": "color",
+      "value": "#0891B2"
+    },
+    "--accent-investment-bg": {
+      "type": "color",
+      "value": "#ECFEFF"
+    },
+    "--accent-programming": {
+      "type": "color",
+      "value": "#7C3AED"
+    },
+    "--accent-programming-bg": {
+      "type": "color",
+      "value": "#F5F3FF"
+    },
+    "--bg-card": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--bg-primary": {
+      "type": "color",
+      "value": "#FAFAF9"
+    },
+    "--bg-surface": {
+      "type": "color",
+      "value": "#F5F5F4"
+    },
+    "--body-size": {
+      "type": "number",
+      "value": 16
+    },
+    "--border": {
+      "type": "color",
+      "value": "#E7E5E4"
+    },
+    "--border-strong": {
+      "type": "color",
+      "value": "#D6D3D1"
+    },
+    "--caption-size": {
+      "type": "number",
+      "value": 14
+    },
+    "--font-mono": {
+      "type": "string",
+      "value": "JetBrains Mono"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": "Noto Sans JP"
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": "Inter"
+    },
+    "--h1-size": {
+      "type": "number",
+      "value": 32
+    },
+    "--h2-size": {
+      "type": "number",
+      "value": 24
+    },
+    "--h3-size": {
+      "type": "number",
+      "value": 20
+    },
+    "--h4-size": {
+      "type": "number",
+      "value": 18
+    },
+    "--radius-lg": {
+      "type": "number",
+      "value": 12
+    },
+    "--radius-md": {
+      "type": "number",
+      "value": 8
+    },
+    "--radius-sm": {
+      "type": "number",
+      "value": 4
+    },
+    "--radius-xl": {
+      "type": "number",
+      "value": 16
+    },
+    "--small-size": {
+      "type": "number",
+      "value": 12
+    },
+    "--text-muted": {
+      "type": "color",
+      "value": "#A8A29E"
+    },
+    "--text-primary": {
+      "type": "color",
+      "value": "#1C1917"
+    },
+    "--text-secondary": {
+      "type": "color",
+      "value": "#57534E"
+    }
+  }
+}
