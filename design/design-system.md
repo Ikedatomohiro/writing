@@ -166,9 +166,38 @@ U(card+"/categoryLabel", {content: "Programming", fill: "$--accent-programming"}
 U(card+"/category", {fill: "$--accent-programming-bg"})
 ```
 
+## ページデザイン
+
+### トップページ (Top Page)
+
+```
+Width: 1280px
+Layout: vertical
+
+Structure:
+├── Header (Header/Main)
+├── Ad Area (Ad/Leaderboard) - ヘッダー下
+├── Hero Section
+│   ├── Site Title (48px, 700)
+│   ├── Subtitle (18px)
+│   └── Category Navigation (3 badges)
+├── Main Content (padding: 0 40px, gap: 64px)
+│   ├── Investment Section
+│   │   ├── Section Header (badge + title + "View All")
+│   │   └── Article Cards (3x Card/Article)
+│   ├── Programming Section
+│   │   ├── Section Header
+│   │   └── Article Cards (3x Card/Article)
+│   ├── Ad Area (Ad/Leaderboard) - コンテンツ間
+│   └── Health Section
+│       ├── Section Header
+│       └── Article Cards (3x Card/Article)
+└── Footer (Footer/Main)
+```
+
 ## 関連Issue
 
-- #11: デザインシステム基盤の作成 (本ドキュメント)
-- #12: トップページのデザイン
+- #11: デザインシステム基盤の作成 ✓
+- #12: トップページのデザイン ✓
 - #13: カテゴリ一覧ページのデザイン
 - #14: 記事詳細ページのデザイン
