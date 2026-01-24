@@ -195,9 +195,39 @@ Structure:
 └── Footer (Footer/Main)
 ```
 
+### カテゴリ一覧ページ (Category Page)
+
+3カテゴリ分のテーマ適用例を作成。
+
+```
+Width: 1280px
+Layout: vertical
+
+Structure:
+├── Header (Header/Main)
+├── Category Hero
+│   ├── Category Badge (テーマカラー)
+│   ├── Category Title (36px, 700)
+│   └── Category Description
+├── Content Area (horizontal, gap: 32px)
+│   ├── Main (fill_container)
+│   │   ├── Article Grid Row 1 (2x Card/Article)
+│   │   ├── Article Grid Row 2 (2x Card/Article)
+│   │   └── Pagination
+│   └── Sidebar (300px)
+│       ├── Popular Articles Card
+│       └── Ad/Rectangle
+└── Footer (Footer/Main)
+```
+
+**テーマカラー適用箇所**:
+- Category Hero背景
+- Category Badge
+- ページネーションのアクティブボタン
+
 ## 関連Issue
 
 - #11: デザインシステム基盤の作成 ✓
 - #12: トップページのデザイン ✓
-- #13: カテゴリ一覧ページのデザイン
+- #13: カテゴリ一覧ページのデザイン ✓
 - #14: 記事詳細ページのデザイン
