@@ -225,9 +225,50 @@ Structure:
 - Category Badge
 - ページネーションのアクティブボタン
 
+### 記事詳細ページ (Article Detail Page)
+
+```
+Width: 1280px
+Layout: vertical
+
+Structure:
+├── Header (Header/Main)
+├── Content Area (horizontal, gap: 32px)
+│   ├── Main (fill_container)
+│   │   ├── Article Meta
+│   │   │   ├── Category Badge
+│   │   │   ├── Title (32px, 700)
+│   │   │   └── Date/Update/ReadTime
+│   │   ├── Featured Image (height: 400px)
+│   │   ├── Ad/Leaderboard (記事上部)
+│   │   ├── Article Body (本文ブロック1)
+│   │   ├── Ad/Leaderboard (記事中)
+│   │   ├── Article Body 2 (本文ブロック2)
+│   │   ├── Ad/Leaderboard (記事下部)
+│   │   ├── Share Section (Twitter, Facebook, Link)
+│   │   └── Related Articles (2x Card/Article)
+│   └── Sidebar (300px)
+│       ├── Table of Contents
+│       └── Ad/Rectangle
+└── Footer (Footer/Main)
+```
+
+**本文スタイル**:
+- H2: 24px, 700
+- H3: 20px, 600
+- Body: 16px, line-height 1.8
+- List: indent 24px
+- Code: JetBrains Mono, dark background
+
+**広告配置 (Google Adsense対応)**:
+- 記事上部（タイトル下）
+- 記事中（本文途中）
+- 記事下部（関連記事前）
+- サイドバー（目次下）
+
 ## 関連Issue
 
 - #11: デザインシステム基盤の作成 ✓
 - #12: トップページのデザイン ✓
 - #13: カテゴリ一覧ページのデザイン ✓
-- #14: 記事詳細ページのデザイン
+- #14: 記事詳細ページのデザイン ✓
