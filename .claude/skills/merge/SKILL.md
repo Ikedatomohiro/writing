@@ -51,12 +51,15 @@ gh pr list --head "$BRANCH" --state all --json number,state --jq '.[0]'
 スクリプトがエラーを返した場合、先にPRをマージする:
 
 ```bash
-# GitHub上でPRをマージ（推奨）
-gh pr merge <PR番号> --merge --delete-branch
+# GitHub上でPRをマージ（--delete-branchは使用しない）
+# worktreeが存在する場合、--delete-branchはローカルブランチ削除に失敗するため
+gh pr merge <PR番号> --squash
 
 # その後、クリーンアップスクリプトを再実行
 .claude/skills/merge/merge-cleanup.sh <PR番号>
 ```
+
+**注意**: `--delete-branch` オプションは使用しないこと。worktreeが存在する場合、ローカルブランチの削除に失敗する。ブランチの削除はクリーンアップスクリプトで行う。
 
 ## 安全対策
 
@@ -73,5 +76,5 @@ gh pr merge <PR番号> --merge --delete-branch
 | 操作 | コマンド |
 |------|----------|
 | クリーンアップ実行 | `.claude/skills/merge/merge-cleanup.sh <PR番号>` |
-| PRマージ | `gh pr merge <PR番号> --merge --delete-branch` |
+| PRマージ | `gh pr merge <PR番号> --squash` |
 | PR状態確認 | `gh pr view <PR番号> --json state` |
