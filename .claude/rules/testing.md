@@ -151,6 +151,8 @@ describe("AdsenseSlot", () => {
 });
 ```
 
+**注意**: 上記のテストでは `data-testid` 属性を使用している。コンポーネント実装時に適切な `data-testid` を付与すること。
+
 ### ChakraProvider でラップ
 
 Chakra UI コンポーネントをテストする際は必ず Provider でラップする。
@@ -162,6 +164,8 @@ const renderWithChakra = (ui: React.ReactElement) => {
   return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
 };
 ```
+
+**注意**: 本プロジェクトでは `defaultSystem` を使用している。カスタムテーマを定義している場合は、そちらを使用すること。
 
 ## pytest ベストプラクティス
 
