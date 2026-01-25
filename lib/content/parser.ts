@@ -10,14 +10,27 @@ export interface ParseResult {
 }
 
 /**
+ * 日付文字列がISO 8601形式（YYYY-MM-DD）かどうかを検証する
+ */
+function isValidDateString(date: string): boolean {
+  const parsed = Date.parse(date);
+  return !isNaN(parsed);
+}
+
+/**
  * 日付を文字列に変換する
+ * 無効な日付文字列の場合はundefinedを返す
  */
 function formatDate(date: Date | string | undefined): string | undefined {
   if (date === undefined) return undefined;
   if (date instanceof Date) {
     return date.toISOString().split("T")[0];
   }
-  return String(date);
+  const dateStr = String(date);
+  if (!isValidDateString(dateStr)) {
+    return undefined;
+  }
+  return dateStr;
 }
 
 /**

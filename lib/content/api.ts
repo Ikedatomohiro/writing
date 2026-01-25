@@ -43,18 +43,30 @@ export async function getArticlesByCategory(
 
 /**
  * 全カテゴリの記事一覧を取得
+ * 注: 各カテゴリで既にソートされた配列を結合後、全体で1回だけソートする
  */
 export async function getAllArticles(
   options: GetArticlesOptions = {}
 ): Promise<ArticleMeta[]> {
+  const { includeDrafts = false } = options;
   const categories: Category[] = ["asset", "tech", "health"];
   const allArticles: ArticleMeta[] = [];
 
+  // 各カテゴリからソートなしで記事を取得
   for (const category of categories) {
-    const articles = await getArticlesByCategory(category, options);
-    allArticles.push(...articles);
+    const files = await listArticleFiles(category);
+    for (const file of files) {
+      const slug = file.replace(/\.mdx$/, "");
+      const article = await readArticleFile(category, slug);
+      if (article && (includeDrafts || article.published)) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { content, ...meta } = article;
+        allArticles.push(meta);
+      }
+    }
   }
 
+  // 全体で1回だけソート
   return sortByDateDesc(allArticles);
 }
 

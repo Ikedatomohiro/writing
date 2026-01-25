@@ -9,7 +9,7 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 
-const TEST_CONTENT_DIR = path.join(process.cwd(), "test-content");
+const TEST_CONTENT_DIR = path.join(process.cwd(), "test-content-api");
 
 // テスト用のコンテンツディレクトリを使用
 process.env.CONTENT_DIR = TEST_CONTENT_DIR;
@@ -97,12 +97,8 @@ published: true
   });
 
   afterAll(() => {
-    // テスト用ファイルを削除
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "asset", "article-1.mdx"), { force: true });
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "asset", "article-2.mdx"), { force: true });
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "asset", "draft.mdx"), { force: true });
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "tech", "tech-article.mdx"), { force: true });
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "health", "health-article.mdx"), { force: true });
+    // テスト用ファイルとディレクトリを削除
+    fs.rmSync(TEST_CONTENT_DIR, { recursive: true, force: true });
   });
 
   describe("getArticlesByCategory", () => {

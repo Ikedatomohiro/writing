@@ -40,15 +40,6 @@ export interface Article extends ArticleMeta {
 }
 
 /**
- * カテゴリパスのマッピング
- */
-export const CATEGORY_PATHS: Record<Category, string> = {
-  asset: "asset",
-  tech: "tech",
-  health: "health",
-};
-
-/**
  * 有効なカテゴリかどうかを判定
  */
 export function isValidCategory(value: string): value is Category {

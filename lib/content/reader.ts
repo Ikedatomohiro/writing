@@ -26,8 +26,11 @@ export async function listArticleFiles(category: Category): Promise<string[]> {
   try {
     const files = await fs.readdir(dir);
     return files.filter((file) => file.endsWith(".mdx"));
-  } catch {
+  } catch (error) {
     // ディレクトリが存在しない場合は空配列を返す
+    if (process.env.NODE_ENV === "development") {
+      console.debug(`[reader] listArticleFiles: ${dir} not found`, error);
+    }
     return [];
   }
 }
@@ -44,8 +47,11 @@ export async function readArticleFile(
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return parseArticle(content, slug);
-  } catch {
+  } catch (error) {
     // ファイルが存在しない場合はnullを返す
+    if (process.env.NODE_ENV === "development") {
+      console.debug(`[reader] readArticleFile: ${filePath} not found`, error);
+    }
     return null;
   }
 }

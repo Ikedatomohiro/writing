@@ -3,7 +3,7 @@ import { readArticleFile, listArticleFiles, getContentDirectory } from "./reader
 import * as fs from "fs";
 import * as path from "path";
 
-const TEST_CONTENT_DIR = path.join(process.cwd(), "test-content");
+const TEST_CONTENT_DIR = path.join(process.cwd(), "test-content-reader");
 
 // テスト用のコンテンツディレクトリを使用
 process.env.CONTENT_DIR = TEST_CONTENT_DIR;
@@ -34,10 +34,8 @@ category: asset
   });
 
   afterAll(() => {
-    // テスト用ファイルを削除
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "asset", "test-article.mdx"), {
-      force: true,
-    });
+    // テスト用ファイルとディレクトリを削除
+    fs.rmSync(TEST_CONTENT_DIR, { recursive: true, force: true });
   });
 
   it("lists mdx files in a category directory", async () => {
@@ -74,9 +72,8 @@ tags: [TypeScript, React]
   });
 
   afterAll(() => {
-    fs.rmSync(path.join(TEST_CONTENT_DIR, "tech", "sample.mdx"), {
-      force: true,
-    });
+    // テスト用ファイルとディレクトリを削除
+    fs.rmSync(TEST_CONTENT_DIR, { recursive: true, force: true });
   });
 
   it("reads and parses an mdx file", async () => {
