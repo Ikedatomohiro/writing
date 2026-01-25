@@ -66,7 +66,7 @@ export function Footer() {
                 Categories
               </Text>
               {CATEGORIES.map((category) => (
-                <Link key={category.href} href={category.href} passHref>
+                <Link key={category.href} href={category.href}>
                   <Text
                     as="span"
                     fontSize="sm"
@@ -92,7 +92,7 @@ export function Footer() {
                 Links
               </Text>
               {LINKS.map((link) => (
-                <Link key={link.href} href={link.href} passHref>
+                <Link key={link.href} href={link.href}>
                   <Text
                     as="span"
                     fontSize="sm"
