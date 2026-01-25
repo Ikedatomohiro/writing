@@ -62,19 +62,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variantStyle = variantStyles[variant];
     const sizeStyle = sizeStyles[size];
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (isDisabled) {
-        e.preventDefault();
-        return;
-      }
-      onClick?.(e);
-    };
-
     return (
       <ChakraButton
         ref={ref}
         disabled={isDisabled}
-        onClick={handleClick}
+        onClick={onClick}
         bg={variantStyle.bg}
         color={variantStyle.color}
         px={sizeStyle.px}
