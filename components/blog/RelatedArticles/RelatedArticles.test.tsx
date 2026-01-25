@@ -62,15 +62,23 @@ describe("RelatedArticles", () => {
     cleanup();
   });
 
-  it("renders section title", async () => {
+  it("renders section with proper accessibility attributes", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
     const { container } = renderWithChakra(
       await RelatedArticles({ category: "tech", currentSlug: "current-article" })
     );
 
-    expect(screen.getByText("関連記事")).toBeInTheDocument();
-    expect(container.querySelector("section")).toBeInTheDocument();
+    const section = container.querySelector("section");
+    expect(section).toBeInTheDocument();
+    expect(section).toHaveAttribute(
+      "aria-labelledby",
+      "related-articles-heading"
+    );
+
+    const heading = screen.getByText("関連記事");
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveAttribute("id", "related-articles-heading");
   });
 
   it("renders article cards for related articles", async () => {
@@ -80,10 +88,9 @@ describe("RelatedArticles", () => {
       await RelatedArticles({ category: "tech", currentSlug: "current-article" })
     );
 
-    // Use getAllByText to handle potential duplicates from React rendering
-    expect(screen.getAllByText("記事1のタイトル").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("記事2のタイトル").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("記事3のタイトル").length).toBeGreaterThan(0);
+    expect(screen.getByText("記事1のタイトル")).toBeInTheDocument();
+    expect(screen.getByText("記事2のタイトル")).toBeInTheDocument();
+    expect(screen.getByText("記事3のタイトル")).toBeInTheDocument();
   });
 
   it("calls getRelatedArticles with correct parameters", async () => {

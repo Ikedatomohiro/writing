@@ -21,8 +21,15 @@ export async function RelatedArticles({
   }
 
   return (
-    <Box as="section" py={8}>
-      <Heading as="h2" fontSize="xl" fontWeight="600" mb={6} color="gray.800">
+    <Box as="section" py={8} aria-labelledby="related-articles-heading">
+      <Heading
+        as="h2"
+        id="related-articles-heading"
+        fontSize="xl"
+        fontWeight="600"
+        mb={6}
+        color="gray.800"
+      >
         関連記事
       </Heading>
       <Flex
