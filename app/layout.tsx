@@ -1,4 +1,5 @@
 import { Providers } from "./providers";
+import { ThemeScript } from "@/lib/theme/ThemeScript";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +13,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
+        <ThemeScript />
         <Providers>{children}</Providers>
       </body>
     </html>
