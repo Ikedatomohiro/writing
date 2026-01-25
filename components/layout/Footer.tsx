@@ -1,5 +1,5 @@
 import { Box, Container, Flex, Text, VStack } from "@chakra-ui/react";
-import NextLink from "next/link";
+import Link from "next/link";
 import { COLORS } from "@/lib/theme/colors";
 
 const CATEGORIES = [
@@ -66,7 +66,7 @@ export function Footer() {
                 Categories
               </Text>
               {CATEGORIES.map((category) => (
-                <NextLink key={category.href} href={category.href} passHref>
+                <Link key={category.href} href={category.href} passHref>
                   <Text
                     as="span"
                     fontSize="sm"
@@ -77,7 +77,7 @@ export function Footer() {
                   >
                     {category.label}
                   </Text>
-                </NextLink>
+                </Link>
               ))}
             </VStack>
 
@@ -92,7 +92,7 @@ export function Footer() {
                 Links
               </Text>
               {LINKS.map((link) => (
-                <NextLink key={link.href} href={link.href} passHref>
+                <Link key={link.href} href={link.href} passHref>
                   <Text
                     as="span"
                     fontSize="sm"
@@ -103,7 +103,7 @@ export function Footer() {
                   >
                     {link.label}
                   </Text>
-                </NextLink>
+                </Link>
               ))}
             </VStack>
           </Flex>
