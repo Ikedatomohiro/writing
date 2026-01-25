@@ -6,7 +6,7 @@ import { Noto_Sans_JP, Inter, JetBrains_Mono } from "next/font/google";
  */
 export const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
   variable: "--font-noto-sans-jp",
   display: "swap",
   preload: true,
@@ -18,7 +18,7 @@ export const notoSansJP = Noto_Sans_JP({
  */
 export const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
   variable: "--font-inter",
   display: "swap",
   preload: true,
@@ -30,7 +30,7 @@ export const inter = Inter({
  */
 export const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700"],
   variable: "--font-jetbrains-mono",
   display: "swap",
   preload: true,
