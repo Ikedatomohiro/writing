@@ -44,18 +44,18 @@
 ### 非機能要件
 
 - FOUT（Flash of Unstyled Text）を最小限に抑える
-- Tailwindのユーティリティクラスとして使用可能
+- グローバルCSSとChakra UIによるスタイル管理
 - CSS変数による一元管理
 
 ## 制約事項
 
 - Next.js 15のnext/fontを使用
-- Tailwind CSS v4と統合
+- Chakra UIをスタイリングに使用（Tailwind CSSは使用しない）
 - 既存のテーマシステム（#15）と連携
 
 ## 成功基準
 
-1. すべての見出し・本文スタイルがTailwindクラスで適用可能
+1. すべての見出し・本文スタイルがグローバルCSSで定義されている
 2. フォントがnext/fontで最適化されている
 3. ビルドが成功する
 4. 既存のスタイルに影響を与えない
