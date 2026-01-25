@@ -46,9 +46,11 @@
 ### 画面構成（認証関連）
 
 ```
-/login              # ログイン画面
+/login              # ログイン画面（app/(admin)/login/）
 /api/auth/[...nextauth]  # NextAuth.js エンドポイント
 ```
+
+※ Route Groupsを使用しているため、URLにはグループ名が含まれない
 
 ### ログイン画面 (`/login`)
 
