@@ -16,12 +16,15 @@
   "dependencies": {
     "@chakra-ui/react": "^3.31.0",
     "@emotion/react": "^11.14.0",
+    "@tailwindcss/postcss": "^4.1.18",
     "@vercel/blob": "^2.0.0",
     "next": "^15.1.0",
     "next-auth": "^5.0.0-beta.30",
+    "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
