@@ -16,13 +16,7 @@ vi.mock("next/font/google", () => ({
   })),
 }));
 
-import {
-  notoSansJP,
-  inter,
-  jetbrainsMono,
-  fontVariables,
-  fontClassNames,
-} from "./fonts";
+import { notoSansJP, inter, jetbrainsMono, fontVariables } from "./fonts";
 
 describe("fonts", () => {
   describe("notoSansJP", () => {
@@ -63,14 +57,6 @@ describe("fonts", () => {
       expect(fontVariables).toContain(notoSansJP.variable);
       expect(fontVariables).toContain(inter.variable);
       expect(fontVariables).toContain(jetbrainsMono.variable);
-    });
-  });
-
-  describe("fontClassNames", () => {
-    it("should be a non-empty string", () => {
-      expect(fontClassNames).toBeDefined();
-      expect(typeof fontClassNames).toBe("string");
-      expect(fontClassNames.length).toBeGreaterThan(0);
     });
   });
 });

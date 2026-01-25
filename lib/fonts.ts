@@ -41,9 +41,3 @@ export const jetbrainsMono = JetBrains_Mono({
  * layout.tsxでhtml/bodyに適用する
  */
 export const fontVariables = `${notoSansJP.variable} ${inter.variable} ${jetbrainsMono.variable}`;
-
-/**
- * フォントクラス名（スペース区切り）
- * CSSクラスとして直接適用する場合に使用
- */
-export const fontClassNames = `${notoSansJP.className} ${inter.className} ${jetbrainsMono.className}`;
