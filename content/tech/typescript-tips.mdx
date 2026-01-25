@@ -1,0 +1,49 @@
+---
+title: TypeScript実践Tips
+description: TypeScriptを使った開発で役立つ実践的なテクニックを紹介します。
+date: 2026-01-22
+category: tech
+tags: [TypeScript, プログラミング, 開発]
+published: true
+---
+
+# TypeScript実践Tips
+
+TypeScriptを使った開発で役立つテクニックを紹介します。
+
+## 型ガード
+
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+function processValue(value: unknown) {
+  if (isString(value)) {
+    // この中ではvalueはstring型として扱われる
+    console.log(value.toUpperCase());
+  }
+}
+```
+
+## ユーティリティ型の活用
+
+TypeScriptには便利なユーティリティ型が用意されています。
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+// すべてのプロパティをオプショナルに
+type PartialUser = Partial<User>;
+
+// 特定のプロパティのみを抽出
+type UserCredentials = Pick<User, "email">;
+```
+
+## まとめ
+
+TypeScriptの型システムを活用することで、より安全で保守性の高いコードを書くことができます。
