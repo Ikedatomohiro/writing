@@ -19,6 +19,7 @@
     "@tailwindcss/postcss": "^4.1.18",
     "@vercel/blob": "^2.0.0",
     "gray-matter": "^4.0.3",
+    "lucide-react": "^0.563.0",
     "next": "^15.1.0",
     "next-auth": "^5.0.0-beta.30",
     "next-mdx-remote": "^5.0.0",
