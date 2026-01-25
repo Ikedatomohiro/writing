@@ -12,7 +12,8 @@ export interface NavLinkProps {
 
 export function NavLink({ href, children }: NavLinkProps) {
   const pathname = usePathname();
-  const isActive = pathname.startsWith(href);
+  // Match exact path or path with trailing slash/subpath
+  const isActive = pathname === href || pathname.startsWith(href + "/");
 
   return (
     <ChakraLink

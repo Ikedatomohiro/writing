@@ -63,6 +63,20 @@ describe("NavLink", () => {
       const link = screen.getByRole("link");
       expect(link).toHaveAttribute("data-active", "false");
     });
+
+    it("does not match similar prefixes (e.g., /a should not match /asset)", () => {
+      mockUsePathname.mockReturnValue("/a");
+      renderWithChakra(<NavLink href="/asset">資産形成</NavLink>);
+      const link = screen.getByRole("link");
+      expect(link).toHaveAttribute("data-active", "false");
+    });
+
+    it("matches subpaths correctly with trailing slash", () => {
+      mockUsePathname.mockReturnValue("/asset/category/article");
+      renderWithChakra(<NavLink href="/asset">資産形成</NavLink>);
+      const link = screen.getByRole("link");
+      expect(link).toHaveAttribute("data-active", "true");
+    });
   });
 
   describe("accessibility", () => {

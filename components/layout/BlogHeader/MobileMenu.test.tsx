@@ -72,6 +72,45 @@ describe("MobileMenu", () => {
         expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
       });
     });
+
+    it("closes menu when ESC key is pressed", async () => {
+      renderWithChakra(<MobileMenu links={defaultLinks} />);
+
+      // Open menu
+      const openButton = screen.getByRole("button", { name: /メニュー/i });
+      fireEvent.click(openButton);
+
+      // Wait for menu to open
+      await screen.findByRole("navigation");
+
+      // Press ESC key
+      fireEvent.keyDown(document, { key: "Escape" });
+
+      // Wait for menu to close
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+      });
+    });
+
+    it("closes menu when backdrop is clicked", async () => {
+      renderWithChakra(<MobileMenu links={defaultLinks} />);
+
+      // Open menu
+      const openButton = screen.getByRole("button", { name: /メニュー/i });
+      fireEvent.click(openButton);
+
+      // Wait for menu to open
+      await screen.findByRole("navigation");
+
+      // Click backdrop
+      const backdrop = screen.getByTestId("mobile-menu-backdrop");
+      fireEvent.click(backdrop);
+
+      // Wait for menu to close
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe("accessibility", () => {
