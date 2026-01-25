@@ -144,7 +144,7 @@ export function Pagination({
           return (
             <Button
               key={page}
-              aria-label={String(page)}
+              aria-label={`${page}ページへ移動`}
               aria-current={isActive ? "page" : undefined}
               onClick={() => onPageChange(page)}
               {...pageButtonStyles.base}

@@ -26,7 +26,7 @@ describe("Pagination", () => {
 
     it("現在ページがハイライトされる", () => {
       renderWithChakra(<Pagination {...defaultProps} currentPage={3} />);
-      const currentPageButton = screen.getByRole("button", { name: /^3$/ });
+      const currentPageButton = screen.getByRole("button", { name: /3ページへ移動/ });
       expect(currentPageButton).toHaveAttribute("aria-current", "page");
     });
   });
@@ -36,7 +36,7 @@ describe("Pagination", () => {
       const onPageChange = vi.fn();
       renderWithChakra(<Pagination {...defaultProps} onPageChange={onPageChange} />);
 
-      fireEvent.click(screen.getByRole("button", { name: /^2$/ }));
+      fireEvent.click(screen.getByRole("button", { name: /2ページへ移動/ }));
       expect(onPageChange).toHaveBeenCalledWith(2);
     });
 
@@ -76,7 +76,7 @@ describe("Pagination", () => {
       renderWithChakra(<Pagination {...defaultProps} totalPages={5} maxVisiblePages={5} />);
 
       for (let i = 1; i <= 5; i++) {
-        expect(screen.getByRole("button", { name: new RegExp(`^${i}$`) })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: new RegExp(`${i}ページへ移動`) })).toBeInTheDocument();
       }
       expect(screen.queryByText("...")).not.toBeInTheDocument();
     });
@@ -85,13 +85,13 @@ describe("Pagination", () => {
       renderWithChakra(<Pagination {...defaultProps} currentPage={6} totalPages={20} maxVisiblePages={5} />);
 
       // 最初と最後のページは常に表示
-      expect(screen.getByRole("button", { name: /^1$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^20$/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /20ページへ移動/ })).toBeInTheDocument();
 
       // 現在ページの前後
-      expect(screen.getByRole("button", { name: /^5$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^6$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^7$/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /5ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /6ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /7ページへ移動/ })).toBeInTheDocument();
 
       // 省略記号
       const ellipses = screen.getAllByText("...");
@@ -101,10 +101,10 @@ describe("Pagination", () => {
     it("最初のページ付近で後方のみ省略", () => {
       renderWithChakra(<Pagination {...defaultProps} currentPage={2} totalPages={20} maxVisiblePages={5} />);
 
-      expect(screen.getByRole("button", { name: /^1$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^2$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^3$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^20$/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /2ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /3ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /20ページへ移動/ })).toBeInTheDocument();
 
       // 省略記号は1つのみ
       const ellipses = screen.getAllByText("...");
@@ -114,10 +114,10 @@ describe("Pagination", () => {
     it("最後のページ付近で前方のみ省略", () => {
       renderWithChakra(<Pagination {...defaultProps} currentPage={19} totalPages={20} maxVisiblePages={5} />);
 
-      expect(screen.getByRole("button", { name: /^1$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^18$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^19$/ })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^20$/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /18ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /19ページへ移動/ })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /20ページへ移動/ })).toBeInTheDocument();
 
       // 省略記号は1つのみ
       const ellipses = screen.getAllByText("...");
@@ -136,7 +136,7 @@ describe("Pagination", () => {
 
     it("現在ページにaria-current='page'がある", () => {
       renderWithChakra(<Pagination {...defaultProps} currentPage={5} />);
-      const currentPageButton = screen.getByRole("button", { name: /^5$/ });
+      const currentPageButton = screen.getByRole("button", { name: /5ページへ移動/ });
       expect(currentPageButton).toHaveAttribute("aria-current", "page");
     });
   });
