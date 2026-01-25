@@ -26,10 +26,14 @@ export const FONT_SIZES = {
 
 /**
  * Line heights for different text types
+ * spec.md定義:
+ * - 見出し: 1.4
+ * - 本文: 1.8（日本語の可読性を考慮）
+ * - キャプション/Small: 1.5
  */
 export const LINE_HEIGHTS = {
-  heading: "1.3",
-  body: "1.75",
+  heading: "1.4",
+  body: "1.8",
   caption: "1.5",
 } as const;
 

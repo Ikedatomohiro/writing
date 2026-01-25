@@ -33,12 +33,16 @@ describe("typography", () => {
   });
 
   describe("LINE_HEIGHTS", () => {
-    it("should define heading line height", () => {
-      expect(LINE_HEIGHTS.heading).toBe("1.3");
+    it("should define heading line height as 1.4", () => {
+      expect(LINE_HEIGHTS.heading).toBe("1.4");
     });
 
-    it("should define body line height", () => {
-      expect(LINE_HEIGHTS.body).toBe("1.75");
+    it("should define body line height as 1.8", () => {
+      expect(LINE_HEIGHTS.body).toBe("1.8");
+    });
+
+    it("should define caption line height as 1.5", () => {
+      expect(LINE_HEIGHTS.caption).toBe("1.5");
     });
   });
 
