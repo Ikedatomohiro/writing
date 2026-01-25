@@ -17,3 +17,7 @@ export type { TagProps, TagVariant, TagSize } from "./Tag";
 // Pagination
 export { Pagination } from "./Pagination";
 export type { PaginationProps } from "./Pagination";
+
+// ShareButton
+export { ShareButton, ShareButtonGroup } from "./ShareButton";
+export type { ShareButtonProps, ShareButtonGroupProps, SharePlatform } from "./ShareButton";
