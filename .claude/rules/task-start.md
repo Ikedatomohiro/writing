@@ -21,9 +21,11 @@
 - `git checkout <ブランチ名>` で作業ブランチに直接チェックアウト
 - mainブランチで直接ファイルを編集
 
-### 0. GitHub Issueの確認（Issueが指定された場合）
+### 0. GitHub Issueの確認
 
-ユーザーから `https://github.com/Ikedatomohiro/writing-task/issues` のURLが指定された場合、まずIssueの内容を確認する。
+#### A. Issueが指定された場合
+
+ユーザーから `https://github.com/Ikedatomohiro/writing-task/issues` のURLやIssue番号が指定された場合、まずIssueの内容を確認する。
 
 ```bash
 # Issue番号を指定して内容を取得
@@ -32,6 +34,37 @@ gh issue view <Issue番号> --repo Ikedatomohiro/writing-task
 # 例: Issue #5 の内容を確認
 gh issue view 5 --repo Ikedatomohiro/writing-task
 ```
+
+#### B. Issueが指定されていない場合（ロードマップから確認）
+
+ユーザーから「タスクを開始して」「フロントエンドのタスク」「AIエージェントのタスク」などと言われた場合、**まずロードマップIssueを確認する**。
+
+**ロードマップIssue一覧**:
+
+| 分野 | Issue# | タイトル |
+|------|--------|----------|
+| フロントエンド | #33 | 【ロードマップ】ブログUI設計・実装 |
+| AIエージェント | #45 | 【ロードマップ】AIエージェント開発 |
+
+```bash
+# フロントエンドのロードマップを確認
+gh issue view 33 --repo Ikedatomohiro/writing-task
+
+# AIエージェントのロードマップを確認
+gh issue view 45 --repo Ikedatomohiro/writing-task
+```
+
+**ロードマップから読み取る情報**:
+1. **現在のフェーズ**: ロードマップの「現在のフェーズ」セクションを確認
+2. **次に着手すべきIssue**: 現在のフェーズ内で未完了のIssueを特定
+3. **依存関係**: 着手するIssueに依存関係がないか確認
+
+**ユーザーへの報告**:
+- 現在のフェーズと状況を報告
+- 次に着手すべきIssueを提案
+- ユーザーの確認を得てから作業を開始
+
+#### 確認事項（共通）
 
 **確認事項**:
 - [ ] Issueのタイトルと説明を読み、タスクの目的を理解する
@@ -42,7 +75,7 @@ gh issue view 5 --repo Ikedatomohiro/writing-task
 **Issueの内容に基づいて**:
 - タスクの範囲を明確にする
 - 不明点があればユーザーに質問する
-- ブランチ名にIssue番号を含める（例: `feature/123-機能名`）
+- ブランチ名にIssue番号を含める（例: `feature/11-design-system`）
 
 ### 1. mainブランチを最新にする
 
@@ -227,7 +260,7 @@ mainブランチにタスク開始に必要なプログラムやモジュール�
 
 ### タスク開始前
 
-- [ ] GitHub Issueが指定されていれば内容を確認したか
+- [ ] GitHub Issueを確認したか（指定された場合は該当Issue、未指定の場合はロードマップ#33/#45）
 - [ ] mainブランチを最新にしたか
 - [ ] worktreeを作成したか（`/using-git-worktrees`または手動）
 - [ ] `gh pr checkout`や`git checkout <branch>`を使っていないか
