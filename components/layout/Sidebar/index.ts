@@ -4,6 +4,9 @@ export type { SidebarProps } from "./Sidebar";
 export { TableOfContents } from "./TableOfContents";
 export type { TableOfContentsProps, TocItem } from "./TableOfContents";
 
+export { TableOfContentsContainer } from "./TableOfContentsContainer";
+export type { TableOfContentsContainerProps } from "./TableOfContentsContainer";
+
 export { PopularArticles } from "./PopularArticles";
 export type { PopularArticlesProps, PopularArticle } from "./PopularArticles";
 
