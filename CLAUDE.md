@@ -11,7 +11,8 @@
 ### Webアプリ
 - **フレームワーク**: Next.js 15 (App Router)
 - **言語**: TypeScript
-- **UI**: React 19
+- **UI**: React 19, Chakra UI
+- **スタイリング**: Chakra UI（Tailwind CSSは使用しない）
 
 ### ツール (tools/)
 - **言語**: Python 3.13
