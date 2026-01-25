@@ -100,6 +100,73 @@ def test_user_can_login():
 # 5. リファクタリング
 ```
 
+## vitest ベストプラクティス (Next.js/TypeScript)
+
+### 環境変数のモック
+
+Next.js では `process.env.NODE_ENV` などの環境変数はビルド時に静的に解決されるため、`vi.stubEnv()` や `vi.mock()` でランタイム時に変更しても反映されない。
+
+**NG: 効かないモック**
+```typescript
+// これは動作しない
+beforeEach(() => {
+  vi.stubEnv("NODE_ENV", "production");
+});
+```
+
+**OK: テストしやすい設計にする**
+
+1. **サブコンポーネントに分割して直接テスト**
+```typescript
+// 環境依存のロジックを含むメインコンポーネント
+export function Ad({ variant, slotId }: AdProps) {
+  const isProduction = process.env.NODE_ENV === "production";
+  return isProduction && slotId
+    ? <AdsenseSlot slotId={slotId} />
+    : <AdPlaceholder variant={variant} />;
+}
+
+// サブコンポーネントは環境に依存せず直接テスト可能
+export function AdsenseSlot({ slotId }: { slotId: string }) {
+  return <ins data-ad-slot={slotId} className="adsbygoogle" />;
+}
+```
+
+2. **テストファイルでは環境非依存の部分をテスト**
+```typescript
+// Ad.test.tsx - 開発モードの動作をテスト
+describe("Ad", () => {
+  it("renders placeholder in development", () => {
+    render(<Ad variant="rectangle" />);
+    expect(screen.getByTestId("ad-placeholder")).toBeInTheDocument();
+  });
+});
+
+// AdsenseSlot.test.tsx - 本番用コンポーネントを直接テスト
+describe("AdsenseSlot", () => {
+  it("renders ins element with correct attributes", () => {
+    render(<AdsenseSlot slotId="1234567890" />);
+    expect(screen.getByTestId("adsense-slot")).toHaveClass("adsbygoogle");
+  });
+});
+```
+
+**注意**: 上記のテストでは `data-testid` 属性を使用している。コンポーネント実装時に適切な `data-testid` を付与すること。
+
+### ChakraProvider でラップ
+
+Chakra UI コンポーネントをテストする際は必ず Provider でラップする。
+
+```typescript
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+
+const renderWithChakra = (ui: React.ReactElement) => {
+  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
+};
+```
+
+**注意**: 本プロジェクトでは `defaultSystem` を使用している。カスタムテーマを定義している場合は、そちらを使用すること。
+
 ## pytest ベストプラクティス
 
 ### Fixture の活用
