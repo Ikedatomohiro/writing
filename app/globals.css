@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* ===================================
+   Base Colors (CSS Variables)
+   =================================== */
+:root {
+  /* Background */
+  --bg-primary: #fafaf9;
+  --bg-surface: #f5f5f4;
+  --bg-card: #ffffff;
+
+  /* Text */
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+
+  /* Border */
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Font Family */
+  --font-primary: "Noto Sans JP", sans-serif;
+  --font-secondary: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Default accent (Investment) */
+  --accent: #0891b2;
+  --accent-bg: #ecfeff;
+}
+
+/* ===================================
+   Category Themes
+   =================================== */
+
+/* Investment (資産形成) - Cyan */
+[data-theme="investment"] {
+  --accent: #0891b2;
+  --accent-bg: #ecfeff;
+}
+
+/* Programming - Violet */
+[data-theme="programming"] {
+  --accent: #7c3aed;
+  --accent-bg: #f5f3ff;
+}
+
+/* Health (健康) - Green */
+[data-theme="health"] {
+  --accent: #16a34a;
+  --accent-bg: #f0fdf4;
+}
+
+/* ===================================
+   Base Styles
+   =================================== */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+}
