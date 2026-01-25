@@ -46,9 +46,11 @@
 ### 画面構成（認証関連）
 
 ```
-/login              # ログイン画面
+/login              # ログイン画面（app/(admin)/login/）
 /api/auth/[...nextauth]  # NextAuth.js エンドポイント
 ```
+
+※ Route Groupsを使用しているため、URLにはグループ名が含まれない
 
 ### ログイン画面 (`/login`)
 
@@ -104,8 +106,17 @@ ALLOWED_EMAILS=user1@gmail.com,user2@gmail.com
 
 ```
 app/
-├── login/
-│   └── page.tsx          # ログイン画面
+├── (admin)/              # 認証が必要な管理画面（Route Group）
+│   ├── layout.tsx        # SessionProvider を含むレイアウト
+│   ├── login/
+│   │   └── page.tsx      # ログイン画面
+│   └── articles/
+│       └── ...           # 記事管理画面
+├── (public)/             # 公開ページ（Route Group）
+│   ├── page.tsx          # トップページ
+│   ├── health/
+│   ├── tech/
+│   └── asset/
 ├── api/
 │   └── auth/
 │       └── [...nextauth]/
@@ -119,6 +130,10 @@ lib/
 │
 middleware.ts             # ルート保護
 ```
+
+**Route Groups について**:
+- `(admin)` と `(public)` はURLには影響しない（括弧は除外される）
+- `(admin)` 配下のみに SessionProvider を適用し、公開ページの読み込み速度を向上
 
 ### ミドルウェア（ルート保護）
 
@@ -267,12 +282,15 @@ type ArticleStatus = 'draft' | 'published' | 'archived';
 
 ```
 app/
-├── articles/
-│   ├── page.tsx              # 記事一覧
-│   └── [id]/
-│       ├── page.tsx          # 記事詳細
-│       └── edit/
-│           └── page.tsx      # 記事編集
+├── (admin)/
+│   └── articles/
+│       ├── page.tsx              # 記事一覧
+│       ├── new/
+│       │   └── page.tsx          # 記事作成
+│       └── [id]/
+│           ├── page.tsx          # 記事詳細
+│           └── edit/
+│               └── page.tsx      # 記事編集
 │
 components/
 ├── articles/
