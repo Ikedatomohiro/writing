@@ -3,6 +3,8 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
+from langgraph.graph import StateGraph
+
 # =============================================================================
 # Schema Tests
 # =============================================================================
@@ -352,6 +354,112 @@ class TestWriterAgent:
         assert state["plan"] is None
         assert state["sections"] == []
         assert state["retry_count"] == 0
+
+    def test_extract_output_returns_output(self):
+        """extract_outputがoutputを返す"""
+        from src.agents.writer.agent import WriterAgent
+        from src.agents.writer.schemas import Section, WriterInput, WriterOutput
+
+        agent = WriterAgent()
+        expected_output = WriterOutput(
+            title="テスト記事",
+            description="説明",
+            content="本文",
+            keywords_used=["キーワード"],
+            sections=[Section(heading="導入", level=2, content="内容")],
+            summary="完了",
+        )
+        final_state = {
+            "input": WriterInput(topic="テスト", keywords=["キーワード"]),
+            "messages": [],
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": expected_output,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result == expected_output
+
+    def test_extract_output_returns_fallback_when_no_output(self):
+        """outputがない場合はフォールバックを返す"""
+        from src.agents.writer.agent import WriterAgent
+        from src.agents.writer.schemas import WriterInput
+
+        agent = WriterAgent()
+        final_state = {
+            "input": WriterInput(topic="テスト", keywords=["キーワード"]),
+            "messages": [],
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result.title == "テスト"
+        assert "失敗" in result.summary
+
+    def test_define_graph_edges(self):
+        """define_graph_edgesがグラフにエッジを追加する"""
+        from src.agents.writer.agent import WriterAgent
+        from src.agents.writer.schemas import AgentState
+
+        agent = WriterAgent()
+        graph = StateGraph(AgentState)
+
+        for name, node in agent.create_nodes().items():
+            graph.add_node(name, node)
+
+        agent.define_graph_edges(graph)
+
+        compiled = graph.compile()
+        assert compiled is not None
+
+
+class TestCreateWriterGraph:
+    """create_writer_graph tests"""
+
+    def test_returns_compiled_graph(self):
+        """コンパイル済みグラフを返す"""
+        from src.agents.writer.agent import create_writer_graph
+
+        graph = create_writer_graph()
+        assert graph is not None
+
+
+class TestBackwardCompatibilityFunctions:
+    """後方互換関数のテスト"""
+
+    def test_create_planner_node(self):
+        from src.agents.writer.agent import create_planner_node
+        from src.agents.writer.nodes import PlannerNode
+
+        node = create_planner_node()
+        assert isinstance(node, PlannerNode)
+
+    def test_create_executor_node(self):
+        from src.agents.writer.agent import create_executor_node
+        from src.agents.writer.nodes import ExecutorNode
+
+        node = create_executor_node()
+        assert isinstance(node, ExecutorNode)
+
+    def test_create_reflector_node(self):
+        from src.agents.writer.agent import create_reflector_node
+        from src.agents.writer.nodes import ReflectorNode
+
+        node = create_reflector_node()
+        assert isinstance(node, ReflectorNode)
+
+    def test_create_integrator_node(self):
+        from src.agents.writer.agent import create_integrator_node
+        from src.agents.writer.nodes import IntegratorNode
+
+        node = create_integrator_node()
+        assert isinstance(node, IntegratorNode)
 
 
 class TestShouldContinue:

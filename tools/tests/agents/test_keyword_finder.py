@@ -3,14 +3,23 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from langgraph.graph import StateGraph
 
 from src.agents.keyword_finder.agent import (
+    KeywordFinderAgent,
     create_executor_node,
     create_integrator_node,
+    create_keyword_finder_graph,
     create_planner_node,
     create_reflector_node,
     run_keyword_finder,
     should_continue,
+)
+from src.agents.keyword_finder.nodes import (
+    ExecutorNode,
+    IntegratorNode,
+    PlannerNode,
+    ReflectorNode,
 )
 from src.agents.keyword_finder.schemas import (
     AgentState,
@@ -21,6 +30,127 @@ from src.agents.keyword_finder.schemas import (
     ReflectionResult,
     ToolResult,
 )
+
+
+class TestKeywordFinderAgent:
+    """KeywordFinderAgentのテスト"""
+
+    def test_get_state_class(self):
+        """get_state_classがAgentStateを返す"""
+        agent = KeywordFinderAgent()
+        assert agent.get_state_class() == AgentState
+
+    def test_create_nodes(self):
+        """create_nodesが正しいノードを返す"""
+        agent = KeywordFinderAgent()
+        nodes = agent.create_nodes()
+
+        assert isinstance(nodes, dict)
+        assert "plan" in nodes
+        assert "execute" in nodes
+        assert "reflect" in nodes
+        assert "integrate" in nodes
+
+    def test_create_initial_state(self):
+        """create_initial_stateが正しい初期状態を返す"""
+        agent = KeywordFinderAgent()
+        input_data = KeywordSearchInput(
+            category="資産形成", seed_keywords=["iDeCo", "積立NISA"]
+        )
+        state = agent.create_initial_state(input_data)
+
+        assert state["input"] == input_data
+        assert state["messages"] == []
+        assert state["plan"] is None
+        assert state["tool_results"] == []
+        assert state["discovered_keywords"] == []
+        assert state["reflection"] is None
+        assert state["retry_count"] == 0
+        assert state["output"] is None
+
+    def test_extract_output_returns_output(self):
+        """extract_outputがoutputを返す"""
+        agent = KeywordFinderAgent()
+        expected_output = KeywordSearchOutput(
+            category="資産形成",
+            seed_keywords=["iDeCo"],
+            results=[KeywordResult(keyword="iDeCo 始め方", relevance_score=0.9)],
+            summary="検索完了",
+        )
+        final_state: AgentState = {
+            "input": KeywordSearchInput(category="資産形成", seed_keywords=["iDeCo"]),
+            "messages": [],
+            "plan": None,
+            "tool_results": [],
+            "discovered_keywords": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": expected_output,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result == expected_output
+
+    def test_extract_output_returns_fallback_when_no_output(self):
+        """outputがない場合はフォールバックを返す"""
+        agent = KeywordFinderAgent()
+        final_state: AgentState = {
+            "input": KeywordSearchInput(category="資産形成", seed_keywords=["iDeCo"]),
+            "messages": [],
+            "plan": None,
+            "tool_results": [],
+            "discovered_keywords": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result.category == "資産形成"
+        assert result.results == []
+        assert "失敗" in result.summary
+
+    def test_define_graph_edges(self):
+        """define_graph_edgesがグラフにエッジを追加する"""
+        agent = KeywordFinderAgent()
+        graph = StateGraph(AgentState)
+
+        for name, node in agent.create_nodes().items():
+            graph.add_node(name, node)
+
+        agent.define_graph_edges(graph)
+
+        compiled = graph.compile()
+        assert compiled is not None
+
+
+class TestCreateKeywordFinderGraph:
+    """create_keyword_finder_graphのテスト"""
+
+    def test_returns_compiled_graph(self):
+        """コンパイル済みグラフを返す"""
+        graph = create_keyword_finder_graph()
+        assert graph is not None
+
+
+class TestBackwardCompatibilityFunctions:
+    """後方互換関数のテスト"""
+
+    def test_create_planner_node(self):
+        node = create_planner_node()
+        assert isinstance(node, PlannerNode)
+
+    def test_create_executor_node(self):
+        node = create_executor_node()
+        assert isinstance(node, ExecutorNode)
+
+    def test_create_reflector_node(self):
+        node = create_reflector_node()
+        assert isinstance(node, ReflectorNode)
+
+    def test_create_integrator_node(self):
+        node = create_integrator_node()
+        assert isinstance(node, IntegratorNode)
 
 
 class TestKeywordSearchInput:

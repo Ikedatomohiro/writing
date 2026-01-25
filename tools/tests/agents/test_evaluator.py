@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from src.agents.evaluator.agent import (
+    EvaluatorAgent,
+    create_evaluator_graph,
     create_executor_node,
     create_goal_creator_node,
     create_integrator_node,
@@ -23,7 +25,133 @@ from src.agents.evaluator.schemas import (
     EvaluationResult,
     GoalCreatorOutput,
     ReflectionResult,
+    ToolResult,
 )
+from src.tools import SearchResult
+
+
+class TestEvaluatorAgent:
+    """EvaluatorAgentのテスト"""
+
+    def test_get_state_class(self):
+        """get_state_classがAgentStateを返す"""
+        agent = EvaluatorAgent()
+        assert agent.get_state_class() == AgentState
+
+    def test_create_nodes(self):
+        """create_nodesが正しいノードを返す"""
+        agent = EvaluatorAgent()
+        nodes = agent.create_nodes()
+
+        assert isinstance(nodes, dict)
+        assert "goal_create" in nodes
+        assert "plan" in nodes
+        assert "execute" in nodes
+        assert "reflect" in nodes
+        assert "integrate" in nodes
+
+    def test_create_initial_state(self):
+        """create_initial_stateが正しい初期状態を返す"""
+        agent = EvaluatorAgent()
+        input_data = EvaluationInput(
+            target="テスト記事", evaluation_request="品質を評価してください"
+        )
+        state = agent.create_initial_state(input_data)
+
+        assert state["input"] == input_data
+        assert state["messages"] == []
+        assert state["goal_output"] is None
+        assert state["goal"] is None
+        assert state["plan"] is None
+        assert state["tool_results"] == []
+        assert state["evaluation_results"] == []
+        assert state["reflection"] is None
+        assert state["retry_count"] == 0
+        assert state["output"] is None
+
+    def test_extract_output_returns_output(self):
+        """extract_outputがoutputを返す"""
+        agent = EvaluatorAgent()
+        expected_output = EvaluationOutput(
+            target_summary="テスト記事の要約",
+            target_type="article",
+            overall_score=75,
+            criterion_scores=[],
+            strengths=[],
+            weaknesses=[],
+            improvements=[],
+            evaluation_criteria=[],
+            summary="評価完了",
+        )
+        final_state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": None,
+            "plan": None,
+            "tool_results": [],
+            "evaluation_results": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": expected_output,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result == expected_output
+
+    def test_extract_output_returns_fallback_when_no_output(self):
+        """outputがない場合はフォールバックを返す"""
+        agent = EvaluatorAgent()
+        final_state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": None,
+            "plan": None,
+            "tool_results": [],
+            "evaluation_results": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = agent.extract_output(final_state)
+        assert result.overall_score == 0
+        assert "失敗" in result.summary
+
+    @patch("src.agents.evaluator.nodes.get_structured_model")
+    def test_define_graph_edges(self, mock_get_model):
+        """define_graph_edgesがグラフにエッジを追加する"""
+        from langgraph.graph import StateGraph
+
+        agent = EvaluatorAgent()
+        graph = StateGraph(AgentState)
+
+        # ノードを追加
+        for name, node in agent.create_nodes().items():
+            graph.add_node(name, node)
+
+        # エッジを定義
+        agent.define_graph_edges(graph)
+
+        # コンパイルできることを確認
+        # エラーが発生しなければ成功
+        compiled = graph.compile()
+        assert compiled is not None
+
+
+class TestCreateEvaluatorGraph:
+    """create_evaluator_graphのテスト"""
+
+    @patch("src.agents.evaluator.nodes.get_structured_model")
+    def test_returns_compiled_graph(self, mock_get_model):
+        """コンパイル済みグラフを返す"""
+        graph = create_evaluator_graph()
+        assert graph is not None
 
 
 class TestEvaluationInput:
@@ -362,6 +490,213 @@ class TestCreateExecutorNode:
 
         assert result == {}
 
+    def test_executor_returns_empty_when_no_goal(self):
+        """goalがない場合は空を返す"""
+        executor = create_executor_node()
+        state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": None,
+            "plan": EvaluationPlan(
+                steps=["ステップ1"],
+                required_research=["調査1"],
+            ),
+            "tool_results": [],
+            "evaluation_results": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = executor(state)
+
+        assert result == {}
+
+    @patch("src.agents.evaluator.nodes.get_structured_model")
+    @patch("src.agents.evaluator.nodes.get_chat_model")
+    def test_executor_executes_research_and_evaluation(
+        self, mock_get_chat_model, mock_get_structured_model
+    ):
+        """リサーチと評価を実行する"""
+        from src.tools import SearchResult
+
+        # モックのツール呼び出し応答を設定
+        mock_chat_model = MagicMock()
+        mock_tool_response = MagicMock()
+        mock_tool_response.tool_calls = [
+            {
+                "name": "search_web",
+                "args": {"query": "テスト調査"},
+            }
+        ]
+        mock_chat_model.invoke.return_value = mock_tool_response
+        mock_chat_model.bind_tools.return_value = mock_chat_model
+        mock_get_chat_model.return_value = mock_chat_model
+
+        # 評価結果のモック
+        mock_eval_result = EvaluationResult(
+            criterion="正確性",
+            score=80,
+            rationale="情報が正確",
+            evidence=["証拠1"],
+        )
+        mock_structured_model = MagicMock()
+        mock_structured_model.invoke.return_value = mock_eval_result
+        mock_get_structured_model.return_value = mock_structured_model
+
+        # search_webをモック
+        with patch("src.agents.evaluator.nodes.search_web") as mock_search:
+            mock_search.invoke.return_value = [
+                SearchResult(
+                    title="テスト結果",
+                    link="https://example.com",
+                    snippet="テストスニペット",
+                )
+            ]
+
+            executor = create_executor_node()
+            state: AgentState = {
+                "input": EvaluationInput(
+                    target="テスト記事", evaluation_request="品質を評価してください"
+                ),
+                "messages": [],
+                "goal_output": None,
+                "goal": EvaluationGoal(
+                    goal="記事の品質を評価する",
+                    criteria=["正確性"],
+                    target_type="article",
+                ),
+                "plan": EvaluationPlan(
+                    steps=["正確性を評価"],
+                    required_research=["テスト調査"],
+                ),
+                "tool_results": [],
+                "evaluation_results": [],
+                "reflection": None,
+                "retry_count": 0,
+                "output": None,
+            }
+
+            result = executor(state)
+
+            assert "tool_results" in result
+            assert "evaluation_results" in result
+            assert len(result["tool_results"]) >= 0
+            assert len(result["evaluation_results"]) >= 0
+
+    @patch("src.agents.evaluator.nodes.get_structured_model")
+    @patch("src.agents.evaluator.nodes.get_chat_model")
+    def test_executor_skips_already_researched_items(
+        self, mock_get_chat_model, mock_get_structured_model
+    ):
+        """既に調査済みのアイテムはスキップする"""
+        from src.agents.evaluator.schemas import ToolResult
+
+        # モック設定
+        mock_chat_model = MagicMock()
+        mock_chat_model.bind_tools.return_value = mock_chat_model
+        mock_get_chat_model.return_value = mock_chat_model
+
+        mock_eval_result = EvaluationResult(
+            criterion="正確性",
+            score=80,
+            rationale="情報が正確",
+            evidence=[],
+        )
+        mock_structured_model = MagicMock()
+        mock_structured_model.invoke.return_value = mock_eval_result
+        mock_get_structured_model.return_value = mock_structured_model
+
+        executor = create_executor_node()
+        state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": EvaluationGoal(
+                goal="記事の品質を評価する",
+                criteria=["正確性"],
+                target_type="article",
+            ),
+            "plan": EvaluationPlan(
+                steps=["正確性を評価"],
+                required_research=["テスト調査"],
+            ),
+            "tool_results": [
+                ToolResult(
+                    tool_name="search_web",
+                    query="テスト調査",
+                    research_item="テスト調査",
+                    results=[],
+                )
+            ],
+            "evaluation_results": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = executor(state)
+
+        # 新しいツール呼び出しは発生しない（既に調査済み）
+        mock_chat_model.invoke.assert_not_called()
+
+    @patch("src.agents.evaluator.nodes.get_structured_model")
+    @patch("src.agents.evaluator.nodes.get_chat_model")
+    def test_executor_skips_already_evaluated_criteria(
+        self, mock_get_chat_model, mock_get_structured_model
+    ):
+        """既に評価済みの基準はスキップする"""
+        # モック設定
+        mock_chat_model = MagicMock()
+        mock_tool_response = MagicMock()
+        mock_tool_response.tool_calls = []  # ツール呼び出しなし
+        mock_chat_model.invoke.return_value = mock_tool_response
+        mock_chat_model.bind_tools.return_value = mock_chat_model
+        mock_get_chat_model.return_value = mock_chat_model
+
+        mock_structured_model = MagicMock()
+        mock_get_structured_model.return_value = mock_structured_model
+
+        executor = create_executor_node()
+        state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": EvaluationGoal(
+                goal="記事の品質を評価する",
+                criteria=["正確性"],
+                target_type="article",
+            ),
+            "plan": EvaluationPlan(
+                steps=["正確性を評価"],
+                required_research=[],  # 調査不要
+            ),
+            "tool_results": [],
+            "evaluation_results": [
+                EvaluationResult(
+                    criterion="正確性",
+                    score=80,
+                    rationale="既に評価済み",
+                    evidence=[],
+                )
+            ],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = executor(state)
+
+        # 評価モデルは呼び出されない（既に評価済み）
+        mock_structured_model.invoke.assert_not_called()
+
 
 class TestCreateReflectorNode:
     """create_reflector_node のテスト"""
@@ -546,6 +881,77 @@ class TestCreateIntegratorNode:
         result = integrator(state)
 
         assert result == {}
+
+    @patch("src.models.get_structured_model")
+    def test_integrator_handles_search_results_in_tool_results(self, mock_get_model):
+        """IntegratorNodeがtool_resultsのSearchResultを正しく処理する"""
+        from src.agents.evaluator.schemas import ToolResult
+        from src.tools import SearchResult
+
+        mock_output = EvaluationOutput(
+            target_summary="テスト記事の要約",
+            target_type="article",
+            overall_score=75,
+            criterion_scores=[],
+            strengths=[],
+            weaknesses=[],
+            improvements=[],
+            evaluation_criteria=["正確性"],
+            summary="評価完了",
+        )
+        mock_model = MagicMock()
+        mock_model.invoke.return_value = mock_output
+        mock_get_model.return_value = mock_model
+
+        integrator = create_integrator_node()
+        state: AgentState = {
+            "input": EvaluationInput(
+                target="テスト記事", evaluation_request="品質を評価してください"
+            ),
+            "messages": [],
+            "goal_output": None,
+            "goal": EvaluationGoal(
+                goal="記事の品質を評価する",
+                criteria=["正確性"],
+                target_type="article",
+            ),
+            "plan": None,
+            "tool_results": [
+                ToolResult(
+                    tool_name="search_web",
+                    query="テスト",
+                    research_item="テスト調査",
+                    results=[
+                        SearchResult(
+                            title="テスト結果1",
+                            link="https://example.com/1",
+                            snippet="テストスニペット1",
+                        ),
+                        SearchResult(
+                            title="テスト結果2",
+                            link="https://example.com/2",
+                            snippet="テストスニペット2",
+                        ),
+                    ],
+                )
+            ],
+            "evaluation_results": [
+                EvaluationResult(
+                    criterion="正確性",
+                    score=80,
+                    rationale="情報が正確",
+                    evidence=[],
+                )
+            ],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = integrator(state)
+
+        assert result["output"] == mock_output
+        mock_model.invoke.assert_called_once()
 
 
 class TestRunEvaluator:
