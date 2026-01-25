@@ -1,3 +1,7 @@
+// Ad
+export { Ad, AdsenseSlot, AdPlaceholder } from "./Ad";
+export type { AdProps, AdVariant } from "./Ad";
+
 // Button
 export { Button } from "./Button";
 export type { ButtonProps, ButtonVariant, ButtonSize } from "./Button";
