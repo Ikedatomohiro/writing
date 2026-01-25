@@ -617,7 +617,8 @@
                       "fill": "$--text-primary",
                       "content": "本文テキスト / Body text for articles and content.",
                       "fontFamily": "Noto Sans JP",
-                      "fontSize": 16
+                      "fontSize": 16,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -644,7 +645,8 @@
                       "fill": "$--text-secondary",
                       "content": "キャプション / Caption and meta information",
                       "fontFamily": "Noto Sans JP",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -671,7 +673,8 @@
                       "fill": "$--text-muted",
                       "content": "小さいテキスト / Small text for dates and tags",
                       "fontFamily": "Noto Sans JP",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
