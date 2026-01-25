@@ -1,5 +1,6 @@
 import { Providers } from "./providers";
 import { ThemeScript } from "@/lib/theme/ThemeScript";
+import { fontVariables } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" className={fontVariables} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ThemeScript />
         <Providers>{children}</Providers>
