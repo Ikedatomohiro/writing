@@ -4,26 +4,28 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import Image from "next/image";
 import type { ArticleMeta, Category } from "@/lib/content/types";
+import type { Theme } from "@/lib/theme/types";
+import { THEME_CONFIGS } from "@/lib/theme/constants";
 
 export interface BlogArticleCardProps {
   article: ArticleMeta;
   readingTime?: string;
 }
 
-const CATEGORY_CONFIG: Record<
-  Category,
-  { label: string; accent: string; bg: string }
-> = {
-  asset: { label: "投資", accent: "#0891B2", bg: "#ECFEFF" },
-  tech: { label: "プログラミング", accent: "#7C3AED", bg: "#F5F3FF" },
-  health: { label: "健康", accent: "#16A34A", bg: "#F0FDF4" },
+const CATEGORY_LABELS: Record<Category, string> = {
+  asset: "投資",
+  tech: "プログラミング",
+  health: "健康",
+};
+
+const CATEGORY_TO_THEME: Record<Category, Theme> = {
+  asset: "investment",
+  tech: "programming",
+  health: "health",
 };
 
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const [year, month, day] = dateString.split("-");
   return `${year}.${month}.${day}`;
 }
 
@@ -31,7 +33,9 @@ export function BlogArticleCard({
   article,
   readingTime,
 }: BlogArticleCardProps) {
-  const categoryConfig = CATEGORY_CONFIG[article.category];
+  const theme = CATEGORY_TO_THEME[article.category];
+  const themeConfig = THEME_CONFIGS[theme];
+  const categoryLabel = CATEGORY_LABELS[article.category];
   const href = `/${article.category}/${article.slug}`;
 
   return (
@@ -77,15 +81,15 @@ export function BlogArticleCard({
             px={2.5}
             py={1}
             borderRadius="4px"
-            bg={categoryConfig.bg}
+            bg={themeConfig.accentBg}
             mb={3}
           >
             <Text
               fontSize="12px"
               fontWeight="500"
-              color={categoryConfig.accent}
+              color={themeConfig.accent}
             >
-              {categoryConfig.label}
+              {categoryLabel}
             </Text>
           </Flex>
 
