@@ -70,7 +70,7 @@ function getShareUrl(platform: SharePlatform, url: string, title: string): strin
 
   switch (platform) {
     case "twitter":
-      return `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+      return `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
     case "facebook":
       return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
     case "hatena":
@@ -88,9 +88,12 @@ export function ShareButton({ platform, url, title, className }: ShareButtonProp
 
   const handleClick = useCallback(() => {
     if (platform === "copy") {
-      navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => {
+        // クリップボードへのアクセスが拒否された場合は何もしない
+      });
       return;
     }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import {
   ShareButton,
@@ -69,7 +69,7 @@ describe("ShareButton", () => {
       );
       fireEvent.click(screen.getByRole("button"));
       expect(window.open).toHaveBeenCalledWith(
-        expect.stringContaining("twitter.com/intent/tweet"),
+        expect.stringContaining("x.com/intent/tweet"),
         "_blank",
         expect.any(String)
       );
@@ -125,7 +125,28 @@ describe("ShareButton", () => {
         <ShareButton platform="copy" url="https://example.com" title="Test" />
       );
       fireEvent.click(screen.getByRole("button"));
-      expect(writeTextMock).toHaveBeenCalledWith("https://example.com");
+
+      await waitFor(() => {
+        expect(writeTextMock).toHaveBeenCalledWith("https://example.com");
+      });
+    });
+
+    it("handles clipboard error gracefully", async () => {
+      const writeTextMock = vi.fn().mockRejectedValue(new Error("Clipboard access denied"));
+      Object.defineProperty(navigator, "clipboard", {
+        value: { writeText: writeTextMock },
+        writable: true,
+        configurable: true,
+      });
+
+      renderWithChakra(
+        <ShareButton platform="copy" url="https://example.com" title="Test" />
+      );
+
+      // エラーがスローされないことを確認
+      expect(() => {
+        fireEvent.click(screen.getByRole("button"));
+      }).not.toThrow();
     });
   });
 });
