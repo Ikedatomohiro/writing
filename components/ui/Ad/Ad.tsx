@@ -74,13 +74,16 @@ export function AdsenseSlot({ slotId, isFluid }: AdsenseSlotProps) {
         width: "100%",
         height: "100%",
       }}
-      data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
       data-ad-slot={slotId}
       data-ad-format={isFluid ? "fluid" : "auto"}
       data-full-width-responsive="true"
     />
   );
 }
+
+AdsenseSlot.displayName = "AdsenseSlot";
+AdPlaceholder.displayName = "AdPlaceholder";
 
 export function Ad({
   variant,
@@ -136,3 +139,5 @@ export function Ad({
     </Box>
   );
 }
+
+Ad.displayName = "Ad";
