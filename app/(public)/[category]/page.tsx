@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Box, Container, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { getArticlesByCategory, getLatestArticles } from "@/lib/content/api";
 import { isValidCategory, type Category } from "@/lib/content/types";
@@ -6,17 +7,18 @@ import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCa
 import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
 import { PopularArticles } from "@/components/layout/Sidebar/PopularArticles";
 import { AdSlot } from "@/components/layout/Sidebar/AdSlot";
+import { CATEGORY_META } from "@/lib/constants/site";
 
 const CATEGORY_TITLES: Record<Category, string> = {
-  asset: "資産形成",
-  tech: "プログラミング",
-  health: "健康",
+  asset: CATEGORY_META.asset.title,
+  tech: CATEGORY_META.tech.title,
+  health: CATEGORY_META.health.title,
 };
 
 const CATEGORY_DESCRIPTIONS: Record<Category, string> = {
-  asset: "資産形成に関する記事を掲載しています。投資、節約、マネープランニングなど。",
-  tech: "プログラミングに関する記事を掲載しています。Web開発、AI、ツールなど。",
-  health: "健康に関する記事を掲載しています。運動、食事、メンタルヘルスなど。",
+  asset: CATEGORY_META.asset.description,
+  tech: CATEGORY_META.tech.description,
+  health: CATEGORY_META.health.description,
 };
 
 interface CategoryPageProps {
@@ -28,16 +30,30 @@ export async function generateStaticParams() {
   return categories.map((category) => ({ category }));
 }
 
-export async function generateMetadata({ params }: CategoryPageProps) {
+export async function generateMetadata({
+  params,
+}: CategoryPageProps): Promise<Metadata> {
   const { category } = await params;
 
   if (!isValidCategory(category)) {
     return {};
   }
 
+  const title = CATEGORY_TITLES[category];
+  const description = CATEGORY_DESCRIPTIONS[category];
+
   return {
-    title: CATEGORY_TITLES[category],
-    description: CATEGORY_DESCRIPTIONS[category],
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `/${category}`,
+    },
+    alternates: {
+      canonical: `/${category}`,
+    },
   };
 }
 

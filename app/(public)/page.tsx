@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Box, Container, Flex, Grid, Text, VStack } from "@chakra-ui/react";
 import Link from "next/link";
 import { BlogHeader } from "@/components/layout/BlogHeader/BlogHeader";
@@ -8,6 +9,21 @@ import { getArticlesByCategory } from "@/lib/content/api";
 import type { Category, ArticleMeta } from "@/lib/content/types";
 import { THEME_CONFIGS } from "@/lib/theme/constants";
 import type { Theme } from "@/lib/theme/types";
+import { SITE_CONFIG } from "@/lib/constants/site";
+
+export const metadata: Metadata = {
+  title: SITE_CONFIG.name,
+  description: SITE_CONFIG.description,
+  openGraph: {
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
+    type: "website",
+    url: "/",
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const CATEGORY_CONFIG: {
   category: Category;

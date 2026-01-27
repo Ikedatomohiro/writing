@@ -202,6 +202,8 @@ export async function generateMetadata({
     };
   }
 
+  const url = `/${category}/${slug}`;
+
   return {
     title: article.title,
     description: article.description,
@@ -209,9 +211,13 @@ export async function generateMetadata({
       title: article.title,
       description: article.description,
       type: "article",
+      url,
       publishedTime: article.date,
       modifiedTime: article.updatedAt,
       images: article.thumbnail ? [article.thumbnail] : [],
+    },
+    alternates: {
+      canonical: url,
     },
   };
 }
