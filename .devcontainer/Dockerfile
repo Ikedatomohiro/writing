@@ -32,20 +32,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  python${PYTHON_VERSION} \
-  python${PYTHON_VERSION}-venv \
-  python3-pip \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* \
-  && ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
-  && ln -sf /usr/bin/python3 /usr/bin/python
-
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh \
   && mv /root/.local/bin/uv /usr/local/bin/ \
   && mv /root/.local/bin/uvx /usr/local/bin/ \
   && chmod +x /usr/local/bin/uv /usr/local/bin/uvx
+
+# Install Python using uv (Debian Bookworm doesn't have Python 3.13 in apt)
+RUN uv python install ${PYTHON_VERSION} \
+  && ln -sf $(uv python find ${PYTHON_VERSION}) /usr/local/bin/python3 \
+  && ln -sf /usr/local/bin/python3 /usr/local/bin/python
 
 # Ensure default node user has access to /usr/local/share
 RUN mkdir -p /usr/local/share/npm-global && \

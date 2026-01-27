@@ -8,6 +8,8 @@
 - ネットワークファイアウォールによるセキュリティ強化
 - VS Code 拡張機能の自動インストール
 
+**Note**: Python 3.13 は Debian Bookworm の標準リポジトリには含まれていないため、`uv python install` を使用してインストールしています。
+
 ## ファイル構成
 
 - `Dockerfile` - コンテナイメージ定義
