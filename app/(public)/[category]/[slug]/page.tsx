@@ -114,9 +114,11 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             {/* 記事ヘッダー */}
             <Box as="header">
               {/* カテゴリタグ */}
-              <Tag variant="category" mb={4}>
-                {getCategoryLabel(article.category)}
-              </Tag>
+              <Box mb={4}>
+                <Tag variant="category">
+                  {getCategoryLabel(article.category)}
+                </Tag>
+              </Box>
 
               {/* タイトル */}
               <Heading
