@@ -5,7 +5,6 @@ ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
 ARG PYTHON_VERSION=3.13
-ARG UV_VERSION=0.5
 
 # Install basic development tools and iptables/ipset
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -32,8 +31,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh \
+# Install uv (latest version)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
   && mv /root/.local/bin/uv /usr/local/bin/ \
   && mv /root/.local/bin/uvx /usr/local/bin/ \
   && chmod +x /usr/local/bin/uv /usr/local/bin/uvx
