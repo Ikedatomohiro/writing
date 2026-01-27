@@ -40,8 +40,8 @@ function CategorySection({
   return (
     <Box as="section" data-testid={`section-${category}`}>
       {/* Section Header */}
-      <Flex justify="space-between" align="center" mb={6}>
-        <Flex align="center" gap={3}>
+      <Flex justify="space-between" align="center" mb={{ base: 6, lg: 8 }}>
+        <Flex align="center" gap={{ base: 3, lg: 4 }}>
           <Flex
             px={3}
             py={1}
@@ -49,7 +49,7 @@ function CategorySection({
             bg={themeConfig.accentBg}
           >
             <Text
-              fontSize="14px"
+              fontSize={{ base: "14px", lg: "15px" }}
               fontWeight="600"
               color={themeConfig.accent}
             >
@@ -57,7 +57,7 @@ function CategorySection({
             </Text>
           </Flex>
           <Text
-            fontSize="24px"
+            fontSize={{ base: "24px", lg: "28px" }}
             fontWeight="700"
             color="var(--text-primary)"
           >
@@ -66,7 +66,7 @@ function CategorySection({
         </Flex>
         <Link href={href}>
           <Text
-            fontSize="14px"
+            fontSize={{ base: "14px", lg: "15px" }}
             color="var(--text-secondary)"
             _hover={{ color: "var(--text-primary)" }}
           >
@@ -119,15 +119,15 @@ export default async function Home() {
       {/* Hero Section */}
       <Box
         data-testid="hero-section"
-        py={{ base: 12, md: 16 }}
+        py={{ base: 12, md: 16, lg: 20 }}
         bg="var(--bg-surface)"
       >
-        <Container maxW="1280px" px={{ base: 4, md: 6 }}>
-          <VStack gap={6} textAlign="center">
+        <Container maxW="1280px" px={{ base: 4, md: 6, lg: 8 }}>
+          <VStack gap={{ base: 6, lg: 8 }} textAlign="center">
             {/* Site Title */}
             <Text
               as="h1"
-              fontSize={{ base: "36px", md: "48px" }}
+              fontSize={{ base: "36px", md: "48px", lg: "56px" }}
               fontWeight="700"
               color="var(--text-primary)"
               fontFamily="'Noto Sans JP', sans-serif"
@@ -137,7 +137,7 @@ export default async function Home() {
 
             {/* Subtitle */}
             <Text
-              fontSize={{ base: "16px", md: "18px" }}
+              fontSize={{ base: "16px", md: "18px", lg: "20px" }}
               color="var(--text-secondary)"
               fontFamily="'Noto Sans JP', sans-serif"
             >
@@ -175,8 +175,8 @@ export default async function Home() {
       </Box>
 
       {/* Main Content */}
-      <Container maxW="1280px" px={{ base: 4, md: 10 }} py={{ base: 8, md: 16 }}>
-        <VStack gap={{ base: 12, md: 16 }} align="stretch">
+      <Container maxW="1280px" px={{ base: 4, md: 8, lg: 10 }} py={{ base: 8, md: 12, lg: 16 }}>
+        <VStack gap={{ base: 12, md: 14, lg: 16 }} align="stretch">
           {/* Investment Section */}
           <CategorySection
             category="asset"
