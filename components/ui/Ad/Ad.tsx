@@ -26,6 +26,8 @@ const variantConfig: Record<AdVariant, VariantConfig> = {
 
 export const getIsProduction = () => process.env.NODE_ENV === "production";
 
+export const getAdsEnabled = () => process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
+
 interface AdPlaceholderProps {
   variant: AdVariant;
   config: VariantConfig;
@@ -98,7 +100,8 @@ export function Ad({
   const minHeight = isFluid ? "90px" : undefined;
 
   const isProduction = getIsProduction();
-  const shouldRenderAdsense = isProduction && slotId;
+  const adsEnabled = getAdsEnabled();
+  const shouldRenderAdsense = isProduction && adsEnabled && slotId;
 
   return (
     <Box

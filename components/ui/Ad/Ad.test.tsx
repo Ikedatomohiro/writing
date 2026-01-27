@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
-import { Ad, type AdVariant } from "./Ad";
+import { Ad, type AdVariant, getAdsEnabled } from "./Ad";
 
 afterEach(() => {
   cleanup();
@@ -74,5 +74,16 @@ describe("Ad", () => {
       renderWithChakra(<Ad variant="rectangle" />);
       expect(screen.getByLabelText("広告")).toBeInTheDocument();
     });
+  });
+});
+
+describe("getAdsEnabled", () => {
+  it("returns false when NEXT_PUBLIC_ADS_ENABLED is not set", () => {
+    // Default behavior: ads disabled
+    expect(getAdsEnabled()).toBe(false);
+  });
+
+  it("is exported as a function", () => {
+    expect(typeof getAdsEnabled).toBe("function");
   });
 });
