@@ -42,7 +42,7 @@
             "path": "zsh"
           }
         },
-        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.defaultInterpreterPath": "/usr/local/bin/python3",
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff",
           "editor.formatOnSave": true,
