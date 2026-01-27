@@ -13,6 +13,8 @@ import { Ad } from "@/components/ui/Ad";
 import { Tag } from "@/components/ui/Tag";
 import { Sidebar, TableOfContentsContainer, AdSlot } from "@/components/layout/Sidebar";
 import { ARTICLE_BODY_SELECTOR } from "@/lib/constants/styles";
+import { SITE_CONFIG, CATEGORY_META } from "@/lib/constants/site";
+import { generateArticleJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -68,9 +70,43 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
   // 記事URLを生成（シェアボタン用）
   const articleUrl = `/${article.category}/${article.slug}`;
+  const fullUrl = `${SITE_CONFIG.url}${articleUrl}`;
+  const imageUrl = article.thumbnail
+    ? article.thumbnail.startsWith("http")
+      ? article.thumbnail
+      : `${SITE_CONFIG.url}${article.thumbnail}`
+    : undefined;
+
+  // JSON-LD構造化データを生成
+  const articleJsonLd = generateArticleJsonLd({
+    title: article.title,
+    description: article.description,
+    datePublished: article.date,
+    dateModified: article.updatedAt,
+    url: fullUrl,
+    image: imageUrl,
+    authorName: SITE_CONFIG.name,
+  });
+
+  const categoryMeta = CATEGORY_META[article.category];
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: "ホーム", url: SITE_CONFIG.url },
+    { name: categoryMeta.title, url: `${SITE_CONFIG.url}/${article.category}` },
+    { name: article.title, url: fullUrl },
+  ]);
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <>
+      {/* JSON-LD構造化データ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Container maxW="container.xl" py={8}>
       <Flex gap={8} direction={{ base: "column", lg: "row" }}>
         {/* メインコンテンツ */}
         <Box flex="1" minW={0}>
@@ -165,6 +201,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
         </Sidebar>
       </Flex>
     </Container>
+    </>
   );
 }
 
@@ -203,6 +240,12 @@ export async function generateMetadata({
   }
 
   const url = `/${category}/${slug}`;
+  const fullUrl = `${SITE_CONFIG.url}${url}`;
+  const imageUrl = article.thumbnail
+    ? article.thumbnail.startsWith("http")
+      ? article.thumbnail
+      : `${SITE_CONFIG.url}${article.thumbnail}`
+    : `${SITE_CONFIG.url}${SITE_CONFIG.defaultOgImage}`;
 
   return {
     title: article.title,
@@ -211,10 +254,16 @@ export async function generateMetadata({
       title: article.title,
       description: article.description,
       type: "article",
-      url,
+      url: fullUrl,
       publishedTime: article.date,
       modifiedTime: article.updatedAt,
-      images: article.thumbnail ? [article.thumbnail] : [],
+      images: [imageUrl],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.description,
+      images: [imageUrl],
     },
     alternates: {
       canonical: url,
