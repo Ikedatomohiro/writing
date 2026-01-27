@@ -330,19 +330,23 @@ class TestWriterAgent:
         agent = WriterAgent()
         assert agent.get_state_class() == AgentState
 
-    def test_create_nodes_returns_dict(self):
+    def test_create_nodes_returns_dict_with_angle_nodes(self):
+        """create_nodesがangle_proposalとangle_selectを含む"""
         from src.agents.writer.agent import WriterAgent
 
         agent = WriterAgent()
         nodes = agent.create_nodes()
 
         assert isinstance(nodes, dict)
+        assert "angle_proposal" in nodes
+        assert "angle_select" in nodes
         assert "plan" in nodes
         assert "execute" in nodes
         assert "reflect" in nodes
         assert "integrate" in nodes
 
-    def test_create_initial_state(self):
+    def test_create_initial_state_with_angle_fields(self):
+        """初期状態にangle_proposalsとselected_angleが含まれる"""
         from src.agents.writer.agent import WriterAgent
         from src.agents.writer.schemas import WriterInput
 
@@ -351,6 +355,8 @@ class TestWriterAgent:
         state = agent.create_initial_state(input_data)
 
         assert state["input"] == input_data
+        assert state["angle_proposals"] is None
+        assert state["selected_angle"] is None
         assert state["plan"] is None
         assert state["sections"] == []
         assert state["retry_count"] == 0

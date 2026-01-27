@@ -4,6 +4,7 @@ from typing import TypedDict
 
 from langchain_core.messages import BaseMessage
 
+from src.agents.writer.schemas.angle import AngleProposalList, AngleSelection
 from src.agents.writer.schemas.input import WriterInput
 from src.agents.writer.schemas.output import (
     ArticlePlan,
@@ -18,6 +19,8 @@ class AgentState(TypedDict):
 
     input: WriterInput
     messages: list[BaseMessage]
+    angle_proposals: AngleProposalList | None
+    selected_angle: AngleSelection | None
     plan: ArticlePlan | None
     sections: list[Section]
     reflection: ReflectionResult | None
