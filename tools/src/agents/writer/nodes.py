@@ -8,6 +8,8 @@ from typing import Any
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.agents.writer.prompts import (
+    ANGLE_PROPOSAL_PROMPT_CONFIG,
+    ANGLE_SELECTION_PROMPT_CONFIG,
     EXECUTOR_PROMPT_CONFIG,
     INTEGRATOR_PROMPT_CONFIG,
     PLANNER_PROMPT_CONFIG,
@@ -15,6 +17,8 @@ from src.agents.writer.prompts import (
 )
 from src.agents.writer.schemas import (
     AgentState,
+    AngleProposalList,
+    AngleSelection,
     ArticlePlan,
     ReflectionResult,
     Section,
@@ -22,8 +26,114 @@ from src.agents.writer.schemas import (
 )
 from src.common import get_logger
 from src.core.nodes import BaseNode
+from src.models import get_structured_model
 
 logger = get_logger(__name__)
+
+
+class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
+    """切り口提案ノード.
+
+    キーワードとカテゴリに基づいて、3つの異なる記事切り口を提案する。
+    """
+
+    def __init__(self):
+        super().__init__(
+            prompt_config=ANGLE_PROPOSAL_PROMPT_CONFIG,
+            output_schema=AngleProposalList,
+        )
+
+    def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
+        input_data = state["input"]
+        return {
+            "keywords": ", ".join(input_data.keywords),
+            "category": input_data.topic,
+            "context": f"トーン: {input_data.tone}, 目標文字数: {input_data.target_length}文字",
+        }
+
+    def update_state(
+        self, state: AgentState, output: AngleProposalList
+    ) -> dict[str, Any]:
+        logger.info(f"切り口提案完了: {len(output.proposals)}件の提案")
+        return {"angle_proposals": output}
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        logger.info("切り口提案を開始")
+        return super().__call__(state)
+
+
+class AngleSelectionNode(BaseNode[AgentState, AngleSelection]):
+    """切り口選択ノード.
+
+    提案された切り口から最適なものを選択する。
+    自動選択モード（LLMが選択）と手動選択モード（インデックス指定）をサポート。
+    """
+
+    def __init__(self, auto_select: bool = True, selected_index: int | None = None):
+        """AngleSelectionNodeを初期化.
+
+        Args:
+            auto_select: 自動選択モードを使用するかどうか
+            selected_index: 手動選択時のインデックス（0始まり）
+        """
+        super().__init__(
+            prompt_config=ANGLE_SELECTION_PROMPT_CONFIG,
+            output_schema=AngleSelection,
+        )
+        self._auto_select = auto_select
+        self._selected_index = selected_index
+
+    def should_skip(self, state: AgentState) -> bool:
+        return state.get("angle_proposals") is None
+
+    def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
+        input_data = state["input"]
+        proposals = state["angle_proposals"]
+
+        proposals_text = "\n\n".join(
+            f"### {i}. {p.title}\n- 概要: {p.summary}\n- 想定読者: {p.target_audience}\n- 差別化: {p.differentiator}"
+            for i, p in enumerate(proposals.proposals)
+        )
+
+        return {
+            "topic": input_data.topic,
+            "keywords": ", ".join(input_data.keywords),
+            "proposals": proposals_text,
+        }
+
+    def update_state(
+        self, state: AgentState, output: AngleSelection
+    ) -> dict[str, Any]:
+        proposals = state["angle_proposals"]
+        selected = proposals.proposals[output.selected_index]
+        logger.info(f"切り口選択完了: {selected.title}")
+        return {"selected_angle": output}
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        if self.should_skip(state):
+            logger.warning("切り口提案がありません")
+            return {}
+
+        logger.info("切り口選択を開始")
+
+        if self._auto_select:
+            # LLMによる自動選択
+            return super().__call__(state)
+        else:
+            # 手動選択モード
+            proposals = state["angle_proposals"]
+            index = self._selected_index if self._selected_index is not None else 0
+
+            if index < 0 or index >= len(proposals.proposals):
+                logger.warning(f"無効なインデックス: {index}")
+                index = 0
+
+            selection = AngleSelection(
+                selected_index=index,
+                reason="ユーザーによる手動選択",
+                auto_selected=False,
+            )
+            return self.update_state(state, selection)
 
 
 class PlannerNode(BaseNode[AgentState, ArticlePlan]):
