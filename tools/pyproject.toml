@@ -13,15 +13,10 @@ dependencies = [
     "pyyaml",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pytest-cov",
-    "ruff",
-]
-
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
+    "pytest-cov",
+    "ruff",
 ]

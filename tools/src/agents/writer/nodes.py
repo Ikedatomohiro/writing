@@ -26,7 +26,6 @@ from src.agents.writer.schemas import (
 )
 from src.common import get_logger
 from src.core.nodes import BaseNode
-from src.models import get_structured_model
 
 logger = get_logger(__name__)
 
@@ -105,9 +104,17 @@ class AngleSelectionNode(BaseNode[AgentState, AngleSelection]):
         self, state: AgentState, output: AngleSelection
     ) -> dict[str, Any]:
         proposals = state["angle_proposals"]
-        selected = proposals.proposals[output.selected_index]
+        # 境界チェック: LLMが範囲外のインデックスを返した場合に対応
+        selected_index = min(max(0, output.selected_index), len(proposals.proposals) - 1)
+        selected = proposals.proposals[selected_index]
         logger.info(f"切り口選択完了: {selected.title}")
-        return {"selected_angle": output}
+        # 自動選択時はauto_selected=Trueを明示的に設定
+        result = AngleSelection(
+            selected_index=selected_index,
+            reason=output.reason,
+            auto_selected=True if self._auto_select else output.auto_selected,
+        )
+        return {"selected_angle": result}
 
     def __call__(self, state: AgentState) -> dict[str, Any]:
         if self.should_skip(state):
