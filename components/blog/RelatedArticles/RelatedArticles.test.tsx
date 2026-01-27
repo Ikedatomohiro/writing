@@ -65,9 +65,8 @@ describe("RelatedArticles", () => {
   it("renders section with proper accessibility attributes", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
-    const { container } = renderWithChakra(
-      await RelatedArticles({ category: "tech", currentSlug: "current-article" })
-    );
+    const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
+    const { container } = renderWithChakra(component!);
 
     const section = container.querySelector("section");
     expect(section).toBeInTheDocument();
@@ -84,9 +83,8 @@ describe("RelatedArticles", () => {
   it("renders article cards for related articles", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
-    renderWithChakra(
-      await RelatedArticles({ category: "tech", currentSlug: "current-article" })
-    );
+    const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
+    renderWithChakra(component!);
 
     expect(screen.getByText("記事1のタイトル")).toBeInTheDocument();
     expect(screen.getByText("記事2のタイトル")).toBeInTheDocument();
@@ -96,13 +94,12 @@ describe("RelatedArticles", () => {
   it("calls getRelatedArticles with correct parameters", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
-    renderWithChakra(
-      await RelatedArticles({
-        category: "asset",
-        currentSlug: "my-slug",
-        limit: 5,
-      })
-    );
+    const component = await RelatedArticles({
+      category: "asset",
+      currentSlug: "my-slug",
+      limit: 5,
+    });
+    renderWithChakra(component!);
 
     expect(getRelatedArticles).toHaveBeenCalledWith("asset", "my-slug", 5);
   });
@@ -110,9 +107,8 @@ describe("RelatedArticles", () => {
   it("uses default limit of 3 when not specified", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
-    renderWithChakra(
-      await RelatedArticles({ category: "tech", currentSlug: "current-article" })
-    );
+    const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
+    renderWithChakra(component!);
 
     expect(getRelatedArticles).toHaveBeenCalledWith(
       "tech",
@@ -124,20 +120,16 @@ describe("RelatedArticles", () => {
   it("renders nothing when no related articles found", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue([]);
 
-    const { container } = renderWithChakra(
-      await RelatedArticles({ category: "tech", currentSlug: "current-article" })
-    );
-
-    expect(container.querySelector("section")).toBeNull();
-    expect(screen.queryByText("関連記事")).not.toBeInTheDocument();
+    const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
+    // component is null when no articles found
+    expect(component).toBeNull();
   });
 
   it("renders with horizontal scroll container", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
-    const { container } = renderWithChakra(
-      await RelatedArticles({ category: "tech", currentSlug: "current-article" })
-    );
+    const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
+    const { container } = renderWithChakra(component!);
 
     const scrollContainer = container.querySelector(
       '[data-testid="related-articles-scroll"]'

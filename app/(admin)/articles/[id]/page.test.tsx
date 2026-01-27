@@ -226,7 +226,7 @@ describe("ArticleDetailPage", () => {
   it("削除ボタンをクリックすると確認ダイアログが表示される", async () => {
     const user = userEvent.setup();
     mockGetArticle.mockResolvedValue(mockArticle);
-    mockDeleteArticle.mockResolvedValue(undefined);
+    mockDeleteArticle.mockResolvedValue(true);
 
     const originalConfirm = window.confirm;
     window.confirm = vi.fn().mockReturnValue(false);
@@ -247,7 +247,7 @@ describe("ArticleDetailPage", () => {
   it("削除を確認するとdeleteArticleが呼ばれる", async () => {
     const user = userEvent.setup();
     mockGetArticle.mockResolvedValue(mockArticle);
-    mockDeleteArticle.mockResolvedValue(undefined);
+    mockDeleteArticle.mockResolvedValue(true);
 
     const originalConfirm = window.confirm;
     window.confirm = vi.fn().mockReturnValue(true);

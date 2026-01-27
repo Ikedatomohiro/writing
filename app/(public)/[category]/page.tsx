@@ -65,10 +65,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     return null;
   }
 
-  const [articles, popularArticles] = await Promise.all([
+  const [articles, latestArticles] = await Promise.all([
     getArticlesByCategory(category),
     getLatestArticles(5),
   ]);
+
+  // ArticleMeta を PopularArticle に変換
+  const popularArticles = latestArticles.map((article) => ({
+    id: article.slug,
+    title: article.title,
+    href: `/${article.category}/${article.slug}`,
+  }));
 
   const title = CATEGORY_TITLES[category];
   const description = CATEGORY_DESCRIPTIONS[category];
