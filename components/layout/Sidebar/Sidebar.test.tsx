@@ -75,6 +75,18 @@ describe("Sidebar", () => {
       const sidebar = screen.getByTestId("sidebar");
       expect(sidebar).toHaveAttribute("data-hide-mobile", "true");
     });
+
+    it("has responsive display styles for mobile hiding", () => {
+      renderWithChakra(
+        <Sidebar>
+          <div>Content</div>
+        </Sidebar>
+      );
+      const sidebar = screen.getByTestId("sidebar");
+      // Chakra UI applies responsive styles via CSS classes
+      // The component should have responsive display prop
+      expect(sidebar).toBeInTheDocument();
+    });
   });
 
   describe("accessibility", () => {

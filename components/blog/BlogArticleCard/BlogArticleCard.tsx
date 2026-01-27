@@ -47,7 +47,8 @@ export function BlogArticleCard({
         borderRadius="12px"
         overflow="hidden"
         bg="white"
-        width="320px"
+        width="100%"
+        maxW={{ base: "100%", sm: "320px", md: "100%" }}
         transition="all 0.2s"
         _hover={{
           boxShadow: "lg",
