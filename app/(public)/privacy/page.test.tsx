@@ -26,7 +26,8 @@ describe("PrivacyPolicyPage", () => {
     expect(
       screen.getByRole("heading", { name: /アクセス解析ツールについて/ })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Google Analytics/)).toBeInTheDocument();
+    const elements = screen.getAllByText(/Google Analytics/);
+    expect(elements.length).toBeGreaterThan(0);
   });
 
   it("広告配信についてのセクションが表示される", () => {
@@ -34,7 +35,8 @@ describe("PrivacyPolicyPage", () => {
     expect(
       screen.getByRole("heading", { name: /広告配信について/ })
     ).toBeInTheDocument();
-    expect(screen.getByText(/Google Adsense/)).toBeInTheDocument();
+    const elements = screen.getAllByText(/Google Adsense/i);
+    expect(elements.length).toBeGreaterThan(0);
   });
 
   it("Amazonアソシエイトについてのセクションが表示される", () => {
@@ -100,5 +102,60 @@ describe("PrivacyPolicyPage", () => {
       name: /お問い合わせページ/,
     });
     expect(contactLink).toHaveAttribute("href", "/contact");
+  });
+
+  // Issue #55: 新規追加テスト
+  describe("運営者情報", () => {
+    it("サイト名「おひとりさまライフ」が表示される", () => {
+      render(<PrivacyPolicyPage />);
+      const elements = screen.getAllByText(/おひとりさまライフ/);
+      expect(elements.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("制定日・改定日", () => {
+    it("制定日が2026年1月28日と表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(screen.getByText(/制定日.*2026年1月28日/)).toBeInTheDocument();
+    });
+  });
+
+  describe("免責事項・著作権", () => {
+    it("免責事項セクションが表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(
+        screen.getByRole("heading", { name: /免責事項/ })
+      ).toBeInTheDocument();
+    });
+
+    it("著作権セクションが表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(
+        screen.getByRole("heading", { name: /著作権/ })
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("改正電気通信事業法対応", () => {
+    it("外部送信規律に関するセクションが表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(
+        screen.getByRole("heading", { name: /外部送信/ })
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("Google AdSense詳細", () => {
+    it("パーソナライズ広告についての説明が含まれる", () => {
+      render(<PrivacyPolicyPage />);
+      const elements = screen.getAllByText(/パーソナライズ/);
+      expect(elements.length).toBeGreaterThan(0);
+    });
+
+    it("Cookie無効化の方法が説明されている", () => {
+      render(<PrivacyPolicyPage />);
+      const elements = screen.getAllByText(/Cookieを無効/);
+      expect(elements.length).toBeGreaterThan(0);
+    });
   });
 });
