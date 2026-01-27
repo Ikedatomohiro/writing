@@ -2,9 +2,9 @@
  * サイト情報の定数
  */
 export const SITE_CONFIG = {
-  name: "Writing",
-  description: "資産形成・プログラミング・健康に関する情報を発信するブログ",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://writing.example.com",
+  name: "おひとりさまライフ",
+  description: "ひとり暮らしを楽しむためのライフスタイルブログ",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://ohitorisama-life.com",
   locale: "ja_JP",
   defaultOgImage: "/images/og-default.png",
 } as const;

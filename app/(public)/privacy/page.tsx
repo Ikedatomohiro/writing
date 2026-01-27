@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { siteConfig } from "@/app/config/site";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 export const metadata = {
   title: "プライバシーポリシー",
-  description: `${siteConfig.name}のプライバシーポリシーについて`,
+  description: `${SITE_CONFIG.name}のプライバシーポリシーについて`,
 };
 
 const sectionStyle = {
@@ -29,13 +29,13 @@ export default function PrivacyPolicyPage() {
       </h1>
 
       <p style={{ marginBottom: "2rem", color: "var(--text-secondary, #666)" }}>
-        「{siteConfig.name}」（以下、当サイト）は、ユーザーの個人情報の取扱いについて、
+        「{SITE_CONFIG.name}」（以下、当サイト）は、ユーザーの個人情報の取扱いについて、
         以下のとおりプライバシーポリシーを定めます。
       </p>
 
       <section style={sectionStyle}>
         <h2 style={headingStyle}>運営者情報</h2>
-        <p>サイト名: {siteConfig.name}</p>
+        <p>サイト名: {SITE_CONFIG.name}</p>
       </section>
 
       <section style={sectionStyle}>
