@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { BlogHeader } from "./BlogHeader";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/"),
@@ -20,7 +21,7 @@ describe("BlogHeader", () => {
   describe("rendering", () => {
     it("renders site name", () => {
       renderWithChakra(<BlogHeader />);
-      expect(screen.getByText("Writing")).toBeInTheDocument();
+      expect(screen.getByText(SITE_CONFIG.name)).toBeInTheDocument();
     });
 
     it("renders as header element", () => {
@@ -30,7 +31,7 @@ describe("BlogHeader", () => {
 
     it("site name links to home page", () => {
       renderWithChakra(<BlogHeader />);
-      const homeLink = screen.getByRole("link", { name: /writing/i });
+      const homeLink = screen.getByRole("link", { name: new RegExp(SITE_CONFIG.name, "i") });
       expect(homeLink).toHaveAttribute("href", "/");
     });
   });

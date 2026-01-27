@@ -2,6 +2,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { describe, expect, it, afterEach } from "vitest";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { Footer } from "./Footer";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(
@@ -16,16 +17,12 @@ afterEach(() => {
 describe("Footer", () => {
   it("ロゴ名が表示される", () => {
     renderWithProviders(<Footer />);
-    expect(screen.getByText("BlogName")).toBeInTheDocument();
+    expect(screen.getByText(SITE_CONFIG.name)).toBeInTheDocument();
   });
 
   it("サイト説明文が表示される", () => {
     renderWithProviders(<Footer />);
-    expect(
-      screen.getByText(
-        "資産形成、プログラミング、健康に関する記事を発信しています。"
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(SITE_CONFIG.description)).toBeInTheDocument();
   });
 
   it("カテゴリセクションが表示される", () => {
@@ -46,8 +43,9 @@ describe("Footer", () => {
 
   it("コピーライトが表示される", () => {
     renderWithProviders(<Footer />);
+    const escapedName = SITE_CONFIG.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     expect(
-      screen.getByText(/© \d{4} BlogName\. All rights reserved\./)
+      screen.getByText(new RegExp(`© \\d{4} ${escapedName}\\. All rights reserved\\.`))
     ).toBeInTheDocument();
   });
 

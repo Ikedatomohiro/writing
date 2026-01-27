@@ -4,6 +4,7 @@ import { Box, Container, Flex, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { NavLink } from "./NavLink";
 import { MobileMenu, type NavLinkItem } from "./MobileMenu";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 const NAV_LINKS: NavLinkItem[] = [
   { href: "/asset", label: "資産形成" },
@@ -34,7 +35,7 @@ export function BlogHeader() {
               color="var(--accent)"
               _hover={{ opacity: 0.8 }}
             >
-              Writing
+              {SITE_CONFIG.name}
             </Text>
           </NextLink>
 

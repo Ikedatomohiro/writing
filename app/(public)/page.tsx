@@ -148,7 +148,7 @@ export default async function Home() {
               color="var(--text-primary)"
               fontFamily="'Noto Sans JP', sans-serif"
             >
-              Writing
+              {SITE_CONFIG.name}
             </Text>
 
             {/* Subtitle */}
@@ -157,7 +157,7 @@ export default async function Home() {
               color="var(--text-secondary)"
               fontFamily="'Noto Sans JP', sans-serif"
             >
-              資産形成・プログラミング・健康に関する情報を発信
+              {SITE_CONFIG.description}
             </Text>
 
             {/* Category Navigation */}

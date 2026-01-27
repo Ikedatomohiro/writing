@@ -1,6 +1,7 @@
 import { Box, Container, Flex, Text, VStack } from "@chakra-ui/react";
 import Link from "next/link";
 import { COLORS } from "@/lib/theme/colors";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 const CATEGORIES = [
   { label: "Investment", href: "/asset" },
@@ -41,7 +42,7 @@ export function Footer() {
               color={COLORS.textPrimary}
               fontFamily="Noto Sans JP"
             >
-              BlogName
+              {SITE_CONFIG.name}
             </Text>
             <Text
               fontSize="sm"
@@ -49,7 +50,7 @@ export function Footer() {
               lineHeight={1.6}
               fontFamily="Noto Sans JP"
             >
-              資産形成、プログラミング、健康に関する記事を発信しています。
+              {SITE_CONFIG.description}
             </Text>
           </VStack>
 
@@ -117,7 +118,7 @@ export function Footer() {
           textAlign="center"
         >
           <Text fontSize="xs" color={COLORS.textMuted} fontFamily="Inter">
-            © {currentYear} BlogName. All rights reserved.
+            © {currentYear} {SITE_CONFIG.name}. All rights reserved.
           </Text>
         </Box>
       </Container>

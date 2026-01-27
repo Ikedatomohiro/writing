@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { screen, cleanup } from "@testing-library/react";
 import { renderWithChakra } from "@/app/test-utils";
 import Home from "./page";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 // Mock Next.js navigation
 vi.mock("next/navigation", () => ({
@@ -71,7 +72,7 @@ describe("Home (Top Page)", () => {
     renderWithChakra(await Home());
     expect(screen.getByTestId("hero-section")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Writing"
+      SITE_CONFIG.name
     );
   });
 
