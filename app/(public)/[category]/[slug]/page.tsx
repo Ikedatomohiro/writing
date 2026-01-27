@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Box, Container, Flex, Heading, Text, VStack, HStack } from "@chakra-ui/react";
 import type { Metadata } from "next";
 import type { Category } from "@/lib/content/types";
@@ -11,6 +12,7 @@ import { ShareButtonGroup } from "@/components/ui/ShareButton";
 import { Ad } from "@/components/ui/Ad";
 import { Tag } from "@/components/ui/Tag";
 import { Sidebar, TableOfContentsContainer, AdSlot } from "@/components/layout/Sidebar";
+import { ARTICLE_BODY_SELECTOR } from "@/lib/constants/styles";
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -117,15 +119,15 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                 borderRadius="lg"
                 overflow="hidden"
                 bg="gray.100"
+                position="relative"
                 h={{ base: "200px", md: "400px" }}
               >
-                <Box
-                  as="img"
+                <Image
                   src={article.thumbnail}
                   alt={article.title}
-                  w="100%"
-                  h="100%"
-                  objectFit="cover"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
                 />
               </Box>
             )}
@@ -158,7 +160,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
         {/* サイドバー */}
         <Sidebar>
-          <TableOfContentsContainer contentSelector=".article-body" />
+          <TableOfContentsContainer contentSelector={ARTICLE_BODY_SELECTOR} />
           <AdSlot size="rectangle" />
         </Sidebar>
       </Flex>
