@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Container, Flex, Grid, Text, VStack } from "@chakra-ui/react";
 import Link from "next/link";
 import { BlogHeader } from "@/components/layout/BlogHeader/BlogHeader";
 import { Footer } from "@/components/layout/Footer";
@@ -76,11 +76,18 @@ function CategorySection({
       </Flex>
 
       {/* Article Cards */}
-      <Flex gap={6} flexWrap="wrap">
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(3, 1fr)",
+        }}
+        gap={6}
+      >
         {articles.slice(0, 3).map((article) => (
           <BlogArticleCard key={article.slug} article={article} />
         ))}
-      </Flex>
+      </Grid>
     </Box>
   );
 }
