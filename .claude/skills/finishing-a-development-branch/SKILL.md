@@ -198,20 +198,22 @@ git worktree remove <worktree-path>
 
 **連携:**
 - **using-git-worktrees** - このスキルで作成したworktreeをクリーンアップ
-- **merge** - Option 1の詳細な手順（既存スキル）
+- **merge** - Option 2でPR作成後、PRがマージされたら片付けに使用
 - **prune** - 不要なブランチの一括クリーンアップ（既存スキル）
 
-## 既存スキルとの関係
+## 関連スキルとの使い分け
 
-このプロジェクトには `merge` と `prune` スキルが存在する:
+| 状況 | 使用するスキル |
+|------|---------------|
+| 開発完了、次に何をするか決めたい | `finishing-a-development-branch`（このスキル） |
+| PRがGitHub上でマージ済み、片付けたい | `merge` |
+| 複数の不要ブランチを一括削除したい | `prune` |
 
-| スキル | 用途 |
-|--------|------|
-| **merge** | PRがマージされた後のクリーンアップに特化 |
-| **prune** | 不要なブランチとworktreeの一括削除 |
-| **finishing-a-development-branch** | 開発完了時の4択ワークフロー |
-
-**使い分け:**
-- subagent-driven-developmentから呼び出される場合 → このスキル
-- PRマージ後の片付け → `merge` スキル
-- 複数の不要ブランチを整理 → `prune` スキル
+**ワークフロー例:**
+```
+開発完了 → finishing-a-development-branch（Option 2: PR作成）
+    ↓
+PRレビュー・マージ（GitHub上）
+    ↓
+/merge でローカルをクリーンアップ
+```
