@@ -145,6 +145,7 @@ class TestPlannerNode:
             state = {
                 "input": WriterInput(topic="テスト", keywords=["キーワード"]),
                 "messages": [],
+                "research_result": None,
                 "plan": None,
                 "sections": [],
                 "reflection": None,
@@ -185,6 +186,7 @@ class TestExecutorNode:
             state = {
                 "input": WriterInput(topic="テスト", keywords=["キーワード"]),
                 "messages": [],
+                "research_result": None,
                 "plan": ArticlePlan(
                     title="テスト",
                     sections=[
@@ -210,6 +212,7 @@ class TestExecutorNode:
         state = {
             "input": WriterInput(topic="テスト", keywords=["キーワード"]),
             "messages": [],
+            "research_result": None,
             "plan": None,
             "sections": [],
             "reflection": None,
@@ -250,6 +253,7 @@ class TestReflectorNode:
             state = {
                 "input": WriterInput(topic="テスト", keywords=["キーワード"]),
                 "messages": [],
+                "research_result": None,
                 "plan": ArticlePlan(
                     title="テスト",
                     sections=[PlannedSection(heading="導入", level=2, description="")],
@@ -299,6 +303,7 @@ class TestIntegratorNode:
             state = {
                 "input": WriterInput(topic="テスト", keywords=["キーワード"]),
                 "messages": [],
+                "research_result": None,
                 "plan": ArticlePlan(
                     title="テスト",
                     sections=[PlannedSection(heading="導入", level=2, description="")],
@@ -340,6 +345,7 @@ class TestWriterAgent:
         assert isinstance(nodes, dict)
         assert "angle_proposal" in nodes
         assert "angle_select" in nodes
+        assert "research" in nodes
         assert "plan" in nodes
         assert "execute" in nodes
         assert "reflect" in nodes
@@ -357,6 +363,7 @@ class TestWriterAgent:
         assert state["input"] == input_data
         assert state["angle_proposals"] is None
         assert state["selected_angle"] is None
+        assert state["research_result"] is None
         assert state["plan"] is None
         assert state["sections"] == []
         assert state["retry_count"] == 0

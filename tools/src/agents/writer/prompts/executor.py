@@ -29,7 +29,11 @@ EXECUTOR_USER_PROMPT_TEMPLATE = """以下のセクションの本文を執筆し
 {tone}
 {persona_context}
 
+## リサーチ情報
+{research_findings}
+
 このセクションの本文を執筆してください。
+リサーチ情報がある場合は、具体的なデータや事実を引用して信頼性の高い内容にしてください。
 
 {category_context}"""
 

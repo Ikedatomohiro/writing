@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field, field_validator
 
+from src.agents.writer.schemas.research import SourceReference
 from src.core.schemas import BaseReflection
 
 
@@ -109,6 +110,10 @@ class WriterOutput(BaseModel):
     keywords_used: list[str] = Field(description="実際に使用したキーワード")
     sections: list[Section] = Field(description="セクション情報")
     summary: str = Field(description="執筆結果のサマリー")
+    references: list[SourceReference] = Field(
+        default_factory=list,
+        description="参考リンクのリスト",
+    )
     seo_metadata: SeoMetadata | None = Field(
         default=None, description="SEO最適化メタデータ"
     )

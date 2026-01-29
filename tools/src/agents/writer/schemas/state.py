@@ -13,6 +13,7 @@ from src.agents.writer.schemas.output import (
     WriterOutput,
 )
 from src.agents.writer.schemas.persona import PersonaConfig
+from src.agents.writer.schemas.research import ResearchResult
 
 
 class AgentState(TypedDict):
@@ -22,6 +23,7 @@ class AgentState(TypedDict):
     messages: list[BaseMessage]
     angle_proposals: AngleProposalList | None
     selected_angle: AngleSelection | None
+    research_result: ResearchResult | None
     plan: ArticlePlan | None
     sections: list[Section]
     reflection: ReflectionResult | None

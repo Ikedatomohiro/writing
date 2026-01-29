@@ -16,6 +16,12 @@ from src.agents.writer.schemas.output import (
     WriterOutput,
 )
 from src.agents.writer.schemas.persona import PersonaConfig, WritingStyle
+from src.agents.writer.schemas.research import (
+    ResearchFinding,
+    ResearchResult,
+    SearchQueries,
+    SourceReference,
+)
 from src.agents.writer.schemas.state import AgentState
 
 __all__ = [
@@ -32,5 +38,9 @@ __all__ = [
     "SeoOptimizationResult",
     "PersonaConfig",
     "WritingStyle",
+    "ResearchFinding",
+    "ResearchResult",
+    "SearchQueries",
+    "SourceReference",
     "AgentState",
 ]
