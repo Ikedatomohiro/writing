@@ -29,9 +29,21 @@ from src.agents.writer.schemas import (
 )
 from src.agents.writer.schemas.persona import format_persona_context
 from src.common import get_logger
+from src.common.category_config import load_category_config_by_slug
 from src.core.nodes import BaseNode
 
 logger = get_logger(__name__)
+
+
+def _get_category_context(category_slug: str | None) -> str:
+    """カテゴリslugからプロンプト用コンテキスト文字列を取得."""
+    if not category_slug:
+        return ""
+    config = load_category_config_by_slug(category_slug)
+    if config is None:
+        logger.warning(f"カテゴリ '{category_slug}' の設定が見つかりません")
+        return ""
+    return config.to_prompt_context()
 
 
 class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
@@ -49,11 +61,13 @@ class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
         persona = state.get("persona")
+        category_context = _get_category_context(input_data.category)
         return {
             "keywords": ", ".join(input_data.keywords),
             "category": input_data.topic,
             "context": f"トーン: {input_data.tone}, 目標文字数: {input_data.target_length}文字",
             "persona_context": format_persona_context(persona),
+            "category_context": category_context,
         }
 
     def update_state(
@@ -161,12 +175,14 @@ class PlannerNode(BaseNode[AgentState, ArticlePlan]):
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
         persona = state.get("persona")
+        category_context = _get_category_context(input_data.category)
         return {
             "topic": input_data.topic,
             "keywords": ", ".join(input_data.keywords),
             "target_length": input_data.target_length,
             "tone": input_data.tone,
             "persona_context": format_persona_context(persona),
+            "category_context": category_context,
         }
 
     def update_state(self, state: AgentState, output: ArticlePlan) -> dict[str, Any]:
@@ -228,6 +244,7 @@ class ExecutorNode(BaseNode[AgentState, Section]):
 
         persona = state.get("persona")
         persona_context = format_persona_context(persona)
+        category_context = _get_category_context(input_data.category)
 
         new_sections = []
         for planned in sections_to_write:
@@ -241,6 +258,7 @@ class ExecutorNode(BaseNode[AgentState, Section]):
                 "keywords": ", ".join(input_data.keywords),
                 "tone": input_data.tone,
                 "persona_context": persona_context,
+                "category_context": category_context,
             }
 
             messages = [

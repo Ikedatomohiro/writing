@@ -6,6 +6,11 @@ from src.common.keyword_config import (
     KeywordConfig,
     load_keyword_config,
 )
+from src.common.category_config import (
+    CategorySpecConfig,
+    load_all_categories,
+    load_category_config,
+)
 from src.common.errors import (
     APIError,
     BaseAgentError,
@@ -32,4 +37,7 @@ __all__ = [
     "SearchError",
     "ValidationError",
     "MaxRetryError",
+    "CategorySpecConfig",
+    "load_category_config",
+    "load_all_categories",
 ]
