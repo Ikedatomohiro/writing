@@ -27,6 +27,7 @@ EXECUTOR_USER_PROMPT_TEMPLATE = """以下のセクションの本文を執筆し
 
 ## トーン
 {tone}
+{persona_context}
 
 このセクションの本文を執筆してください。"""
 
