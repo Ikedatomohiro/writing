@@ -6,6 +6,7 @@ from src.agents.writer.prompts.executor import EXECUTOR_PROMPT_CONFIG
 from src.agents.writer.prompts.integrator import INTEGRATOR_PROMPT_CONFIG
 from src.agents.writer.prompts.planner import PLANNER_PROMPT_CONFIG
 from src.agents.writer.prompts.reflector import REFLECTOR_PROMPT_CONFIG
+from src.agents.writer.prompts.seo_optimizer import SEO_OPTIMIZER_PROMPT_CONFIG
 
 __all__ = [
     "ANGLE_PROPOSAL_PROMPT_CONFIG",
@@ -14,4 +15,5 @@ __all__ = [
     "EXECUTOR_PROMPT_CONFIG",
     "REFLECTOR_PROMPT_CONFIG",
     "INTEGRATOR_PROMPT_CONFIG",
+    "SEO_OPTIMIZER_PROMPT_CONFIG",
 ]

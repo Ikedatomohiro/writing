@@ -14,6 +14,7 @@ from src.agents.writer.prompts import (
     INTEGRATOR_PROMPT_CONFIG,
     PLANNER_PROMPT_CONFIG,
     REFLECTOR_PROMPT_CONFIG,
+    SEO_OPTIMIZER_PROMPT_CONFIG,
 )
 from src.agents.writer.schemas import (
     AgentState,
@@ -22,6 +23,8 @@ from src.agents.writer.schemas import (
     ArticlePlan,
     ReflectionResult,
     Section,
+    SeoMetadata,
+    SeoOptimizationResult,
     WriterOutput,
 )
 from src.agents.writer.schemas.persona import format_persona_context
@@ -348,3 +351,84 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
             return {}
         logger.info("結果統合を開始")
         return super().__call__(state)
+
+
+class SeoOptimizerNode(BaseNode[AgentState, SeoOptimizationResult]):
+    """SEO最適化ノード
+
+    統合済みの記事に対してSEO最適化を行う。
+    タイトル・メタディスクリプション・本文のキーワード配置を最適化し、
+    読者ファーストを維持しつつ検索エンジンからの流入を改善する。
+    """
+
+    def __init__(self):
+        super().__init__(
+            prompt_config=SEO_OPTIMIZER_PROMPT_CONFIG,
+            output_schema=SeoOptimizationResult,
+        )
+
+    def should_skip(self, state: AgentState) -> bool:
+        return state.get("output") is None
+
+    def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
+        output = state["output"]
+        input_data = state["input"]
+        return {
+            "title": output.title,
+            "description": output.description,
+            "keywords": ", ".join(input_data.keywords),
+            "content": output.content,
+        }
+
+    def update_state(
+        self, state: AgentState, output: SeoOptimizationResult
+    ) -> dict[str, Any]:
+        original_output = state["output"]
+
+        seo_metadata = SeoMetadata(
+            primary_keyword=output.primary_keyword,
+            keyword_density=output.keyword_density,
+            title_length=len(output.optimized_title),
+            description_length=len(output.optimized_description),
+            co_occurrence_words=output.co_occurrence_words,
+            heading_keywords=_extract_heading_keywords(
+                output.optimized_content, state["input"].keywords
+            ),
+            seo_score=output.seo_score,
+            improvements_applied=output.improvements_applied,
+        )
+
+        optimized_output = WriterOutput(
+            title=output.optimized_title,
+            description=output.optimized_description,
+            content=output.optimized_content,
+            keywords_used=original_output.keywords_used,
+            sections=original_output.sections,
+            summary=original_output.summary,
+            seo_metadata=seo_metadata,
+        )
+
+        logger.info(
+            f"SEO最適化完了: スコア={seo_metadata.seo_score}, "
+            f"改善={len(seo_metadata.improvements_applied)}件"
+        )
+        return {"output": optimized_output}
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        if self.should_skip(state):
+            logger.warning("出力がありません。SEO最適化をスキップ")
+            return {}
+        logger.info("SEO最適化を開始")
+        return super().__call__(state)
+
+
+def _extract_heading_keywords(content: str, keywords: list[str]) -> list[str]:
+    """本文の見出し行からキーワードを抽出する"""
+    heading_keywords = []
+    for line in content.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            for keyword in keywords:
+                if keyword in stripped and keyword not in heading_keywords:
+                    heading_keywords.append(keyword)
+    return heading_keywords

@@ -13,6 +13,7 @@ from src.agents.writer.nodes import (
     IntegratorNode,
     PlannerNode,
     ReflectorNode,
+    SeoOptimizerNode,
 )
 from src.agents.writer.schemas import (
     AgentState,
@@ -58,10 +59,11 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
             "execute": ExecutorNode(),
             "reflect": ReflectorNode(),
             "integrate": IntegratorNode(),
+            "seo_optimize": SeoOptimizerNode(),
         }
 
     def define_graph_edges(self, graph: StateGraph[AgentState]) -> None:
-        # 新フロー: angle_proposal → angle_select → plan → execute → reflect → integrate
+        # フロー: angle_proposal → angle_select → plan → execute → reflect → integrate → seo_optimize
         graph.set_entry_point("angle_proposal")
         graph.add_edge("angle_proposal", "angle_select")
         graph.add_edge("angle_select", "plan")
@@ -75,7 +77,8 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
                 "integrate": "integrate",
             },
         )
-        graph.add_edge("integrate", END)
+        graph.add_edge("integrate", "seo_optimize")
+        graph.add_edge("seo_optimize", END)
 
     def create_initial_state(self, input_data: WriterInput) -> AgentState:
         return AgentState(
