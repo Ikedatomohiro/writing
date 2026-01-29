@@ -85,9 +85,11 @@ describe("Home (Top Page)", () => {
   });
 
   it("renders ad slots", async () => {
+    process.env.NEXT_PUBLIC_ADS_ENABLED = "true";
     renderWithChakra(await Home());
     const adSlots = screen.getAllByRole("region", { name: "Advertisement" });
     expect(adSlots.length).toBeGreaterThanOrEqual(2);
+    delete process.env.NEXT_PUBLIC_ADS_ENABLED;
   });
 
   it("renders investment section", async () => {

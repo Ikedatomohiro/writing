@@ -2,6 +2,7 @@
 
 import { type ReactNode } from "react";
 import { Box, Text, Center } from "@chakra-ui/react";
+import { getAdsEnabled } from "@/components/ui/Ad/Ad";
 
 export type AdSize = "rectangle" | "skyscraper" | "leaderboard";
 
@@ -24,6 +25,9 @@ export function AdSlot({
   showPlaceholder = false,
   children,
 }: AdSlotProps) {
+  const adsEnabled = getAdsEnabled();
+  if (!adsEnabled) return null;
+
   const { width, height } = sizeStyles[size];
 
   return (
