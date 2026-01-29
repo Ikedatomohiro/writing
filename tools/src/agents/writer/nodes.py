@@ -16,6 +16,7 @@ from src.agents.writer.prompts import (
     REFLECTOR_PROMPT_CONFIG,
     RESEARCHER_QUERY_PROMPT_CONFIG,
     RESEARCHER_SUMMARIZER_PROMPT_CONFIG,
+    SEO_OPTIMIZER_PROMPT_CONFIG,
 )
 from src.agents.writer.schemas import (
     AgentState,
@@ -24,15 +25,30 @@ from src.agents.writer.schemas import (
     ArticlePlan,
     ReflectionResult,
     Section,
+    SeoMetadata,
+    SeoOptimizationResult,
     WriterOutput,
 )
+from src.agents.writer.schemas.persona import format_persona_context
 from src.agents.writer.schemas.research import ResearchResult, SearchQueries
 from src.common import get_logger
+from src.common.category_config import load_category_config_by_slug
 from src.core.nodes import BaseNode
 from src.models import get_structured_model
 from src.tools import search_web
 
 logger = get_logger(__name__)
+
+
+def _get_category_context(category_slug: str | None) -> str:
+    """カテゴリslugからプロンプト用コンテキスト文字列を取得."""
+    if not category_slug:
+        return ""
+    config = load_category_config_by_slug(category_slug)
+    if config is None:
+        logger.warning(f"カテゴリ '{category_slug}' の設定が見つかりません")
+        return ""
+    return config.to_prompt_context()
 
 
 class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
@@ -49,10 +65,14 @@ class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
 
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
+        persona = state.get("persona")
+        category_context = _get_category_context(input_data.category)
         return {
             "keywords": ", ".join(input_data.keywords),
             "category": input_data.topic,
             "context": f"トーン: {input_data.tone}, 目標文字数: {input_data.target_length}文字",
+            "persona_context": format_persona_context(persona),
+            "category_context": category_context,
         }
 
     def update_state(
@@ -159,6 +179,8 @@ class PlannerNode(BaseNode[AgentState, ArticlePlan]):
 
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
+        persona = state.get("persona")
+        category_context = _get_category_context(input_data.category)
         research_result = state.get("research_result")
         research_summary = "なし"
         if research_result:
@@ -175,6 +197,8 @@ class PlannerNode(BaseNode[AgentState, ArticlePlan]):
             "keywords": ", ".join(input_data.keywords),
             "target_length": input_data.target_length,
             "tone": input_data.tone,
+            "persona_context": format_persona_context(persona),
+            "category_context": category_context,
             "research_summary": research_summary,
         }
 
@@ -235,6 +259,10 @@ class ExecutorNode(BaseNode[AgentState, Section]):
         model_factory = self._get_model_factory()
         model = model_factory(Section)
 
+        persona = state.get("persona")
+        persona_context = format_persona_context(persona)
+        category_context = _get_category_context(input_data.category)
+
         # リサーチ結果をテキストに変換
         research_result = state.get("research_result")
         research_findings = "なし"
@@ -255,6 +283,8 @@ class ExecutorNode(BaseNode[AgentState, Section]):
                 "description": planned.description,
                 "keywords": ", ".join(input_data.keywords),
                 "tone": input_data.tone,
+                "persona_context": persona_context,
+                "category_context": category_context,
                 "research_findings": research_findings,
             }
 
@@ -293,6 +323,7 @@ class ReflectorNode(BaseNode[AgentState, ReflectionResult]):
         input_data = state["input"]
         plan = state["plan"]
         sections = state.get("sections", [])
+        persona = state.get("persona")
 
         planned_sections = "\n".join(
             f"- {s.heading}（H{s.level}）: {s.description}" for s in plan.sections
@@ -307,6 +338,7 @@ class ReflectorNode(BaseNode[AgentState, ReflectionResult]):
             "keywords": ", ".join(input_data.keywords),
             "planned_sections": planned_sections,
             "written_sections": written_sections or "なし",
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(
@@ -342,6 +374,7 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
         input_data = state["input"]
         plan = state["plan"]
         sections = state.get("sections", [])
+        persona = state.get("persona")
         research_result = state.get("research_result")
 
         sections_text = "\n\n".join(f"## {s.heading}\n{s.content}" for s in sections)
@@ -358,6 +391,7 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
             "keywords": ", ".join(input_data.keywords),
             "sections": sections_text or "なし",
             "references": references,
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(self, state: AgentState, output: WriterOutput) -> dict[str, Any]:
@@ -496,3 +530,84 @@ class ResearchNode:
                 snippet = r.snippet if hasattr(r, "snippet") else r.get("snippet", "")
                 lines.append(f"- [{title}]({link}): {snippet}")
         return "\n".join(lines)
+
+
+class SeoOptimizerNode(BaseNode[AgentState, SeoOptimizationResult]):
+    """SEO最適化ノード
+
+    統合済みの記事に対してSEO最適化を行う。
+    タイトル・メタディスクリプション・本文のキーワード配置を最適化し、
+    読者ファーストを維持しつつ検索エンジンからの流入を改善する。
+    """
+
+    def __init__(self):
+        super().__init__(
+            prompt_config=SEO_OPTIMIZER_PROMPT_CONFIG,
+            output_schema=SeoOptimizationResult,
+        )
+
+    def should_skip(self, state: AgentState) -> bool:
+        return state.get("output") is None
+
+    def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
+        output = state["output"]
+        input_data = state["input"]
+        return {
+            "title": output.title,
+            "description": output.description,
+            "keywords": ", ".join(input_data.keywords),
+            "content": output.content,
+        }
+
+    def update_state(
+        self, state: AgentState, output: SeoOptimizationResult
+    ) -> dict[str, Any]:
+        original_output = state["output"]
+
+        seo_metadata = SeoMetadata(
+            primary_keyword=output.primary_keyword,
+            keyword_density=output.keyword_density,
+            title_length=len(output.optimized_title),
+            description_length=len(output.optimized_description),
+            co_occurrence_words=output.co_occurrence_words,
+            heading_keywords=_extract_heading_keywords(
+                output.optimized_content, state["input"].keywords
+            ),
+            seo_score=output.seo_score,
+            improvements_applied=output.improvements_applied,
+        )
+
+        optimized_output = WriterOutput(
+            title=output.optimized_title,
+            description=output.optimized_description,
+            content=output.optimized_content,
+            keywords_used=original_output.keywords_used,
+            sections=original_output.sections,
+            summary=original_output.summary,
+            seo_metadata=seo_metadata,
+        )
+
+        logger.info(
+            f"SEO最適化完了: スコア={seo_metadata.seo_score}, "
+            f"改善={len(seo_metadata.improvements_applied)}件"
+        )
+        return {"output": optimized_output}
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        if self.should_skip(state):
+            logger.warning("出力がありません。SEO最適化をスキップ")
+            return {}
+        logger.info("SEO最適化を開始")
+        return super().__call__(state)
+
+
+def _extract_heading_keywords(content: str, keywords: list[str]) -> list[str]:
+    """本文の見出し行からキーワードを抽出する"""
+    heading_keywords = []
+    for line in content.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            for keyword in keywords:
+                if keyword in stripped and keyword not in heading_keywords:
+                    heading_keywords.append(keyword)
+    return heading_keywords

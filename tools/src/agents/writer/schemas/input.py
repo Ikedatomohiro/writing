@@ -10,6 +10,9 @@ class WriterInput(BaseModel):
     keywords: list[str] = Field(description="使用するキーワード")
     target_length: int = Field(default=2000, description="目標文字数")
     tone: str = Field(default="informative", description="トーン")
+    category: str | None = Field(
+        default=None, description="カテゴリslug（asset, programming, health等）"
+    )
 
     @field_validator("keywords")
     @classmethod

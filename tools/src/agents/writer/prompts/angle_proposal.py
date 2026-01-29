@@ -38,12 +38,15 @@ ANGLE_PROPOSAL_USER_PROMPT_TEMPLATE = """以下の情報に基づいて、記事
 
 ## 補足情報（あれば）
 {context}
+{persona_context}
 
 各切り口について以下を明確にしてください：
 - タイトル案
 - 概要・方向性
 - 想定読者層
-- 他記事との差別化ポイント"""
+- 他記事との差別化ポイント
+
+{category_context}"""
 
 ANGLE_PROPOSAL_PROMPT_CONFIG = PromptConfig(
     system_prompt=ANGLE_PROPOSAL_SYSTEM_PROMPT,

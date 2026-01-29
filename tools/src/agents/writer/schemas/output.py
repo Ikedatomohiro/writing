@@ -54,6 +54,53 @@ class ReflectionResult(BaseReflection):
     )
 
 
+class SeoMetadata(BaseModel):
+    """SEO最適化メタデータ"""
+
+    primary_keyword: str = Field(description="メインキーワード")
+    keyword_density: float = Field(description="キーワード密度（%）")
+    title_length: int = Field(description="タイトル文字数")
+    description_length: int = Field(description="ディスクリプション文字数")
+    co_occurrence_words: list[str] = Field(
+        default_factory=list, description="共起語リスト"
+    )
+    heading_keywords: list[str] = Field(
+        default_factory=list, description="見出しに含まれるキーワード"
+    )
+    seo_score: int = Field(description="SEOスコア（0-100）")
+    improvements_applied: list[str] = Field(
+        default_factory=list, description="適用した改善リスト"
+    )
+
+    @field_validator("seo_score")
+    @classmethod
+    def seo_score_must_be_valid(cls, v: int) -> int:
+        if v < 0 or v > 100:
+            raise ValueError("seo_score must be between 0 and 100")
+        return v
+
+
+class SeoOptimizationResult(BaseModel):
+    """SEO最適化ノードのLLM出力スキーマ"""
+
+    optimized_title: str = Field(description="SEO最適化されたタイトル")
+    optimized_description: str = Field(
+        description="最適化されたメタディスクリプション（120-160文字）"
+    )
+    optimized_content: str = Field(
+        description="キーワード配置・共起語を最適化した本文（Markdown形式）"
+    )
+    primary_keyword: str = Field(description="メインキーワード")
+    keyword_density: float = Field(description="キーワード密度（%）")
+    co_occurrence_words: list[str] = Field(
+        default_factory=list, description="使用した共起語リスト"
+    )
+    seo_score: int = Field(description="SEOスコア（0-100）")
+    improvements_applied: list[str] = Field(
+        default_factory=list, description="適用した改善リスト"
+    )
+
+
 class WriterOutput(BaseModel):
     """記事生成エージェントの出力スキーマ"""
 
@@ -66,4 +113,7 @@ class WriterOutput(BaseModel):
     references: list[SourceReference] = Field(
         default_factory=list,
         description="参考リンクのリスト",
+    )
+    seo_metadata: SeoMetadata | None = Field(
+        default=None, description="SEO最適化メタデータ"
     )
