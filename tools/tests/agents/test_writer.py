@@ -556,3 +556,241 @@ class TestRunWriter:
             result = run_writer(input_data)
 
             assert "失敗" in result.summary
+
+
+# =============================================================================
+# SEO Optimization Tests
+# =============================================================================
+
+
+class TestSeoMetadata:
+    """SeoMetadata schema tests"""
+
+    def test_valid_seo_metadata(self):
+        from src.agents.writer.schemas import SeoMetadata
+
+        metadata = SeoMetadata(
+            primary_keyword="新NISA",
+            keyword_density=2.5,
+            title_length=30,
+            description_length=140,
+            co_occurrence_words=["投資信託", "つみたて", "口座開設"],
+            heading_keywords=["新NISA", "始め方"],
+            seo_score=85,
+            improvements_applied=["タイトルにキーワードを追加"],
+        )
+        assert metadata.primary_keyword == "新NISA"
+        assert metadata.seo_score == 85
+        assert len(metadata.co_occurrence_words) == 3
+
+    def test_seo_score_range(self):
+        from src.agents.writer.schemas import SeoMetadata
+
+        # Valid scores
+        SeoMetadata(
+            primary_keyword="テスト",
+            keyword_density=1.0,
+            title_length=20,
+            description_length=100,
+            co_occurrence_words=[],
+            heading_keywords=[],
+            seo_score=0,
+            improvements_applied=[],
+        )
+        SeoMetadata(
+            primary_keyword="テスト",
+            keyword_density=1.0,
+            title_length=20,
+            description_length=100,
+            co_occurrence_words=[],
+            heading_keywords=[],
+            seo_score=100,
+            improvements_applied=[],
+        )
+
+        # Invalid scores
+        with pytest.raises(ValueError):
+            SeoMetadata(
+                primary_keyword="テスト",
+                keyword_density=1.0,
+                title_length=20,
+                description_length=100,
+                co_occurrence_words=[],
+                heading_keywords=[],
+                seo_score=-1,
+                improvements_applied=[],
+            )
+        with pytest.raises(ValueError):
+            SeoMetadata(
+                primary_keyword="テスト",
+                keyword_density=1.0,
+                title_length=20,
+                description_length=100,
+                co_occurrence_words=[],
+                heading_keywords=[],
+                seo_score=101,
+                improvements_applied=[],
+            )
+
+
+class TestSeoOptimizationResult:
+    """SeoOptimizationResult schema tests"""
+
+    def test_valid_result(self):
+        from src.agents.writer.schemas import SeoOptimizationResult
+
+        result = SeoOptimizationResult(
+            optimized_title="【2026年最新】新NISAの始め方完全ガイド",
+            optimized_description="新NISAを始めたい方向けに、口座開設から商品選びまで初心者にもわかりやすく解説します。2026年の最新情報を網羅。",
+            optimized_content="# 新NISAの始め方\n\n本文...",
+            primary_keyword="新NISA",
+            keyword_density=2.5,
+            co_occurrence_words=["投資信託", "つみたて"],
+            seo_score=85,
+            improvements_applied=["タイトルにキーワード追加", "メタディスクリプション最適化"],
+        )
+        assert "新NISA" in result.optimized_title
+        assert result.seo_score == 85
+
+
+class TestWriterOutputWithSeoMetadata:
+    """WriterOutput with seo_metadata field tests"""
+
+    def test_output_without_seo_metadata(self):
+        from src.agents.writer.schemas import Section, WriterOutput
+
+        output = WriterOutput(
+            title="テスト記事",
+            description="テストの説明",
+            content="# テスト\n\n本文",
+            keywords_used=["キーワード"],
+            sections=[Section(heading="導入", level=2, content="内容")],
+            summary="完了",
+        )
+        assert output.seo_metadata is None
+
+    def test_output_with_seo_metadata(self):
+        from src.agents.writer.schemas import Section, SeoMetadata, WriterOutput
+
+        seo_meta = SeoMetadata(
+            primary_keyword="テスト",
+            keyword_density=2.0,
+            title_length=15,
+            description_length=120,
+            co_occurrence_words=["関連語"],
+            heading_keywords=["テスト"],
+            seo_score=80,
+            improvements_applied=["タイトル最適化"],
+        )
+        output = WriterOutput(
+            title="テスト記事",
+            description="テストの説明",
+            content="# テスト\n\n本文",
+            keywords_used=["キーワード"],
+            sections=[Section(heading="導入", level=2, content="内容")],
+            summary="完了",
+            seo_metadata=seo_meta,
+        )
+        assert output.seo_metadata is not None
+        assert output.seo_metadata.seo_score == 80
+
+
+class TestSeoOptimizerNode:
+    """SeoOptimizerNode tests"""
+
+    def test_optimizer_produces_seo_output(self):
+        from src.agents.writer.nodes import SeoOptimizerNode
+        from src.agents.writer.schemas import (
+            ArticlePlan,
+            PlannedSection,
+            Section,
+            SeoOptimizationResult,
+            WriterInput,
+            WriterOutput,
+        )
+
+        mock_seo_result = SeoOptimizationResult(
+            optimized_title="【最新】テスト記事完全ガイド",
+            optimized_description="テストについて詳しく解説。初心者にもわかりやすい内容です。",
+            optimized_content="# テスト記事完全ガイド\n\nキーワードを含む最適化された本文",
+            primary_keyword="テスト",
+            keyword_density=2.0,
+            co_occurrence_words=["関連語1", "関連語2"],
+            seo_score=85,
+            improvements_applied=["タイトル最適化", "メタディスクリプション最適化"],
+        )
+
+        with patch("src.core.nodes.base.BaseNode._get_model_factory") as mock_factory:
+            mock_model = MagicMock()
+            mock_model.invoke.return_value = mock_seo_result
+            mock_factory.return_value = lambda schema: mock_model
+
+            node = SeoOptimizerNode()
+            state = {
+                "input": WriterInput(topic="テスト", keywords=["キーワード"]),
+                "messages": [],
+                "angle_proposals": None,
+                "selected_angle": None,
+                "plan": ArticlePlan(
+                    title="テスト",
+                    sections=[PlannedSection(heading="導入", level=2, description="")],
+                ),
+                "sections": [Section(heading="導入", level=2, content="内容")],
+                "reflection": None,
+                "retry_count": 0,
+                "output": WriterOutput(
+                    title="テスト記事",
+                    description="テストの説明",
+                    content="# テスト\n\n本文",
+                    keywords_used=["キーワード"],
+                    sections=[Section(heading="導入", level=2, content="内容")],
+                    summary="完了",
+                ),
+            }
+
+            result = node(state)
+
+            assert "output" in result
+            assert result["output"].title == "【最新】テスト記事完全ガイド"
+            assert result["output"].seo_metadata is not None
+            assert result["output"].seo_metadata.seo_score == 85
+
+    def test_optimizer_skips_when_no_output(self):
+        from src.agents.writer.nodes import SeoOptimizerNode
+        from src.agents.writer.schemas import WriterInput
+
+        node = SeoOptimizerNode()
+        state = {
+            "input": WriterInput(topic="テスト", keywords=["キーワード"]),
+            "messages": [],
+            "angle_proposals": None,
+            "selected_angle": None,
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        result = node(state)
+        assert result == {}
+
+
+class TestWriterAgentWithSeo:
+    """WriterAgent SEO integration tests"""
+
+    def test_create_nodes_includes_seo_optimize(self):
+        from src.agents.writer.agent import WriterAgent
+
+        agent = WriterAgent()
+        nodes = agent.create_nodes()
+
+        assert "seo_optimize" in nodes
+
+    def test_graph_compiles_with_seo_node(self):
+        from src.agents.writer.agent import WriterAgent
+        from src.agents.writer.schemas import AgentState
+
+        agent = WriterAgent()
+        graph = agent.build_graph()
+        assert graph is not None

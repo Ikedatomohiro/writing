@@ -11,6 +11,8 @@ from src.agents.writer.schemas.output import (
     PlannedSection,
     ReflectionResult,
     Section,
+    SeoMetadata,
+    SeoOptimizationResult,
     WriterOutput,
 )
 from src.agents.writer.schemas.state import AgentState
@@ -25,5 +27,7 @@ __all__ = [
     "PlannedSection",
     "ArticlePlan",
     "ReflectionResult",
+    "SeoMetadata",
+    "SeoOptimizationResult",
     "AgentState",
 ]
