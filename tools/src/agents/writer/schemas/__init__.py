@@ -13,6 +13,12 @@ from src.agents.writer.schemas.output import (
     Section,
     WriterOutput,
 )
+from src.agents.writer.schemas.research import (
+    ResearchFinding,
+    ResearchResult,
+    SearchQueries,
+    SourceReference,
+)
 from src.agents.writer.schemas.state import AgentState
 
 __all__ = [
@@ -25,5 +31,9 @@ __all__ = [
     "PlannedSection",
     "ArticlePlan",
     "ReflectionResult",
+    "ResearchFinding",
+    "ResearchResult",
+    "SearchQueries",
+    "SourceReference",
     "AgentState",
 ]

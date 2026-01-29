@@ -14,6 +14,8 @@ from src.agents.writer.prompts import (
     INTEGRATOR_PROMPT_CONFIG,
     PLANNER_PROMPT_CONFIG,
     REFLECTOR_PROMPT_CONFIG,
+    RESEARCHER_QUERY_PROMPT_CONFIG,
+    RESEARCHER_SUMMARIZER_PROMPT_CONFIG,
 )
 from src.agents.writer.schemas import (
     AgentState,
@@ -24,8 +26,11 @@ from src.agents.writer.schemas import (
     Section,
     WriterOutput,
 )
+from src.agents.writer.schemas.research import ResearchResult, SearchQueries
 from src.common import get_logger
 from src.core.nodes import BaseNode
+from src.models import get_structured_model
+from src.tools import search_web
 
 logger = get_logger(__name__)
 
@@ -154,11 +159,23 @@ class PlannerNode(BaseNode[AgentState, ArticlePlan]):
 
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
+        research_result = state.get("research_result")
+        research_summary = "なし"
+        if research_result:
+            findings_text = "\n".join(
+                f"- {f.topic}: {f.summary}" for f in research_result.findings
+            )
+            research_summary = (
+                f"{research_result.summary}\n\n### 詳細\n{findings_text}"
+                if findings_text
+                else research_result.summary
+            )
         return {
             "topic": input_data.topic,
             "keywords": ", ".join(input_data.keywords),
             "target_length": input_data.target_length,
             "tone": input_data.tone,
+            "research_summary": research_summary,
         }
 
     def update_state(self, state: AgentState, output: ArticlePlan) -> dict[str, Any]:
@@ -218,6 +235,15 @@ class ExecutorNode(BaseNode[AgentState, Section]):
         model_factory = self._get_model_factory()
         model = model_factory(Section)
 
+        # リサーチ結果をテキストに変換
+        research_result = state.get("research_result")
+        research_findings = "なし"
+        if research_result and research_result.findings:
+            research_findings = "\n".join(
+                f"- {f.topic}: {f.summary}（出典: {f.source_title}）"
+                for f in research_result.findings
+            )
+
         new_sections = []
         for planned in sections_to_write:
             logger.info(f"セクション執筆: {planned.heading}")
@@ -229,6 +255,7 @@ class ExecutorNode(BaseNode[AgentState, Section]):
                 "description": planned.description,
                 "keywords": ", ".join(input_data.keywords),
                 "tone": input_data.tone,
+                "research_findings": research_findings,
             }
 
             messages = [
@@ -315,14 +342,22 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
         input_data = state["input"]
         plan = state["plan"]
         sections = state.get("sections", [])
+        research_result = state.get("research_result")
 
         sections_text = "\n\n".join(f"## {s.heading}\n{s.content}" for s in sections)
+
+        references = "なし"
+        if research_result and research_result.sources:
+            references = "\n".join(
+                f"- [{s.title}]({s.url})" for s in research_result.sources
+            )
 
         return {
             "title": plan.title,
             "topic": input_data.topic,
             "keywords": ", ".join(input_data.keywords),
             "sections": sections_text or "なし",
+            "references": references,
         }
 
     def update_state(self, state: AgentState, output: WriterOutput) -> dict[str, Any]:
@@ -335,3 +370,129 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
             return {}
         logger.info("結果統合を開始")
         return super().__call__(state)
+
+
+class ResearchNode:
+    """リサーチノード
+
+    Web検索で情報収集を行い、記事の品質と正確性を向上させる。
+
+    BaseNodeを継承しない理由:
+    - 複数ステップの処理（クエリ生成→Web検索→結果要約）が必要
+    - search_webツールの呼び出しが含まれる
+    - BaseNodeの単一LLM呼び出しパターンに適さない
+    """
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        if self._should_skip(state):
+            return {}
+
+        logger.info("リサーチを開始")
+
+        input_data = state["input"]
+        angle_proposals = state["angle_proposals"]
+        selected_angle = state["selected_angle"]
+        selected = angle_proposals.proposals[selected_angle.selected_index]
+
+        # Step 1: 検索クエリを生成
+        queries = self._generate_queries(input_data, selected)
+
+        # Step 2: Web検索を実行
+        all_search_results = self._execute_searches(queries)
+
+        # Step 3: 検索結果を要約
+        research_result = self._summarize_results(
+            input_data, selected, all_search_results
+        )
+
+        logger.info(
+            f"リサーチ完了: {len(research_result.findings)}件の知見, "
+            f"{len(research_result.sources)}件の参考リンク"
+        )
+
+        return {"research_result": research_result}
+
+    def _should_skip(self, state: AgentState) -> bool:
+        if state.get("selected_angle") is None:
+            logger.warning("切り口が選択されていません")
+            return True
+        if state.get("angle_proposals") is None:
+            logger.warning("切り口提案がありません")
+            return True
+        return False
+
+    def _generate_queries(self, input_data, selected_angle) -> SearchQueries:
+        """検索クエリをLLMで生成"""
+        model = get_structured_model(SearchQueries)
+        prompt_config = RESEARCHER_QUERY_PROMPT_CONFIG
+
+        variables = {
+            "topic": input_data.topic,
+            "angle_title": selected_angle.title,
+            "angle_summary": selected_angle.summary,
+            "keywords": ", ".join(input_data.keywords),
+        }
+
+        messages = [
+            SystemMessage(content=prompt_config.system_prompt),
+            HumanMessage(
+                content=prompt_config.user_prompt_template.format(**variables)
+            ),
+        ]
+
+        return model.invoke(messages)
+
+    def _execute_searches(self, queries: SearchQueries) -> list[dict]:
+        """各クエリでWeb検索を実行"""
+        all_results = []
+        for query in queries.queries:
+            try:
+                results = search_web.invoke({"query": query, "num_results": 5})
+                all_results.append({"query": query, "results": results})
+                logger.info(f"検索完了: '{query}' → {len(results)}件")
+            except Exception as e:
+                logger.warning(f"検索エラー: '{query}' → {e}")
+                all_results.append({"query": query, "results": []})
+        return all_results
+
+    def _summarize_results(
+        self, input_data, selected_angle, search_results: list[dict]
+    ) -> ResearchResult:
+        """検索結果をLLMで要約"""
+        model = get_structured_model(ResearchResult)
+        prompt_config = RESEARCHER_SUMMARIZER_PROMPT_CONFIG
+
+        results_text = self._format_search_results(search_results)
+
+        variables = {
+            "topic": input_data.topic,
+            "angle_title": selected_angle.title,
+            "keywords": ", ".join(input_data.keywords),
+            "search_results": results_text or "検索結果なし",
+        }
+
+        messages = [
+            SystemMessage(content=prompt_config.system_prompt),
+            HumanMessage(
+                content=prompt_config.user_prompt_template.format(**variables)
+            ),
+        ]
+
+        return model.invoke(messages)
+
+    def _format_search_results(self, search_results: list[dict]) -> str:
+        """検索結果をテキスト形式にフォーマット"""
+        lines = []
+        for item in search_results:
+            query = item["query"]
+            results = item["results"]
+            lines.append(f"### 検索: {query}")
+            if not results:
+                lines.append("- 結果なし")
+                continue
+            for r in results:
+                title = r.title if hasattr(r, "title") else r.get("title", "")
+                link = r.link if hasattr(r, "link") else r.get("link", "")
+                snippet = r.snippet if hasattr(r, "snippet") else r.get("snippet", "")
+                lines.append(f"- [{title}]({link}): {snippet}")
+        return "\n".join(lines)

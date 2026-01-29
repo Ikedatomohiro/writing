@@ -6,6 +6,10 @@ from src.agents.writer.prompts.executor import EXECUTOR_PROMPT_CONFIG
 from src.agents.writer.prompts.integrator import INTEGRATOR_PROMPT_CONFIG
 from src.agents.writer.prompts.planner import PLANNER_PROMPT_CONFIG
 from src.agents.writer.prompts.reflector import REFLECTOR_PROMPT_CONFIG
+from src.agents.writer.prompts.researcher import (
+    QUERY_GENERATOR_PROMPT_CONFIG as RESEARCHER_QUERY_PROMPT_CONFIG,
+    RESEARCH_SUMMARIZER_PROMPT_CONFIG as RESEARCHER_SUMMARIZER_PROMPT_CONFIG,
+)
 
 __all__ = [
     "ANGLE_PROPOSAL_PROMPT_CONFIG",
@@ -14,4 +18,6 @@ __all__ = [
     "EXECUTOR_PROMPT_CONFIG",
     "REFLECTOR_PROMPT_CONFIG",
     "INTEGRATOR_PROMPT_CONFIG",
+    "RESEARCHER_QUERY_PROMPT_CONFIG",
+    "RESEARCHER_SUMMARIZER_PROMPT_CONFIG",
 ]

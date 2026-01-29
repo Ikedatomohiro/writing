@@ -28,7 +28,11 @@ EXECUTOR_USER_PROMPT_TEMPLATE = """以下のセクションの本文を執筆し
 ## トーン
 {tone}
 
-このセクションの本文を執筆してください。"""
+## リサーチ情報
+{research_findings}
+
+このセクションの本文を執筆してください。
+リサーチ情報がある場合は、具体的なデータや事実を引用して信頼性の高い内容にしてください。"""
 
 EXECUTOR_PROMPT_CONFIG = PromptConfig(
     system_prompt=EXECUTOR_SYSTEM_PROMPT,

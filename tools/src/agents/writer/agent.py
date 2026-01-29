@@ -12,6 +12,7 @@ from src.agents.writer.nodes import (
     IntegratorNode,
     PlannerNode,
     ReflectorNode,
+    ResearchNode,
 )
 from src.agents.writer.schemas import (
     AgentState,
@@ -51,6 +52,7 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
         return {
             "angle_proposal": AngleProposalNode(),
             "angle_select": AngleSelectionNode(auto_select=True),
+            "research": ResearchNode(),
             "plan": PlannerNode(),
             "execute": ExecutorNode(),
             "reflect": ReflectorNode(),
@@ -58,10 +60,11 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
         }
 
     def define_graph_edges(self, graph: StateGraph[AgentState]) -> None:
-        # 新フロー: angle_proposal → angle_select → plan → execute → reflect → integrate
+        # フロー: angle_proposal → angle_select → research → plan → execute → reflect → integrate
         graph.set_entry_point("angle_proposal")
         graph.add_edge("angle_proposal", "angle_select")
-        graph.add_edge("angle_select", "plan")
+        graph.add_edge("angle_select", "research")
+        graph.add_edge("research", "plan")
         graph.add_edge("plan", "execute")
         graph.add_edge("execute", "reflect")
         graph.add_conditional_edges(
@@ -80,6 +83,7 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
             messages=[],
             angle_proposals=None,
             selected_angle=None,
+            research_result=None,
             plan=None,
             sections=[],
             reflection=None,
@@ -166,6 +170,7 @@ def run_writer(input_data: WriterInput) -> WriterOutput:
         "messages": [],
         "angle_proposals": None,
         "selected_angle": None,
+        "research_result": None,
         "plan": None,
         "sections": [],
         "reflection": None,
