@@ -27,6 +27,7 @@ from src.agents.writer.schemas import (
     SeoOptimizationResult,
     WriterOutput,
 )
+from src.agents.writer.schemas.persona import format_persona_context
 from src.common import get_logger
 from src.core.nodes import BaseNode
 
@@ -47,10 +48,12 @@ class AngleProposalNode(BaseNode[AgentState, AngleProposalList]):
 
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
+        persona = state.get("persona")
         return {
             "keywords": ", ".join(input_data.keywords),
             "category": input_data.topic,
             "context": f"トーン: {input_data.tone}, 目標文字数: {input_data.target_length}文字",
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(
@@ -157,11 +160,13 @@ class PlannerNode(BaseNode[AgentState, ArticlePlan]):
 
     def extract_prompt_variables(self, state: AgentState) -> dict[str, Any]:
         input_data = state["input"]
+        persona = state.get("persona")
         return {
             "topic": input_data.topic,
             "keywords": ", ".join(input_data.keywords),
             "target_length": input_data.target_length,
             "tone": input_data.tone,
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(self, state: AgentState, output: ArticlePlan) -> dict[str, Any]:
@@ -221,6 +226,9 @@ class ExecutorNode(BaseNode[AgentState, Section]):
         model_factory = self._get_model_factory()
         model = model_factory(Section)
 
+        persona = state.get("persona")
+        persona_context = format_persona_context(persona)
+
         new_sections = []
         for planned in sections_to_write:
             logger.info(f"セクション執筆: {planned.heading}")
@@ -232,6 +240,7 @@ class ExecutorNode(BaseNode[AgentState, Section]):
                 "description": planned.description,
                 "keywords": ", ".join(input_data.keywords),
                 "tone": input_data.tone,
+                "persona_context": persona_context,
             }
 
             messages = [
@@ -269,6 +278,7 @@ class ReflectorNode(BaseNode[AgentState, ReflectionResult]):
         input_data = state["input"]
         plan = state["plan"]
         sections = state.get("sections", [])
+        persona = state.get("persona")
 
         planned_sections = "\n".join(
             f"- {s.heading}（H{s.level}）: {s.description}" for s in plan.sections
@@ -283,6 +293,7 @@ class ReflectorNode(BaseNode[AgentState, ReflectionResult]):
             "keywords": ", ".join(input_data.keywords),
             "planned_sections": planned_sections,
             "written_sections": written_sections or "なし",
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(
@@ -318,6 +329,7 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
         input_data = state["input"]
         plan = state["plan"]
         sections = state.get("sections", [])
+        persona = state.get("persona")
 
         sections_text = "\n\n".join(f"## {s.heading}\n{s.content}" for s in sections)
 
@@ -326,6 +338,7 @@ class IntegratorNode(BaseNode[AgentState, WriterOutput]):
             "topic": input_data.topic,
             "keywords": ", ".join(input_data.keywords),
             "sections": sections_text or "なし",
+            "persona_context": format_persona_context(persona),
         }
 
     def update_state(self, state: AgentState, output: WriterOutput) -> dict[str, Any]:

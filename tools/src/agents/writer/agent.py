@@ -1,5 +1,6 @@
 """Writer agent."""
 
+from pathlib import Path
 from typing import Any
 
 from langgraph.graph import END, StateGraph
@@ -19,6 +20,7 @@ from src.agents.writer.schemas import (
     WriterInput,
     WriterOutput,
 )
+from src.agents.writer.schemas.persona import PersonaConfig, load_persona
 from src.common import get_logger
 from src.core.agents import BaseAgent
 from src.core.utils import RetryConfig, create_should_continue
@@ -38,12 +40,13 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
     BaseAgentを継承し、記事生成ワークフローを実行する。
     """
 
-    def __init__(self):
+    def __init__(self, persona_path: Path | None = None):
         self._retry_config = RetryConfig(
             max_retries=MAX_WRITER_RETRY,
             continue_node="execute",
             finish_node="integrate",
         )
+        self._persona = load_persona(persona_path)
 
     def get_state_class(self) -> type[AgentState]:
         return AgentState
@@ -88,6 +91,7 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
             reflection=None,
             retry_count=0,
             output=None,
+            persona=self._persona,
         )
 
     def extract_output(self, final_state: AgentState) -> WriterOutput:
@@ -164,6 +168,8 @@ def run_writer(input_data: WriterInput) -> WriterOutput:
 
     graph = create_writer_graph()
 
+    persona = load_persona()
+
     initial_state: AgentState = {
         "input": input_data,
         "messages": [],
@@ -174,6 +180,7 @@ def run_writer(input_data: WriterInput) -> WriterOutput:
         "reflection": None,
         "retry_count": 0,
         "output": None,
+        "persona": persona,
     }
 
     result = graph.invoke(initial_state)

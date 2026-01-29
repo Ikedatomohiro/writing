@@ -12,6 +12,7 @@ from src.agents.writer.schemas.output import (
     Section,
     WriterOutput,
 )
+from src.agents.writer.schemas.persona import PersonaConfig
 
 
 class AgentState(TypedDict):
@@ -26,3 +27,4 @@ class AgentState(TypedDict):
     reflection: ReflectionResult | None
     retry_count: int
     output: WriterOutput | None
+    persona: PersonaConfig | None
