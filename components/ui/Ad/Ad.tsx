@@ -93,6 +93,9 @@ export function Ad({
   showLabel = true,
   className,
 }: AdProps) {
+  const adsEnabled = getAdsEnabled();
+  if (!adsEnabled) return null;
+
   const config = variantConfig[variant];
   const isFluid = config.width === "fluid";
   const width = isFluid ? "100%" : `${config.width}px`;
@@ -100,8 +103,7 @@ export function Ad({
   const minHeight = isFluid ? "90px" : undefined;
 
   const isProduction = getIsProduction();
-  const adsEnabled = getAdsEnabled();
-  const shouldRenderAdsense = isProduction && adsEnabled && slotId;
+  const shouldRenderAdsense = isProduction && slotId;
 
   return (
     <Box
