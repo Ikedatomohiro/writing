@@ -28,7 +28,9 @@ EXECUTOR_USER_PROMPT_TEMPLATE = """以下のセクションの本文を執筆し
 ## トーン
 {tone}
 
-このセクションの本文を執筆してください。"""
+このセクションの本文を執筆してください。
+
+{category_context}"""
 
 EXECUTOR_PROMPT_CONFIG = PromptConfig(
     system_prompt=EXECUTOR_SYSTEM_PROMPT,

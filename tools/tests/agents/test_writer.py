@@ -556,3 +556,166 @@ class TestRunWriter:
             result = run_writer(input_data)
 
             assert "失敗" in result.summary
+
+
+# =============================================================================
+# Category Specialization Tests (Issue #42)
+# =============================================================================
+
+
+class TestWriterInputCategory:
+    """WriterInput category field tests"""
+
+    def test_category_defaults_to_none(self):
+        from src.agents.writer.schemas import WriterInput
+
+        input_data = WriterInput(topic="テスト", keywords=["キーワード"])
+        assert input_data.category is None
+
+    def test_category_can_be_set(self):
+        from src.agents.writer.schemas import WriterInput
+
+        input_data = WriterInput(
+            topic="投資入門",
+            keywords=["投資", "NISA"],
+            category="asset",
+        )
+        assert input_data.category == "asset"
+
+    def test_backward_compatibility_without_category(self):
+        """カテゴリ未指定で既存の動作と互換性がある."""
+        from src.agents.writer.schemas import WriterInput
+
+        input_data = WriterInput(
+            topic="テスト",
+            keywords=["キーワード"],
+            target_length=2000,
+            tone="informative",
+        )
+        assert input_data.category is None
+        assert input_data.topic == "テスト"
+
+
+class TestCategoryPromptInjection:
+    """カテゴリ情報のプロンプト注入テスト."""
+
+    def test_angle_proposal_includes_category_context(self):
+        """AngleProposalNode がカテゴリ情報をプロンプト変数に含める."""
+        from src.agents.writer.nodes import AngleProposalNode
+        from src.agents.writer.schemas import WriterInput
+        from src.common.category_config import CategorySpecConfig
+
+        node = AngleProposalNode()
+        input_data = WriterInput(
+            topic="投資信託の始め方",
+            keywords=["投資信託", "NISA"],
+            category="asset",
+        )
+        state = {
+            "input": input_data,
+            "messages": [],
+            "angle_proposals": None,
+            "selected_angle": None,
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        with patch(
+            "src.agents.writer.nodes.load_category_config_by_slug"
+        ) as mock_load:
+            mock_config = CategorySpecConfig(
+                name="資産形成",
+                slug="asset",
+                expertise={
+                    "topics": ["投資信託"],
+                    "terminology_level": "初心者向け",
+                },
+                writing_style={
+                    "tone": "安心感",
+                    "structure": ["結論ファースト"],
+                    "avoid": ["煽り"],
+                },
+                common_sections=["まとめ"],
+            )
+            mock_load.return_value = mock_config
+
+            variables = node.extract_prompt_variables(state)
+
+            assert "category_context" in variables
+            assert "資産形成" in variables["category_context"]
+
+    def test_angle_proposal_without_category(self):
+        """カテゴリ未指定時は category_context が空文字."""
+        from src.agents.writer.nodes import AngleProposalNode
+        from src.agents.writer.schemas import WriterInput
+
+        node = AngleProposalNode()
+        input_data = WriterInput(
+            topic="一般トピック",
+            keywords=["キーワード"],
+        )
+        state = {
+            "input": input_data,
+            "messages": [],
+            "angle_proposals": None,
+            "selected_angle": None,
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        variables = node.extract_prompt_variables(state)
+        assert variables["category_context"] == ""
+
+    def test_planner_includes_category_context(self):
+        """PlannerNode がカテゴリ情報をプロンプト変数に含める."""
+        from src.agents.writer.nodes import PlannerNode
+        from src.agents.writer.schemas import WriterInput
+        from src.common.category_config import CategorySpecConfig
+
+        node = PlannerNode()
+        input_data = WriterInput(
+            topic="Python入門",
+            keywords=["Python"],
+            category="programming",
+        )
+        state = {
+            "input": input_data,
+            "messages": [],
+            "angle_proposals": None,
+            "selected_angle": None,
+            "plan": None,
+            "sections": [],
+            "reflection": None,
+            "retry_count": 0,
+            "output": None,
+        }
+
+        with patch(
+            "src.agents.writer.nodes.load_category_config_by_slug"
+        ) as mock_load:
+            mock_config = CategorySpecConfig(
+                name="プログラミング",
+                slug="programming",
+                expertise={
+                    "topics": ["Python"],
+                    "terminology_level": "技術者向け",
+                },
+                writing_style={
+                    "tone": "論理的",
+                    "structure": ["問題→解決"],
+                    "avoid": ["曖昧"],
+                },
+                common_sections=["実装例"],
+            )
+            mock_load.return_value = mock_config
+
+            variables = node.extract_prompt_variables(state)
+
+            assert "category_context" in variables
+            assert "プログラミング" in variables["category_context"]
