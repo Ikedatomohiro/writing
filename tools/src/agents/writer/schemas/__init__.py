@@ -13,6 +13,7 @@ from src.agents.writer.schemas.output import (
     Section,
     WriterOutput,
 )
+from src.agents.writer.schemas.persona import PersonaConfig, WritingStyle
 from src.agents.writer.schemas.state import AgentState
 
 __all__ = [
@@ -25,5 +26,7 @@ __all__ = [
     "PlannedSection",
     "ArticlePlan",
     "ReflectionResult",
+    "PersonaConfig",
+    "WritingStyle",
     "AgentState",
 ]

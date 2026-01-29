@@ -38,6 +38,7 @@ ANGLE_PROPOSAL_USER_PROMPT_TEMPLATE = """以下の情報に基づいて、記事
 
 ## 補足情報（あれば）
 {context}
+{persona_context}
 
 各切り口について以下を明確にしてください：
 - タイトル案
