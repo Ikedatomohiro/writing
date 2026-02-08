@@ -11,6 +11,7 @@ from src.agents.writer.prompts import (
     ANGLE_PROPOSAL_PROMPT_CONFIG,
     ANGLE_SELECTION_PROMPT_CONFIG,
     EXECUTOR_PROMPT_CONFIG,
+    IMAGE_SUGGESTION_PROMPT_CONFIG,
     INTEGRATOR_PROMPT_CONFIG,
     PLANNER_PROMPT_CONFIG,
     REFLECTOR_PROMPT_CONFIG,
@@ -23,10 +24,14 @@ from src.agents.writer.schemas import (
     AngleProposalList,
     AngleSelection,
     ArticlePlan,
+    ImageSearchQuery,
+    ImageSuggestion,
+    ImageSuggestions,
     ReflectionResult,
     Section,
     SeoMetadata,
     SeoOptimizationResult,
+    UnsplashPhoto,
     WriterOutput,
 )
 from src.agents.writer.schemas.persona import format_persona_context
@@ -36,6 +41,7 @@ from src.common.category_config import load_category_config_by_slug
 from src.core.nodes import BaseNode
 from src.models import get_structured_model
 from src.tools import search_web
+from src.tools.unsplash import search_unsplash_photos
 
 logger = get_logger(__name__)
 
@@ -611,3 +617,159 @@ def _extract_heading_keywords(content: str, keywords: list[str]) -> list[str]:
                 if keyword in stripped and keyword not in heading_keywords:
                     heading_keywords.append(keyword)
     return heading_keywords
+
+
+# API呼び出し回数の上限
+MAX_IMAGE_API_CALLS = 5
+
+
+class ImageSuggestionNode:
+    """画像提案ノード
+
+    記事内容に基づいて適切な画像を検索・提案する。
+
+    BaseNodeを継承しない理由:
+    - 複数ステップの処理（クエリ生成→画像検索→結果整形）が必要
+    - Unsplash APIの外部呼び出しが含まれる
+    - BaseNodeの単一LLM呼び出しパターンに適さない
+    """
+
+    def __call__(self, state: AgentState) -> dict[str, Any]:
+        if self._should_skip(state):
+            return {}
+
+        logger.info("画像提案を開始")
+
+        output = state["output"]
+        input_data = state["input"]
+
+        # Step 1: LLMで検索クエリを生成
+        queries = self._generate_search_queries(output, input_data)
+
+        # Step 2: Unsplash APIで画像検索
+        suggestions = self._search_images(queries, output)
+
+        # Step 3: WriterOutputに画像提案を付与
+        updated_output = WriterOutput(
+            title=output.title,
+            description=output.description,
+            content=output.content,
+            keywords_used=output.keywords_used,
+            sections=output.sections,
+            summary=output.summary,
+            references=output.references,
+            seo_metadata=output.seo_metadata,
+            image_suggestions=suggestions,
+        )
+
+        logger.info(
+            f"画像提案完了: アイキャッチ={suggestions.eyecatch.selected_photo is not None}, "
+            f"本文挿入={len(suggestions.inline_images)}件"
+        )
+
+        return {"image_suggestions": suggestions, "output": updated_output}
+
+    def _should_skip(self, state: AgentState) -> bool:
+        if state.get("output") is None:
+            logger.warning("出力がありません。画像提案をスキップ")
+            return True
+        return False
+
+    def _generate_search_queries(
+        self, output: WriterOutput, input_data
+    ) -> ImageSearchQuery:
+        """LLMで画像検索クエリを生成"""
+        model = get_structured_model(ImageSearchQuery)
+        prompt_config = IMAGE_SUGGESTION_PROMPT_CONFIG
+
+        content_excerpt = output.content[:1000]
+        sections_text = "\n".join(
+            f"- {s.heading}" for s in output.sections
+        )
+
+        variables = {
+            "title": output.title,
+            "keywords": ", ".join(input_data.keywords),
+            "content_excerpt": content_excerpt,
+            "sections": sections_text or "なし",
+        }
+
+        messages = [
+            SystemMessage(content=prompt_config.system_prompt),
+            HumanMessage(
+                content=prompt_config.user_prompt_template.format(**variables)
+            ),
+        ]
+
+        return model.invoke(messages)
+
+    def _search_images(
+        self, queries: ImageSearchQuery, output: WriterOutput
+    ) -> ImageSuggestions:
+        """検索クエリに基づいて画像を検索し、ImageSuggestionsを構築"""
+        api_calls = 0
+
+        # アイキャッチ画像
+        eyecatch_photos: list[UnsplashPhoto] = []
+        if api_calls < MAX_IMAGE_API_CALLS:
+            raw = search_unsplash_photos(queries.eyecatch_query, per_page=3)
+            eyecatch_photos = _dicts_to_photos(raw)
+            api_calls += 1
+
+        eyecatch = ImageSuggestion(
+            purpose="eyecatch",
+            search_query=queries.eyecatch_query,
+            photos=eyecatch_photos,
+            selected_photo=eyecatch_photos[0] if eyecatch_photos else None,
+            alt_text=output.title,
+        )
+
+        # 本文挿入画像
+        inline_images = []
+        for item in queries.inline_queries:
+            if api_calls >= MAX_IMAGE_API_CALLS:
+                break
+            heading = item.get("heading", "")
+            query = item.get("query", "")
+            if not query:
+                continue
+
+            raw = search_unsplash_photos(query, per_page=3)
+            photos = _dicts_to_photos(raw)
+            api_calls += 1
+
+            inline_images.append(
+                ImageSuggestion(
+                    purpose="inline",
+                    search_query=query,
+                    photos=photos,
+                    selected_photo=photos[0] if photos else None,
+                    alt_text=heading,
+                    section_heading=heading,
+                )
+            )
+
+        # OGP画像
+        ogp = None
+        if queries.ogp_query and api_calls < MAX_IMAGE_API_CALLS:
+            raw = search_unsplash_photos(queries.ogp_query, per_page=3)
+            ogp_photos = _dicts_to_photos(raw)
+            api_calls += 1
+            ogp = ImageSuggestion(
+                purpose="ogp",
+                search_query=queries.ogp_query,
+                photos=ogp_photos,
+                selected_photo=ogp_photos[0] if ogp_photos else None,
+                alt_text=output.title,
+            )
+
+        return ImageSuggestions(
+            eyecatch=eyecatch,
+            inline_images=inline_images,
+            ogp=ogp,
+        )
+
+
+def _dicts_to_photos(raw_photos: list[dict]) -> list[UnsplashPhoto]:
+    """辞書リストをUnsplashPhotoリストに変換する。"""
+    return [UnsplashPhoto(**p) for p in raw_photos]

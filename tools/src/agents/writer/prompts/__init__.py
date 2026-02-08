@@ -10,6 +10,9 @@ from src.agents.writer.prompts.researcher import (
     QUERY_GENERATOR_PROMPT_CONFIG as RESEARCHER_QUERY_PROMPT_CONFIG,
     RESEARCH_SUMMARIZER_PROMPT_CONFIG as RESEARCHER_SUMMARIZER_PROMPT_CONFIG,
 )
+from src.agents.writer.prompts.image_suggestion import (
+    IMAGE_SUGGESTION_PROMPT_CONFIG,
+)
 from src.agents.writer.prompts.seo_optimizer import SEO_OPTIMIZER_PROMPT_CONFIG
 
 __all__ = [
@@ -22,4 +25,5 @@ __all__ = [
     "RESEARCHER_QUERY_PROMPT_CONFIG",
     "RESEARCHER_SUMMARIZER_PROMPT_CONFIG",
     "SEO_OPTIMIZER_PROMPT_CONFIG",
+    "IMAGE_SUGGESTION_PROMPT_CONFIG",
 ]

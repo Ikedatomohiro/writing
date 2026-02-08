@@ -5,6 +5,7 @@ from typing import TypedDict
 from langchain_core.messages import BaseMessage
 
 from src.agents.writer.schemas.angle import AngleProposalList, AngleSelection
+from src.agents.writer.schemas.image import ImageSuggestions
 from src.agents.writer.schemas.input import WriterInput
 from src.agents.writer.schemas.output import (
     ArticlePlan,
@@ -30,3 +31,4 @@ class AgentState(TypedDict):
     retry_count: int
     output: WriterOutput | None
     persona: PersonaConfig | None
+    image_suggestions: ImageSuggestions | None

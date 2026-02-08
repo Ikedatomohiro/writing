@@ -5,6 +5,12 @@ from src.agents.writer.schemas.angle import (
     AngleProposalList,
     AngleSelection,
 )
+from src.agents.writer.schemas.image import (
+    ImageSearchQuery,
+    ImageSuggestion,
+    ImageSuggestions,
+    UnsplashPhoto,
+)
 from src.agents.writer.schemas.input import WriterInput
 from src.agents.writer.schemas.output import (
     ArticlePlan,
@@ -43,4 +49,8 @@ __all__ = [
     "SearchQueries",
     "SourceReference",
     "AgentState",
+    "ImageSuggestion",
+    "ImageSuggestions",
+    "ImageSearchQuery",
+    "UnsplashPhoto",
 ]

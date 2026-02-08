@@ -8,6 +8,7 @@ from src.agents.writer.agent import (
 )
 from src.agents.writer.nodes import (
     ExecutorNode,
+    ImageSuggestionNode,
     IntegratorNode,
     PlannerNode,
     ReflectorNode,
@@ -33,6 +34,7 @@ __all__ = [
     "ExecutorNode",
     "ReflectorNode",
     "IntegratorNode",
+    "ImageSuggestionNode",
     # Schemas
     "WriterInput",
     "WriterOutput",

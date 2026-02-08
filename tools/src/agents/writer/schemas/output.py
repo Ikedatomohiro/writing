@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field, field_validator
 
+from src.agents.writer.schemas.image import ImageSuggestions
 from src.agents.writer.schemas.research import SourceReference
 from src.core.schemas import BaseReflection
 
@@ -116,4 +117,7 @@ class WriterOutput(BaseModel):
     )
     seo_metadata: SeoMetadata | None = Field(
         default=None, description="SEO最適化メタデータ"
+    )
+    image_suggestions: ImageSuggestions | None = Field(
+        default=None, description="画像提案"
     )

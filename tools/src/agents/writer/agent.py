@@ -10,6 +10,7 @@ from src.agents.writer.nodes import (
     AngleProposalNode,
     AngleSelectionNode,
     ExecutorNode,
+    ImageSuggestionNode,
     IntegratorNode,
     PlannerNode,
     ReflectorNode,
@@ -61,6 +62,7 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
             "execute": ExecutorNode(),
             "reflect": ReflectorNode(),
             "integrate": IntegratorNode(),
+            "image_suggest": ImageSuggestionNode(),
             "seo_optimize": SeoOptimizerNode(),
         }
 
@@ -80,7 +82,8 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
                 "integrate": "integrate",
             },
         )
-        graph.add_edge("integrate", "seo_optimize")
+        graph.add_edge("integrate", "image_suggest")
+        graph.add_edge("image_suggest", "seo_optimize")
         graph.add_edge("seo_optimize", END)
 
     def create_initial_state(self, input_data: WriterInput) -> AgentState:
@@ -96,6 +99,7 @@ class WriterAgent(BaseAgent[AgentState, WriterInput, WriterOutput]):
             retry_count=0,
             output=None,
             persona=self._persona,
+            image_suggestions=None,
         )
 
     def extract_output(self, final_state: AgentState) -> WriterOutput:
@@ -186,6 +190,7 @@ def run_writer(input_data: WriterInput) -> WriterOutput:
         "retry_count": 0,
         "output": None,
         "persona": persona,
+        "image_suggestions": None,
     }
 
     result = graph.invoke(initial_state)
