@@ -40,6 +40,12 @@ const config: Config = {
         "surface-tint": "var(--color-surface-tint)",
         "surface-variant": "var(--color-surface-variant)",
         "surface-dim": "var(--color-surface-dim)",
+        "on-secondary-container": "var(--color-on-secondary-container)",
+        "on-tertiary-container": "var(--color-on-tertiary-container)",
+        "on-error": "var(--color-on-error)",
+        "on-error-container": "var(--color-on-error-container)",
+        "inverse-primary": "var(--color-inverse-primary)",
+        "surface-bright": "var(--color-surface-bright)",
       },
       fontFamily: {
         headline: ["var(--font-manrope)", "sans-serif"],

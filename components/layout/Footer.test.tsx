@@ -13,25 +13,27 @@ describe("Footer", () => {
     expect(screen.getByText(SITE_CONFIG.name)).toBeInTheDocument();
   });
 
-  it("サイト説明文が表示される", () => {
+  it("サブタイトルが表示される", () => {
     render(<Footer />);
-    expect(screen.getByText(SITE_CONFIG.description)).toBeInTheDocument();
+    expect(screen.getByText("The Editorial Manuscript.")).toBeInTheDocument();
   });
 
-  it("カテゴリセクションが表示される", () => {
+  it("フッターリンクが表示される", () => {
     render(<Footer />);
-    expect(screen.getByText("Categories")).toBeInTheDocument();
-    expect(screen.getByText("Investment")).toBeInTheDocument();
-    expect(screen.getByText("Programming")).toBeInTheDocument();
-    expect(screen.getByText("Health")).toBeInTheDocument();
-  });
-
-  it("リンクセクションが表示される", () => {
-    render(<Footer />);
-    expect(screen.getByText("Links")).toBeInTheDocument();
-    expect(screen.getByText("About")).toBeInTheDocument();
     expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
+    expect(screen.getByText("Terms of Service")).toBeInTheDocument();
+    expect(screen.getByText("Careers")).toBeInTheDocument();
     expect(screen.getByText("Contact")).toBeInTheDocument();
+    expect(screen.getByText("Newsletter")).toBeInTheDocument();
+  });
+
+  it("フッターリンクが正しいhrefを持つ", () => {
+    render(<Footer />);
+    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: "Terms of Service" })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("link", { name: "Careers" })).toHaveAttribute("href", "/careers");
+    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
+    expect(screen.getByRole("link", { name: "Newsletter" })).toHaveAttribute("href", "/newsletter");
   });
 
   it("コピーライトが表示される", () => {
@@ -42,20 +44,10 @@ describe("Footer", () => {
     ).toBeInTheDocument();
   });
 
-  it("カテゴリリンクが正しいhrefを持つ", () => {
+  it("ソーシャルアイコンが表示される", () => {
     render(<Footer />);
-    expect(screen.getByRole("link", { name: "Investment" })).toHaveAttribute(
-      "href",
-      "/asset"
-    );
-    expect(screen.getByRole("link", { name: "Programming" })).toHaveAttribute(
-      "href",
-      "/tech"
-    );
-    expect(screen.getByRole("link", { name: "Health" })).toHaveAttribute(
-      "href",
-      "/health"
-    );
+    expect(screen.getByLabelText("RSS Feed")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
   });
 
   it("footer要素としてレンダリングされる", () => {

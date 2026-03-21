@@ -155,9 +155,7 @@ function ResultItem({ article }: { article: ArticleMeta }) {
           </p>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center">
-              <span className="text-[10px] font-bold text-on-secondary-container">
-                A
-              </span>
+              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
             </div>
             <span className="font-label text-xs font-medium text-on-surface">
               {SITE_CONFIG.name}
@@ -202,7 +200,7 @@ function Pagination({
           className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant"
           aria-label="Previous page"
         >
-          &lsaquo;
+          <span className="material-symbols-outlined text-sm">chevron_left</span>
         </Link>
       )}
       {pages.map((page, index) =>
@@ -230,7 +228,7 @@ function Pagination({
           className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant"
           aria-label="Next page"
         >
-          &rsaquo;
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
         </Link>
       )}
     </div>

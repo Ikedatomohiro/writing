@@ -21,7 +21,7 @@ export function BlogHeader() {
         {/* Logo / Site Name */}
         <NextLink
           href="/"
-          className="font-headline font-bold text-lg md:text-xl text-primary hover:opacity-80 transition-opacity"
+          className="font-headline text-2xl font-black tracking-tighter text-on-surface hover:opacity-80 transition-opacity"
         >
           {SITE_CONFIG.name}
         </NextLink>
@@ -34,6 +34,27 @@ export function BlogHeader() {
             </NavLink>
           ))}
         </nav>
+
+        {/* Search & Subscribe */}
+        <div className="hidden md:flex items-center gap-3">
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">
+              search
+            </span>
+            <input
+              placeholder="Search articles..."
+              className="bg-surface-container border-none rounded-full py-1.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 w-48 font-body"
+              data-testid="header-search-input"
+            />
+          </div>
+          <NextLink
+            href="/search"
+            className="inline-flex px-5 py-2 bg-primary text-on-primary rounded-full text-sm font-semibold hover:bg-primary-container transition-colors"
+            data-testid="header-subscribe-button"
+          >
+            Subscribe
+          </NextLink>
+        </div>
 
         {/* Mobile Menu */}
         <div className="block md:hidden">

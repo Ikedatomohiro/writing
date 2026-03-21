@@ -18,11 +18,11 @@ export function NavLink({ href, children }: NavLinkProps) {
     <NextLink
       href={href}
       className={`
-        px-3 py-2 rounded-lg text-sm font-body transition-colors
+        px-3 py-2 text-sm font-body transition-colors
         ${
           isActive
-            ? "text-primary font-semibold"
-            : "text-on-surface-variant font-normal hover:text-on-surface"
+            ? "text-primary font-semibold border-b-2 border-primary pb-1"
+            : "text-on-surface-variant hover:text-primary transition-colors font-medium"
         }
       `}
       data-active={isActive}

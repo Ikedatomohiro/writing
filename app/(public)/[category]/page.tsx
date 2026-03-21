@@ -2,12 +2,15 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getArticlesByCategory, getLatestArticles } from "@/lib/content/api";
 import { isValidCategory, type Category } from "@/lib/content/types";
+import type { ArticleMeta } from "@/lib/content/types";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
 import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
 import { PopularArticles } from "@/components/layout/Sidebar/PopularArticles";
 import { NewsletterSignup } from "@/components/layout/Sidebar/NewsletterSignup";
 import { AdSlot } from "@/components/layout/Sidebar/AdSlot";
 import { CATEGORY_META } from "@/lib/constants/site";
+import Link from "next/link";
+import Image from "next/image";
 
 const CATEGORY_TITLES: Record<Category, string> = {
   asset: CATEGORY_META.asset.title,
@@ -27,7 +30,15 @@ const CATEGORY_SUBTITLES: Record<Category, string> = {
   health: "Wellness Journal",
 };
 
-const TECH_PILLS = ["Frontend", "Backend", "DevOps", "AI"];
+const CATEGORY_PILLS: Record<Category, string[]> = {
+  health: ["Nutrition", "Fitness", "Mindset", "Sleep", "Wellness"],
+  asset: ["Markets", "Retirement", "Savings", "Taxes", "Crypto"],
+  tech: ["Frontend", "Backend", "DevOps", "AI"],
+};
+
+function getDataTheme(category: Category): string {
+  return category === "tech" ? "programming" : category;
+}
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
@@ -65,6 +76,26 @@ export async function generateMetadata({
   };
 }
 
+function CategoryPills({ category }: { category: Category }) {
+  const pills = CATEGORY_PILLS[category];
+  return (
+    <div className="flex flex-wrap gap-2 mt-4" data-testid="category-pills">
+      {pills.map((pill, index) => (
+        <span
+          key={pill}
+          className={
+            index === 0
+              ? "bg-primary text-on-primary px-4 py-1 rounded-full text-sm font-semibold"
+              : "bg-surface-container-high text-on-surface-variant px-4 py-1 rounded-full text-sm font-medium hover:bg-surface-container-highest transition-colors"
+          }
+        >
+          {pill}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function CategoryHeader({ category }: { category: Category }) {
   const title = CATEGORY_TITLES[category];
   const subtitle = CATEGORY_SUBTITLES[category];
@@ -74,28 +105,85 @@ function CategoryHeader({ category }: { category: Category }) {
       <p className="text-primary font-label text-xs font-bold tracking-widest uppercase mb-2">
         {subtitle}
       </p>
-      <h1 className="font-headline text-4xl md:text-5xl font-extrabold text-on-surface leading-tight mb-3">
+      <h1 className="font-headline text-5xl md:text-7xl font-extrabold text-on-surface tracking-tighter leading-none mb-3">
         {title}
       </h1>
       <p className="text-on-surface-variant text-base leading-relaxed max-w-2xl">
         {CATEGORY_DESCRIPTIONS[category]}
       </p>
-      {category === "tech" && <TechCategoryPills />}
+      <CategoryPills category={category} />
       <div className="mt-6 h-px bg-outline-variant" />
     </header>
   );
 }
 
-function TechCategoryPills() {
+function formatDate(dateString: string): string {
+  const [year, month, day] = dateString.split("-");
+  return `${year}.${month}.${day}`;
+}
+
+function TechGlassCard({
+  article,
+  isFirst,
+}: {
+  article: ArticleMeta;
+  isFirst: boolean;
+}) {
+  const href = `/${article.category}/${article.slug}`;
+
   return (
-    <div className="flex gap-2 mt-4" data-testid="tech-pills">
-      {TECH_PILLS.map((pill) => (
-        <span
-          key={pill}
-          className="px-3 py-1 text-xs font-label font-bold tracking-wider rounded-full bg-surface-container-high text-on-surface-variant"
-        >
-          {pill}
-        </span>
+    <Link
+      href={href}
+      className={`block group ${isFirst ? "md:col-span-2" : ""}`}
+    >
+      <article className="glass-card neo-glow rounded-xl overflow-hidden h-full flex flex-col transition-all duration-500">
+        <div className="aspect-[16/9] overflow-hidden bg-surface-container relative">
+          {article.thumbnail ? (
+            <Image
+              src={article.thumbnail}
+              alt={article.title}
+              fill
+              className="object-cover grayscale hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-surface-container grayscale hover:grayscale-0 transition-all duration-500" />
+          )}
+        </div>
+        <div className="p-6 flex-1">
+          <span className="font-mono text-primary font-label text-xs font-bold tracking-widest uppercase">
+            {article.category}
+          </span>
+          <h3 className="text-lg font-headline font-extrabold leading-tight mb-2 mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-fixed">
+            {article.title}
+          </h3>
+          {article.description && (
+            <p className="text-on-surface-variant text-sm line-clamp-2">
+              {article.description}
+            </p>
+          )}
+          <div className="mt-auto pt-4">
+            <span className="text-on-surface-variant font-label text-xs">
+              {formatDate(article.date)}
+            </span>
+          </div>
+        </div>
+      </article>
+    </Link>
+  );
+}
+
+function TechBentoGrid({ articles }: { articles: ArticleMeta[] }) {
+  return (
+    <div
+      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      data-testid="tech-bento-grid"
+    >
+      {articles.map((article, index) => (
+        <TechGlassCard
+          key={article.slug}
+          article={article}
+          isFirst={index === 0}
+        />
       ))}
     </div>
   );
@@ -104,7 +192,7 @@ function TechCategoryPills() {
 function FeaturedArticle({
   article,
 }: {
-  article: Parameters<typeof BlogArticleCard>[0]["article"];
+  article: ArticleMeta;
 }) {
   return (
     <section className="mb-12" data-testid="featured-article">
@@ -116,7 +204,7 @@ function FeaturedArticle({
 function ArticleGrid({
   articles,
 }: {
-  articles: Parameters<typeof BlogArticleCard>[0]["article"][];
+  articles: ArticleMeta[];
 }) {
   return (
     <div
@@ -141,6 +229,34 @@ function EmptyState() {
   );
 }
 
+function ArticleContent({
+  category,
+  articles,
+}: {
+  category: Category;
+  articles: ArticleMeta[];
+}) {
+  if (articles.length === 0) {
+    return <EmptyState />;
+  }
+
+  if (category === "tech") {
+    return <TechBentoGrid articles={articles} />;
+  }
+
+  const featuredArticle = articles[0];
+  const remainingArticles = articles.slice(1);
+
+  return (
+    <>
+      <FeaturedArticle article={featuredArticle} />
+      {remainingArticles.length > 0 && (
+        <ArticleGrid articles={remainingArticles} />
+      )}
+    </>
+  );
+}
+
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
 
@@ -154,37 +270,33 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     getLatestArticles(5),
   ]);
 
-  // ArticleMeta を PopularArticle に変換
   const popularArticles = latestArticles.map((article) => ({
     id: article.slug,
     title: article.title,
     href: `/${article.category}/${article.slug}`,
   }));
 
-  const featuredArticle = articles[0];
-  const remainingArticles = articles.slice(1);
-
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="flex gap-10">
+    <div
+      data-theme={getDataTheme(category)}
+      data-testid="category-theme-container"
+      className="max-w-7xl mx-auto px-6 py-10"
+    >
+      <div
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+        data-testid="category-grid"
+      >
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
+        <main className="lg:col-span-8 min-w-0">
           <CategoryHeader category={category} />
-
-          {articles.length > 0 ? (
-            <>
-              <FeaturedArticle article={featuredArticle} />
-              {remainingArticles.length > 0 && (
-                <ArticleGrid articles={remainingArticles} />
-              )}
-            </>
-          ) : (
-            <EmptyState />
-          )}
+          <ArticleContent category={category} articles={articles} />
         </main>
 
         {/* Sidebar */}
-        <div className="hidden lg:block">
+        <div
+          className="hidden lg:block lg:col-span-4"
+          data-testid="sidebar-wrapper"
+        >
           <Sidebar>
             <PopularArticles articles={popularArticles} />
             <NewsletterSignup />
