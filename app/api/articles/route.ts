@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { VercelBlobBackend } from "@/lib/articles/backend";
 import { ArticleService } from "@/lib/articles/service";
+import { requireAuth } from "@/lib/auth/api-auth";
 import type { ArticleListOptions, ArticleStatus } from "@/lib/articles/types";
 
 function getService() {
@@ -38,6 +39,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   const body = await request.json();
 
   if (!body.title || typeof body.title !== "string") {

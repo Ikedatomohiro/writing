@@ -6,6 +6,7 @@ import type { Article } from "@/lib/articles/types";
 const mockGetArticle = vi.fn();
 const mockUpdateArticle = vi.fn();
 const mockDeleteArticle = vi.fn();
+const mockRequireAuth = vi.fn();
 
 // モジュールのモック
 vi.mock("@/lib/articles/backend", () => ({
@@ -23,6 +24,10 @@ vi.mock("@/lib/articles/service", async () => {
     },
   };
 });
+
+vi.mock("@/lib/auth/api-auth", () => ({
+  requireAuth: () => mockRequireAuth(),
+}));
 
 const mockArticle: Article = {
   id: "1",
@@ -75,6 +80,27 @@ describe("PUT /api/articles/[id]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+    mockRequireAuth.mockResolvedValue(null);
+  });
+
+  it("未認証の場合は401を返す", async () => {
+    const { NextResponse } = await import("next/server");
+    mockRequireAuth.mockResolvedValue(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
+    const { PUT } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+      method: "PUT",
+      body: JSON.stringify({ title: "Updated" }),
+    });
+    const params = { params: Promise.resolve({ id: "1" }) };
+    const response = await PUT(request, params);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
+    expect(mockUpdateArticle).not.toHaveBeenCalled();
   });
 
   it("記事を更新する", async () => {
@@ -134,6 +160,26 @@ describe("DELETE /api/articles/[id]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+    mockRequireAuth.mockResolvedValue(null);
+  });
+
+  it("未認証の場合は401を返す", async () => {
+    const { NextResponse } = await import("next/server");
+    mockRequireAuth.mockResolvedValue(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
+    const { DELETE } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+      method: "DELETE",
+    });
+    const params = { params: Promise.resolve({ id: "1" }) };
+    const response = await DELETE(request, params);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
+    expect(mockDeleteArticle).not.toHaveBeenCalled();
   });
 
   it("記事を削除する", async () => {
