@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { VercelBlobBackend } from "@/lib/articles/backend";
 import { ArticleService } from "@/lib/articles/service";
+import { requireAuth } from "@/lib/auth/api-auth";
 
 function getService() {
   return new ArticleService(new VercelBlobBackend());
@@ -21,6 +22,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -40,6 +44,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   const { id } = await params;
   const service = getService();
   const deleted = await service.deleteArticle(id);

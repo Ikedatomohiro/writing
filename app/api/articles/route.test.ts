@@ -5,6 +5,7 @@ import type { Article } from "@/lib/articles/types";
 // モック関数の定義
 const mockGetArticles = vi.fn();
 const mockCreateArticle = vi.fn();
+const mockRequireAuth = vi.fn();
 
 // モジュールのモック - vi.hoisted を使用
 vi.mock("@/lib/articles/backend", () => ({
@@ -22,6 +23,10 @@ vi.mock("@/lib/articles/service", async () => {
     },
   };
 });
+
+vi.mock("@/lib/auth/api-auth", () => ({
+  requireAuth: () => mockRequireAuth(),
+}));
 
 const mockArticles: Article[] = [
   {
@@ -112,6 +117,27 @@ describe("POST /api/articles", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+    mockRequireAuth.mockResolvedValue(null);
+  });
+
+  it("未認証の場合は401を返す", async () => {
+    const { NextResponse } = await import("next/server");
+    mockRequireAuth.mockResolvedValue(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
+    const { POST } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/articles", {
+      method: "POST",
+      body: JSON.stringify({ title: "Test" }),
+    });
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
+    expect(mockCreateArticle).not.toHaveBeenCalled();
   });
 
   it("記事を作成する", async () => {
