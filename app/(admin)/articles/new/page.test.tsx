@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithChakra } from "@/app/test-utils";
 import NewArticlePage from "./page";
 import { createArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
@@ -40,21 +39,21 @@ describe("NewArticlePage", () => {
   });
 
   it("新規記事作成フォームを表示する", () => {
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
-    expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
-    expect(screen.getByLabelText("本文")).toBeInTheDocument();
-    expect(screen.getByLabelText("キーワード")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("記事のタイトルを入力")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("記事の本文を入力")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("キーワードを入力してEnter")).toBeInTheDocument();
   });
 
   it("作成ボタンを表示する", () => {
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     expect(screen.getByRole("button", { name: "作成" })).toBeInTheDocument();
   });
 
   it("キャンセルボタンを表示する", () => {
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
   });
@@ -62,7 +61,7 @@ describe("NewArticlePage", () => {
   it("キャンセルボタンをクリックすると記事一覧ページに戻る", async () => {
     const user = userEvent.setup();
 
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     await user.click(screen.getByRole("button", { name: "キャンセル" }));
 
@@ -73,13 +72,13 @@ describe("NewArticlePage", () => {
     const user = userEvent.setup();
     mockCreateArticle.mockResolvedValue(mockCreatedArticle);
 
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     // タイトルを入力
-    await user.type(screen.getByLabelText("タイトル"), "新しい記事");
+    await user.type(screen.getByPlaceholderText("記事のタイトルを入力"), "新しい記事");
 
     // 本文を入力
-    await user.type(screen.getByLabelText("本文"), "新しい本文");
+    await user.type(screen.getByPlaceholderText("記事の本文を入力"), "新しい本文");
 
     // 作成ボタンをクリック
     await user.click(screen.getByRole("button", { name: "作成" }));
@@ -98,10 +97,10 @@ describe("NewArticlePage", () => {
     const user = userEvent.setup();
     mockCreateArticle.mockResolvedValue(mockCreatedArticle);
 
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     // タイトルを入力
-    await user.type(screen.getByLabelText("タイトル"), "新しい記事");
+    await user.type(screen.getByPlaceholderText("記事のタイトルを入力"), "新しい記事");
 
     // 作成ボタンをクリック
     await user.click(screen.getByRole("button", { name: "作成" }));
@@ -112,7 +111,7 @@ describe("NewArticlePage", () => {
   });
 
   it("タイトルが空の状態でも作成ボタンはクリック可能", () => {
-    renderWithChakra(<NewArticlePage />);
+    render(<NewArticlePage />);
 
     const createButton = screen.getByRole("button", { name: "作成" });
     expect(createButton).not.toBeDisabled();

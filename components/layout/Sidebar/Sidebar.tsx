@@ -1,35 +1,29 @@
-"use client";
+import { type ReactNode } from "react";
 
-import { forwardRef, type ReactNode } from "react";
-import { Box, type BoxProps } from "@chakra-ui/react";
-
-export interface SidebarProps extends Omit<BoxProps, "children"> {
+export interface SidebarProps {
   children: ReactNode;
   sticky?: boolean;
+  className?: string;
+  "aria-label"?: string;
 }
 
-export const Sidebar = forwardRef<HTMLElement, SidebarProps>(
-  ({ children, sticky = true, ...props }, ref) => {
-    return (
-      <Box
-        as="aside"
-        ref={ref}
-        data-testid="sidebar"
-        data-sticky={sticky.toString()}
-        data-hide-mobile="true"
-        width={{ base: "100%", lg: "300px" }}
-        display={{ base: "none", lg: "flex" }}
-        flexDirection="column"
-        gap={6}
-        position={sticky ? "sticky" : "relative"}
-        top={sticky ? "100px" : undefined}
-        alignSelf="flex-start"
-        {...props}
-      >
-        {children}
-      </Box>
-    );
-  }
-);
+export function Sidebar({
+  children,
+  sticky = true,
+  className = "",
+  "aria-label": ariaLabel,
+}: SidebarProps) {
+  const stickyClass = sticky ? "sticky top-[100px]" : "relative";
 
-Sidebar.displayName = "Sidebar";
+  return (
+    <aside
+      data-testid="sidebar"
+      data-sticky={sticky.toString()}
+      data-hide-mobile="true"
+      aria-label={ariaLabel}
+      className={`w-[300px] hidden lg:flex flex-col gap-6 self-start ${stickyClass} ${className}`}
+    >
+      {children}
+    </aside>
+  );
+}

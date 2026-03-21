@@ -1,15 +1,10 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { Pagination } from "./Pagination";
 
 afterEach(() => {
   cleanup();
 });
-
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
 
 describe("Pagination", () => {
   const defaultProps = {
@@ -20,12 +15,12 @@ describe("Pagination", () => {
 
   describe("基本レンダリング", () => {
     it("コンポーネントがレンダリングされる", () => {
-      renderWithChakra(<Pagination {...defaultProps} />);
+      render(<Pagination {...defaultProps} />);
       expect(screen.getByRole("navigation")).toBeInTheDocument();
     });
 
     it("現在ページがハイライトされる", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={3} />);
+      render(<Pagination {...defaultProps} currentPage={3} />);
       const currentPageButton = screen.getByRole("button", { name: /3ページへ移動/ });
       expect(currentPageButton).toHaveAttribute("aria-current", "page");
     });
@@ -34,7 +29,7 @@ describe("Pagination", () => {
   describe("ナビゲーション", () => {
     it("ページ番号クリックでonPageChangeが呼ばれる", () => {
       const onPageChange = vi.fn();
-      renderWithChakra(<Pagination {...defaultProps} onPageChange={onPageChange} />);
+      render(<Pagination {...defaultProps} onPageChange={onPageChange} />);
 
       fireEvent.click(screen.getByRole("button", { name: /2ページへ移動/ }));
       expect(onPageChange).toHaveBeenCalledWith(2);
@@ -42,7 +37,7 @@ describe("Pagination", () => {
 
     it("次へボタンでcurrentPage + 1が呼ばれる", () => {
       const onPageChange = vi.fn();
-      renderWithChakra(<Pagination {...defaultProps} currentPage={3} onPageChange={onPageChange} />);
+      render(<Pagination {...defaultProps} currentPage={3} onPageChange={onPageChange} />);
 
       fireEvent.click(screen.getByRole("button", { name: /次のページ/i }));
       expect(onPageChange).toHaveBeenCalledWith(4);
@@ -50,7 +45,7 @@ describe("Pagination", () => {
 
     it("前へボタンでcurrentPage - 1が呼ばれる", () => {
       const onPageChange = vi.fn();
-      renderWithChakra(<Pagination {...defaultProps} currentPage={3} onPageChange={onPageChange} />);
+      render(<Pagination {...defaultProps} currentPage={3} onPageChange={onPageChange} />);
 
       fireEvent.click(screen.getByRole("button", { name: /前のページ/i }));
       expect(onPageChange).toHaveBeenCalledWith(2);
@@ -59,13 +54,13 @@ describe("Pagination", () => {
 
   describe("境界値処理", () => {
     it("最初のページで前へボタンが非活性", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={1} />);
+      render(<Pagination {...defaultProps} currentPage={1} />);
       const prevButton = screen.getByRole("button", { name: /前のページ/i });
       expect(prevButton).toBeDisabled();
     });
 
     it("最後のページで次へボタンが非活性", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={10} totalPages={10} />);
+      render(<Pagination {...defaultProps} currentPage={10} totalPages={10} />);
       const nextButton = screen.getByRole("button", { name: /次のページ/i });
       expect(nextButton).toBeDisabled();
     });
@@ -73,7 +68,7 @@ describe("Pagination", () => {
 
   describe("省略表示", () => {
     it("totalPages <= maxVisiblePagesで全ページ表示", () => {
-      renderWithChakra(<Pagination {...defaultProps} totalPages={5} maxVisiblePages={5} />);
+      render(<Pagination {...defaultProps} totalPages={5} maxVisiblePages={5} />);
 
       for (let i = 1; i <= 5; i++) {
         expect(screen.getByRole("button", { name: new RegExp(`${i}ページへ移動`) })).toBeInTheDocument();
@@ -82,7 +77,7 @@ describe("Pagination", () => {
     });
 
     it("中間ページで前後に省略表示", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={6} totalPages={20} maxVisiblePages={5} />);
+      render(<Pagination {...defaultProps} currentPage={6} totalPages={20} maxVisiblePages={5} />);
 
       // 最初と最後のページは常に表示
       expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
@@ -99,7 +94,7 @@ describe("Pagination", () => {
     });
 
     it("最初のページ付近で後方のみ省略", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={2} totalPages={20} maxVisiblePages={5} />);
+      render(<Pagination {...defaultProps} currentPage={2} totalPages={20} maxVisiblePages={5} />);
 
       expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /2ページへ移動/ })).toBeInTheDocument();
@@ -112,7 +107,7 @@ describe("Pagination", () => {
     });
 
     it("最後のページ付近で前方のみ省略", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={19} totalPages={20} maxVisiblePages={5} />);
+      render(<Pagination {...defaultProps} currentPage={19} totalPages={20} maxVisiblePages={5} />);
 
       expect(screen.getByRole("button", { name: /1ページへ移動/ })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /18ページへ移動/ })).toBeInTheDocument();
@@ -127,7 +122,7 @@ describe("Pagination", () => {
 
   describe("アクセシビリティ", () => {
     it("nav要素に適切なaria-labelがある", () => {
-      renderWithChakra(<Pagination {...defaultProps} />);
+      render(<Pagination {...defaultProps} />);
       expect(screen.getByRole("navigation")).toHaveAttribute(
         "aria-label",
         "ページネーション"
@@ -135,7 +130,7 @@ describe("Pagination", () => {
     });
 
     it("現在ページにaria-current='page'がある", () => {
-      renderWithChakra(<Pagination {...defaultProps} currentPage={5} />);
+      render(<Pagination {...defaultProps} currentPage={5} />);
       const currentPageButton = screen.getByRole("button", { name: /5ページへ移動/ });
       expect(currentPageButton).toHaveAttribute("aria-current", "page");
     });

@@ -4,20 +4,20 @@ export const THEME_CONFIGS: Record<Theme, ThemeConfig> = {
   investment: {
     theme: "investment",
     paths: ["/asset"],
-    accent: "#0891B2",
-    accentBg: "#ECFEFF",
+    accent: "#00478d",
+    accentBg: "#ecedf6",
   },
   programming: {
     theme: "programming",
     paths: ["/tech"],
-    accent: "#7C3AED",
-    accentBg: "#F5F3FF",
+    accent: "#a9c7ff",
+    accentBg: "#191c21",
   },
   health: {
     theme: "health",
     paths: ["/health"],
-    accent: "#16A34A",
-    accentBg: "#F0FDF4",
+    accent: "#00478d",
+    accentBg: "#f9f9ff",
   },
 };
 

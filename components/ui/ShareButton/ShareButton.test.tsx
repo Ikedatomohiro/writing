@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import {
   ShareButton,
   ShareButtonGroup,
@@ -11,21 +10,17 @@ afterEach(() => {
   cleanup();
 });
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("ShareButton", () => {
   describe("rendering", () => {
     it("renders as a button element", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="twitter" url="https://example.com" title="Test" />
       );
       expect(screen.getByRole("button")).toBeInTheDocument();
     });
 
     it("has accessible name based on platform", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="twitter" url="https://example.com" title="Test" />
       );
       expect(screen.getByRole("button", { name: /xでシェア/i })).toBeInTheDocument();
@@ -44,7 +39,7 @@ describe("ShareButton", () => {
     it.each(platformTests)(
       "renders $platform button with correct label",
       ({ platform, expectedLabel }) => {
-        renderWithChakra(
+        render(
           <ShareButton platform={platform} url="https://example.com" title="Test" />
         );
         expect(screen.getByRole("button", { name: expectedLabel })).toBeInTheDocument();
@@ -64,7 +59,7 @@ describe("ShareButton", () => {
     });
 
     it("opens Twitter share URL on click", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="twitter" url="https://example.com" title="Test Title" />
       );
       fireEvent.click(screen.getByRole("button"));
@@ -76,7 +71,7 @@ describe("ShareButton", () => {
     });
 
     it("opens Facebook share URL on click", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="facebook" url="https://example.com" title="Test" />
       );
       fireEvent.click(screen.getByRole("button"));
@@ -88,7 +83,7 @@ describe("ShareButton", () => {
     });
 
     it("opens Hatena bookmark URL on click", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="hatena" url="https://example.com" title="Test" />
       );
       fireEvent.click(screen.getByRole("button"));
@@ -100,7 +95,7 @@ describe("ShareButton", () => {
     });
 
     it("opens LINE share URL on click", () => {
-      renderWithChakra(
+      render(
         <ShareButton platform="line" url="https://example.com" title="Test" />
       );
       fireEvent.click(screen.getByRole("button"));
@@ -121,7 +116,7 @@ describe("ShareButton", () => {
         configurable: true,
       });
 
-      renderWithChakra(
+      render(
         <ShareButton platform="copy" url="https://example.com" title="Test" />
       );
       fireEvent.click(screen.getByRole("button"));
@@ -139,11 +134,10 @@ describe("ShareButton", () => {
         configurable: true,
       });
 
-      renderWithChakra(
+      render(
         <ShareButton platform="copy" url="https://example.com" title="Test" />
       );
 
-      // エラーがスローされないことを確認
       expect(() => {
         fireEvent.click(screen.getByRole("button"));
       }).not.toThrow();
@@ -153,7 +147,7 @@ describe("ShareButton", () => {
 
 describe("ShareButtonGroup", () => {
   it("renders all share buttons by default", () => {
-    renderWithChakra(
+    render(
       <ShareButtonGroup url="https://example.com" title="Test" />
     );
     expect(screen.getByRole("button", { name: /xでシェア/i })).toBeInTheDocument();
@@ -164,7 +158,7 @@ describe("ShareButtonGroup", () => {
   });
 
   it("renders only specified platforms", () => {
-    renderWithChakra(
+    render(
       <ShareButtonGroup
         url="https://example.com"
         title="Test"
@@ -177,14 +171,14 @@ describe("ShareButtonGroup", () => {
   });
 
   it("shows label when showLabel is true", () => {
-    renderWithChakra(
+    render(
       <ShareButtonGroup url="https://example.com" title="Test" showLabel />
     );
     expect(screen.getByText("Share:")).toBeInTheDocument();
   });
 
   it("has correct aria-label", () => {
-    renderWithChakra(
+    render(
       <ShareButtonGroup url="https://example.com" title="Test" />
     );
     expect(screen.getByLabelText("シェアボタン")).toBeInTheDocument();

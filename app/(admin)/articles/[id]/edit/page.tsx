@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Box, Button, Container, Heading, VStack } from "@chakra-ui/react";
 import Link from "next/link";
-import { LuArrowLeft } from "react-icons/lu";
 import { ArticleForm } from "@/components/articles";
 import { getArticle, updateArticle } from "@/lib/articles/storage";
 import type { Article, ArticleStatus } from "@/lib/articles/types";
@@ -55,38 +53,39 @@ export default function EditArticlePage() {
 
   if (isLoading) {
     return (
-      <Container maxW="container.lg" py={8}>
-        <Box>読み込み中...</Box>
-      </Container>
+      <div className="max-w-4xl mx-auto py-8">
+        <div className="text-on-surface-variant">読み込み中...</div>
+      </div>
     );
   }
 
   if (!article) {
     return (
-      <Container maxW="container.lg" py={8}>
-        <VStack gap={4}>
-          <Heading as="h1" size="lg">
-            記事が見つかりません
-          </Heading>
-          <Link href="/articles">
-            <Button variant="outline">
-              <LuArrowLeft />
-              記事一覧に戻る
-            </Button>
-          </Link>
-        </VStack>
-      </Container>
+      <div className="max-w-4xl mx-auto py-8 space-y-4">
+        <h1 className="text-2xl font-bold font-headline text-on-surface">
+          記事が見つかりません
+        </h1>
+        <Link
+          href="/articles"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
+        >
+          <span className="material-symbols-outlined text-lg">
+            arrow_back
+          </span>
+          記事一覧に戻る
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Container maxW="container.lg" py={8}>
+    <div className="max-w-4xl mx-auto py-8">
       <ArticleForm
         article={article}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={isSubmitting}
       />
-    </Container>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { BlogHeader } from "./BlogHeader";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
@@ -13,24 +12,20 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("BlogHeader", () => {
   describe("rendering", () => {
     it("renders site name", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
       expect(screen.getByText(SITE_CONFIG.name)).toBeInTheDocument();
     });
 
     it("renders as header element", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
       expect(screen.getByRole("banner")).toBeInTheDocument();
     });
 
     it("site name links to home page", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
       const homeLink = screen.getByRole("link", { name: new RegExp(SITE_CONFIG.name, "i") });
       expect(homeLink).toHaveAttribute("href", "/");
     });
@@ -38,7 +33,7 @@ describe("BlogHeader", () => {
 
   describe("navigation", () => {
     it("renders all category navigation links on desktop", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
 
       // Check desktop navigation links
       expect(screen.getByRole("link", { name: "資産形成" })).toBeInTheDocument();
@@ -47,7 +42,7 @@ describe("BlogHeader", () => {
     });
 
     it("has correct href for each category", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
 
       expect(screen.getByRole("link", { name: "資産形成" })).toHaveAttribute("href", "/asset");
       expect(screen.getByRole("link", { name: "プログラミング" })).toHaveAttribute("href", "/tech");
@@ -57,7 +52,7 @@ describe("BlogHeader", () => {
 
   describe("mobile menu", () => {
     it("renders mobile menu button (hidden on desktop via CSS)", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
       // The mobile menu button is rendered but hidden via CSS on desktop
       // We verify it exists in the DOM
       const mobileMenuContainer = document.querySelector('[data-component="blog-header"] button');
@@ -67,7 +62,7 @@ describe("BlogHeader", () => {
 
   describe("styling", () => {
     it("has header data attribute", () => {
-      renderWithChakra(<BlogHeader />);
+      render(<BlogHeader />);
       const header = screen.getByRole("banner");
       expect(header).toHaveAttribute("data-component", "blog-header");
     });

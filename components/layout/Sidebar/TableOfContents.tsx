@@ -1,7 +1,5 @@
 "use client";
 
-import { Box, Text, Link } from "@chakra-ui/react";
-
 export interface TocItem {
   id: string;
   title: string;
@@ -14,11 +12,11 @@ export interface TableOfContentsProps {
   onItemClick?: (id: string) => void;
 }
 
-const levelIndent: Record<number, number> = {
-  1: 0,
-  2: 4,
-  3: 8,
-  4: 12,
+const levelPadding: Record<number, string> = {
+  1: "pl-0",
+  2: "pl-4",
+  3: "pl-8",
+  4: "pl-12",
 };
 
 export function TableOfContents({
@@ -34,48 +32,35 @@ export function TableOfContents({
   };
 
   return (
-    <Box
-      as="nav"
+    <nav
       data-testid="table-of-contents"
       aria-label="目次"
-      bg="var(--bg-card)"
-      borderRadius="12px"
-      border="1px solid var(--border)"
-      p={5}
+      className="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-5"
     >
-      <Text
-        fontFamily="'Noto Sans JP', sans-serif"
-        fontSize="16px"
-        fontWeight="semibold"
-        color="var(--text-primary)"
-        mb={3}
-      >
+      <h3 className="font-headline text-base font-semibold text-on-surface mb-3">
         目次
-      </Text>
-      <Box display="flex" flexDirection="column" gap={3}>
+      </h3>
+      <div className="flex flex-col gap-3">
         {items.map((item) => {
           const isActive = activeId === item.id;
           return (
-            <Link
+            <a
               key={item.id}
               href={`#${item.id}`}
               onClick={handleClick(item.id)}
               data-active={isActive.toString()}
               data-level={item.level}
-              pl={levelIndent[item.level] || 0}
-              fontFamily="'Noto Sans JP', sans-serif"
-              fontSize="14px"
-              color={isActive ? "var(--accent)" : "var(--text-secondary)"}
-              textDecoration="none"
-              _hover={{
-                color: "var(--accent)",
-              }}
+              className={`font-body text-sm no-underline transition-colors ${levelPadding[item.level] || "pl-0"} ${
+                isActive
+                  ? "text-primary"
+                  : "text-on-surface-variant hover:text-primary"
+              }`}
             >
               {item.title}
-            </Link>
+            </a>
           );
         })}
-      </Box>
-    </Box>
+      </div>
+    </nav>
   );
 }

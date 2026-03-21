@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, HStack } from "@chakra-ui/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface PaginationProps {
@@ -64,35 +63,17 @@ function getVisiblePages(
   return pages;
 }
 
-const pageButtonStyles = {
-  base: {
-    width: "40px",
-    height: "40px",
-    minWidth: "40px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    fontFamily: "Inter, sans-serif",
-    fontWeight: "500",
-  },
-  active: {
-    bg: "var(--accent, #0891B2)",
-    color: "white",
-    _hover: { opacity: 0.9 },
-  },
-  inactive: {
-    bg: "var(--bg-card, #FFFFFF)",
-    color: "var(--text-secondary, #57534E)",
-    border: "1px solid var(--border, #E7E5E4)",
-    _hover: { bg: "var(--bg-surface, #F5F5F4)" },
-  },
-  disabled: {
-    bg: "var(--bg-card, #FFFFFF)",
-    color: "var(--text-muted, #A8A29E)",
-    border: "1px solid var(--border, #E7E5E4)",
-    cursor: "not-allowed",
-    _hover: {},
-  },
-};
+const baseButtonClass =
+  "w-10 h-10 min-w-[40px] rounded-lg text-sm font-body font-medium inline-flex items-center justify-center transition-all";
+
+const activeButtonClass =
+  "bg-primary text-on-primary hover:opacity-90";
+
+const inactiveButtonClass =
+  "bg-surface-container-lowest text-on-surface-variant border border-outline-variant hover:bg-surface-container";
+
+const disabledButtonClass =
+  "bg-surface-container-lowest text-outline border border-outline-variant cursor-not-allowed";
 
 export function Pagination({
   currentPage,
@@ -106,66 +87,56 @@ export function Pagination({
   const isLastPage = currentPage === totalPages;
 
   return (
-    <Box as="nav" aria-label="ページネーション">
-      <HStack gap={2}>
+    <nav aria-label="ページネーション">
+      <div className="flex items-center gap-2">
         {/* 前へボタン */}
-        <Button
+        <button
           aria-label="前のページ"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={isFirstPage}
-          {...pageButtonStyles.base}
-          {...(isFirstPage ? pageButtonStyles.disabled : pageButtonStyles.inactive)}
+          className={`${baseButtonClass} ${isFirstPage ? disabledButtonClass : inactiveButtonClass}`}
         >
           <ChevronLeft size={20} />
-        </Button>
+        </button>
 
         {/* ページ番号 */}
         {visiblePages.map((page, index) => {
           if (page === "ellipsis") {
             return (
-              <Box
+              <span
                 key={`ellipsis-${index}`}
-                width="40px"
-                height="40px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color="var(--text-secondary, #57534E)"
-                fontSize="14px"
-                fontFamily="Inter, sans-serif"
+                className="w-10 h-10 flex items-center justify-center text-on-surface-variant text-sm font-body"
               >
                 ...
-              </Box>
+              </span>
             );
           }
 
           const isActive = page === currentPage;
 
           return (
-            <Button
+            <button
               key={page}
               aria-label={`${page}ページへ移動`}
               aria-current={isActive ? "page" : undefined}
               onClick={() => onPageChange(page)}
-              {...pageButtonStyles.base}
-              {...(isActive ? pageButtonStyles.active : pageButtonStyles.inactive)}
+              className={`${baseButtonClass} ${isActive ? activeButtonClass : inactiveButtonClass}`}
             >
               {page}
-            </Button>
+            </button>
           );
         })}
 
         {/* 次へボタン */}
-        <Button
+        <button
           aria-label="次のページ"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={isLastPage}
-          {...pageButtonStyles.base}
-          {...(isLastPage ? pageButtonStyles.disabled : pageButtonStyles.inactive)}
+          className={`${baseButtonClass} ${isLastPage ? disabledButtonClass : inactiveButtonClass}`}
         >
           <ChevronRight size={20} />
-        </Button>
-      </HStack>
-    </Box>
+        </button>
+      </div>
+    </nav>
   );
 }

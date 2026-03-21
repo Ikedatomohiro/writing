@@ -1,7 +1,6 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { Box, Text, Center } from "@chakra-ui/react";
 import { getAdsEnabled } from "@/components/ui/Ad/Ad";
 
 export type AdSize = "rectangle" | "skyscraper" | "leaderboard";
@@ -13,10 +12,10 @@ export interface AdSlotProps {
   children?: ReactNode;
 }
 
-const sizeStyles: Record<AdSize, { width: string | number; height: number }> = {
-  rectangle: { width: "100%", height: 250 },
-  skyscraper: { width: "100%", height: 600 },
-  leaderboard: { width: "100%", height: 90 },
+const sizeStyles: Record<AdSize, { height: string }> = {
+  rectangle: { height: "h-[250px]" },
+  skyscraper: { height: "h-[600px]" },
+  leaderboard: { height: "h-[90px]" },
 };
 
 export function AdSlot({
@@ -28,34 +27,27 @@ export function AdSlot({
   const adsEnabled = getAdsEnabled();
   if (!adsEnabled) return null;
 
-  const { width, height } = sizeStyles[size];
+  const { height } = sizeStyles[size];
+  const bgClass = showPlaceholder ? "bg-surface-container" : "";
 
   return (
-    <Box
+    <div
       role="region"
       aria-label="Advertisement"
       data-testid="ad-slot"
       data-size={size}
       data-slot-id={slotId}
-      width={width}
-      height={height}
-      bg={showPlaceholder ? "var(--bg-surface)" : undefined}
-      borderRadius="12px"
-      overflow="hidden"
+      className={`w-full ${height} ${bgClass} rounded-xl overflow-hidden`}
     >
       {showPlaceholder ? (
-        <Center h="100%">
-          <Text
-            fontFamily="'Noto Sans JP', sans-serif"
-            fontSize="14px"
-            color="var(--text-muted)"
-          >
+        <div className="flex items-center justify-center h-full">
+          <span className="font-body text-sm text-on-surface-variant">
             広告
-          </Text>
-        </Center>
+          </span>
+        </div>
       ) : (
         children
       )}
-    </Box>
+    </div>
   );
 }

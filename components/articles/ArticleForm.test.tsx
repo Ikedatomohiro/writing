@@ -1,15 +1,8 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { ArticleForm } from "./ArticleForm";
 import type { Article } from "@/lib/articles/types";
-
-function renderWithProviders(ui: React.ReactElement) {
-  return render(
-    <ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>
-  );
-}
 
 function createTestArticle(overrides: Partial<Article> = {}): Article {
   return {
@@ -32,25 +25,19 @@ describe("ArticleForm", () => {
 
   describe("新規作成モード", () => {
     it("「新規記事作成」見出しを表示する", () => {
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       expect(screen.getByText("新規記事作成")).toBeInTheDocument();
     });
 
     it("「作成」ボタンを表示する", () => {
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       expect(screen.getByRole("button", { name: "作成" })).toBeInTheDocument();
     });
 
     it("空のフォームフィールドを表示する", () => {
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const titleInput = screen.getByPlaceholderText("記事のタイトルを入力");
       const contentInput = screen.getByPlaceholderText("記事の本文を入力");
@@ -63,7 +50,7 @@ describe("ArticleForm", () => {
   describe("編集モード", () => {
     it("「記事を編集」見出しを表示する", () => {
       const article = createTestArticle();
-      renderWithProviders(
+      render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
@@ -72,7 +59,7 @@ describe("ArticleForm", () => {
 
     it("「更新」ボタンを表示する", () => {
       const article = createTestArticle();
-      renderWithProviders(
+      render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
@@ -85,7 +72,7 @@ describe("ArticleForm", () => {
         content: "既存の本文",
         keywords: ["キーワード1"],
       });
-      renderWithProviders(
+      render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
@@ -98,9 +85,7 @@ describe("ArticleForm", () => {
   describe("フォーム操作", () => {
     it("タイトルを入力できる", async () => {
       const user = userEvent.setup();
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const titleInput = screen.getByPlaceholderText("記事のタイトルを入力");
       await user.type(titleInput, "新しいタイトル");
@@ -110,9 +95,7 @@ describe("ArticleForm", () => {
 
     it("本文を入力できる", async () => {
       const user = userEvent.setup();
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const contentInput = screen.getByPlaceholderText("記事の本文を入力");
       await user.type(contentInput, "新しい本文");
@@ -122,9 +105,7 @@ describe("ArticleForm", () => {
 
     it("キーワードを追加できる", async () => {
       const user = userEvent.setup();
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const keywordInput = screen.getByPlaceholderText(
         "キーワードを入力してEnter"
@@ -138,9 +119,7 @@ describe("ArticleForm", () => {
 
     it("Enterキーでキーワードを追加できる", async () => {
       const user = userEvent.setup();
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const keywordInput = screen.getByPlaceholderText(
         "キーワードを入力してEnter"
@@ -153,7 +132,7 @@ describe("ArticleForm", () => {
     it("キーワードを削除できる", async () => {
       const user = userEvent.setup();
       const article = createTestArticle({ keywords: ["削除対象"] });
-      renderWithProviders(
+      render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
@@ -168,7 +147,7 @@ describe("ArticleForm", () => {
     it("重複したキーワードは追加されない", async () => {
       const user = userEvent.setup();
       const article = createTestArticle({ keywords: ["重複"] });
-      renderWithProviders(
+      render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
@@ -185,9 +164,7 @@ describe("ArticleForm", () => {
     it("ステータスを変更できる", async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
-      renderWithProviders(
-        <ArticleForm onSubmit={onSubmit} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={onSubmit} onCancel={vi.fn()} />);
 
       const publishButton = screen.getByRole("button", { name: "公開" });
       await user.click(publishButton);
@@ -203,9 +180,7 @@ describe("ArticleForm", () => {
     it("送信時にonSubmitが正しいデータで呼ばれる", async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
-      renderWithProviders(
-        <ArticleForm onSubmit={onSubmit} onCancel={vi.fn()} />
-      );
+      render(<ArticleForm onSubmit={onSubmit} onCancel={vi.fn()} />);
 
       await user.type(
         screen.getByPlaceholderText("記事のタイトルを入力"),
@@ -233,9 +208,7 @@ describe("ArticleForm", () => {
     it("キャンセルボタンでonCancelが呼ばれる", async () => {
       const user = userEvent.setup();
       const onCancel = vi.fn();
-      renderWithProviders(
-        <ArticleForm onSubmit={vi.fn()} onCancel={onCancel} />
-      );
+      render(<ArticleForm onSubmit={vi.fn()} onCancel={onCancel} />);
 
       await user.click(screen.getByRole("button", { name: "キャンセル" }));
 
@@ -243,7 +216,7 @@ describe("ArticleForm", () => {
     });
 
     it("送信中はローディング状態になる", () => {
-      const { container } = renderWithProviders(
+      const { container } = render(
         <ArticleForm
           onSubmit={vi.fn()}
           onCancel={vi.fn()}
@@ -252,8 +225,8 @@ describe("ArticleForm", () => {
       );
 
       const submitButton = container.querySelector('button[type="submit"]');
-      expect(submitButton).toHaveAttribute("data-loading");
       expect(submitButton).toBeDisabled();
+      expect(submitButton).toHaveTextContent("保存中...");
     });
   });
 });

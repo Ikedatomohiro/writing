@@ -1,6 +1,5 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import CategoryPage from "./page";
 
 // Mock the content API
@@ -53,11 +52,9 @@ const mockArticles = [
   },
 ];
 
-const renderWithChakra = async (params: { category: string }) => {
+const renderPage = async (params: { category: string }) => {
   const Component = await CategoryPage({ params: Promise.resolve(params) });
-  return render(
-    <ChakraProvider value={defaultSystem}>{Component}</ChakraProvider>
-  );
+  return render(<>{Component}</>);
 };
 
 describe("CategoryPage", () => {
@@ -73,7 +70,7 @@ describe("CategoryPage", () => {
 
   describe("有効なカテゴリ", () => {
     it("assetカテゴリのページが表示される", async () => {
-      await renderWithChakra({ category: "asset" });
+      await renderPage({ category: "asset" });
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         "資産形成"
@@ -81,7 +78,7 @@ describe("CategoryPage", () => {
     });
 
     it("techカテゴリのページが表示される", async () => {
-      await renderWithChakra({ category: "tech" });
+      await renderPage({ category: "tech" });
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         "プログラミング"
@@ -89,7 +86,7 @@ describe("CategoryPage", () => {
     });
 
     it("healthカテゴリのページが表示される", async () => {
-      await renderWithChakra({ category: "health" });
+      await renderPage({ category: "health" });
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         "健康"
@@ -97,14 +94,14 @@ describe("CategoryPage", () => {
     });
 
     it("記事カードが表示される", async () => {
-      await renderWithChakra({ category: "asset" });
+      await renderPage({ category: "asset" });
 
       expect(screen.getByText("テスト記事1")).toBeInTheDocument();
       expect(screen.getByText("テスト記事2")).toBeInTheDocument();
     });
 
     it("getArticlesByCategoryが正しいカテゴリで呼ばれる", async () => {
-      await renderWithChakra({ category: "asset" });
+      await renderPage({ category: "asset" });
 
       expect(getArticlesByCategory).toHaveBeenCalledWith("asset");
     });
@@ -112,7 +109,7 @@ describe("CategoryPage", () => {
 
   describe("無効なカテゴリ", () => {
     it("無効なカテゴリの場合はnotFoundが呼ばれる", async () => {
-      await renderWithChakra({ category: "invalid" });
+      await renderPage({ category: "invalid" });
 
       expect(notFound).toHaveBeenCalled();
     });
@@ -122,7 +119,7 @@ describe("CategoryPage", () => {
     it("記事がない場合はメッセージが表示される", async () => {
       vi.mocked(getArticlesByCategory).mockResolvedValue([]);
 
-      await renderWithChakra({ category: "asset" });
+      await renderPage({ category: "asset" });
 
       expect(
         screen.getByText("まだ記事がありません。")

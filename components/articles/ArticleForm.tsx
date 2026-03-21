@@ -1,21 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  Field,
-  Flex,
-  Heading,
-  Input,
-  Textarea,
-  VStack,
-  HStack,
-  Badge,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
-import { LuX } from "react-icons/lu";
 import type { Article, ArticleStatus } from "@/lib/articles/types";
 
 interface ArticleFormProps {
@@ -29,6 +14,12 @@ interface ArticleFormProps {
   onCancel: () => void;
   isSubmitting?: boolean;
 }
+
+const STATUS_OPTIONS: { value: ArticleStatus; label: string }[] = [
+  { value: "draft", label: "下書き" },
+  { value: "published", label: "公開" },
+  { value: "archived", label: "アーカイブ" },
+];
 
 export function ArticleForm({
   article,
@@ -69,91 +60,123 @@ export function ArticleForm({
   };
 
   return (
-    <Box as="form" onSubmit={handleSubmit}>
-      <VStack gap={6} align="stretch">
-        <Heading size="lg">{article ? "記事を編集" : "新規記事作成"}</Heading>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="text-2xl font-bold font-headline text-on-surface">
+        {article ? "記事を編集" : "新規記事作成"}
+      </h2>
 
-        <Field.Root>
-          <Field.Label>タイトル</Field.Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="記事のタイトルを入力"
+      <FormField label="タイトル">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="記事のタイトルを入力"
+          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline"
+        />
+      </FormField>
+
+      <FormField label="本文">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="記事の本文を入力"
+          rows={15}
+          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline resize-y"
+        />
+      </FormField>
+
+      <FormField label="キーワード">
+        <div className="flex gap-2">
+          <input
+            value={keywordInput}
+            onChange={(e) => setKeywordInput(e.target.value)}
+            onKeyDown={handleKeywordKeyDown}
+            placeholder="キーワードを入力してEnter"
+            className="flex-1 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline"
           />
-        </Field.Root>
-
-        <Field.Root>
-          <Field.Label>本文</Field.Label>
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="記事の本文を入力"
-            rows={15}
-          />
-        </Field.Root>
-
-        <Field.Root>
-          <Field.Label>キーワード</Field.Label>
-          <HStack>
-            <Input
-              value={keywordInput}
-              onChange={(e) => setKeywordInput(e.target.value)}
-              onKeyDown={handleKeywordKeyDown}
-              placeholder="キーワードを入力してEnter"
-            />
-            <Button type="button" onClick={addKeyword} variant="outline">
-              追加
-            </Button>
-          </HStack>
-          {keywords.length > 0 && (
-            <HStack mt={2} flexWrap="wrap" gap={2}>
-              {keywords.map((keyword) => (
-                <Badge key={keyword} variant="solid" size="lg">
-                  <HStack gap={1}>
-                    <Text>{keyword}</Text>
-                    <IconButton
-                      aria-label={`${keyword}を削除`}
-                      size="2xs"
-                      variant="ghost"
-                      onClick={() => removeKeyword(keyword)}
-                    >
-                      <LuX />
-                    </IconButton>
-                  </HStack>
-                </Badge>
-              ))}
-            </HStack>
-          )}
-        </Field.Root>
-
-        <Field.Root>
-          <Field.Label>ステータス</Field.Label>
-          <HStack gap={2}>
-            {(["draft", "published", "archived"] as const).map((s) => (
-              <Button
-                key={s}
-                type="button"
-                variant={status === s ? "solid" : "outline"}
-                onClick={() => setStatus(s)}
-                size="sm"
+          <button
+            type="button"
+            onClick={addKeyword}
+            className="px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
+          >
+            追加
+          </button>
+        </div>
+        {keywords.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {keywords.map((keyword) => (
+              <span
+                key={keyword}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-on-primary text-sm font-medium"
               >
-                {s === "draft" && "下書き"}
-                {s === "published" && "公開"}
-                {s === "archived" && "アーカイブ"}
-              </Button>
+                {keyword}
+                <button
+                  type="button"
+                  aria-label={`${keyword}を削除`}
+                  onClick={() => removeKeyword(keyword)}
+                  className="ml-1 hover:opacity-70 transition-opacity"
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    close
+                  </span>
+                </button>
+              </span>
             ))}
-          </HStack>
-        </Field.Root>
+          </div>
+        )}
+      </FormField>
 
-        <Flex gap={3} justify="flex-end">
-          <Button type="button" variant="ghost" onClick={onCancel}>
-            キャンセル
-          </Button>
-          <Button type="submit" colorPalette="blue" loading={isSubmitting}>
-            {article ? "更新" : "作成"}
-          </Button>
-        </Flex>
-      </VStack>
-    </Box>
+      <FormField label="ステータス">
+        <div className="flex gap-2">
+          {STATUS_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setStatus(option.value)}
+              className={
+                status === option.value
+                  ? "px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium"
+                  : "px-4 py-2 rounded-lg border border-outline-variant text-on-surface text-sm font-medium hover:bg-surface-container transition-colors"
+              }
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </FormField>
+
+      <div className="flex gap-3 justify-end">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-6 py-2.5 rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
+        >
+          キャンセル
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-6 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
+        >
+          {isSubmitting ? "保存中..." : article ? "更新" : "作成"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function FormField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
+        {label}
+      </label>
+      {children}
+    </div>
   );
 }

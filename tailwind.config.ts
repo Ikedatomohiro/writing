@@ -1,0 +1,61 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "var(--color-primary)",
+        "primary-container": "var(--color-primary-container)",
+        "on-primary": "var(--color-on-primary)",
+        "on-primary-container": "var(--color-on-primary-container)",
+        secondary: "var(--color-secondary)",
+        "secondary-container": "var(--color-secondary-container)",
+        "on-secondary": "var(--color-on-secondary)",
+        tertiary: "var(--color-tertiary)",
+        "tertiary-container": "var(--color-tertiary-container)",
+        "on-tertiary": "var(--color-on-tertiary)",
+        surface: "var(--color-surface)",
+        "surface-container": "var(--color-surface-container)",
+        "surface-container-low": "var(--color-surface-container-low)",
+        "surface-container-lowest": "var(--color-surface-container-lowest)",
+        "surface-container-high": "var(--color-surface-container-high)",
+        "surface-container-highest": "var(--color-surface-container-highest)",
+        "on-surface": "var(--color-on-surface)",
+        "on-surface-variant": "var(--color-on-surface-variant)",
+        outline: "var(--color-outline)",
+        "outline-variant": "var(--color-outline-variant)",
+        error: "var(--color-error)",
+        "inverse-surface": "var(--color-inverse-surface)",
+        "inverse-on-surface": "var(--color-inverse-on-surface)",
+        "primary-fixed": "var(--color-primary-fixed)",
+        "primary-fixed-dim": "var(--color-primary-fixed-dim)",
+        "secondary-fixed": "var(--color-secondary-fixed)",
+        "tertiary-fixed": "var(--color-tertiary-fixed)",
+        "error-container": "var(--color-error-container)",
+        "surface-tint": "var(--color-surface-tint)",
+        "surface-variant": "var(--color-surface-variant)",
+        "surface-dim": "var(--color-surface-dim)",
+      },
+      fontFamily: {
+        headline: ["var(--font-manrope)", "sans-serif"],
+        body: ["var(--font-inter)", "sans-serif"],
+        label: ["var(--font-inter)", "sans-serif"],
+        mono: ["var(--font-fira-code)", "monospace"],
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "1.5rem",
+        full: "9999px",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

@@ -1,6 +1,5 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { RelatedArticles } from "./RelatedArticles";
 import type { ArticleMeta } from "@/lib/content/types";
 
@@ -49,10 +48,6 @@ const mockArticles: ArticleMeta[] = [
   },
 ];
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("RelatedArticles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -66,7 +61,7 @@ describe("RelatedArticles", () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
     const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
-    const { container } = renderWithChakra(component!);
+    const { container } = render(component!);
 
     const section = container.querySelector("section");
     expect(section).toBeInTheDocument();
@@ -84,7 +79,7 @@ describe("RelatedArticles", () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
     const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
-    renderWithChakra(component!);
+    render(component!);
 
     expect(screen.getByText("記事1のタイトル")).toBeInTheDocument();
     expect(screen.getByText("記事2のタイトル")).toBeInTheDocument();
@@ -99,7 +94,7 @@ describe("RelatedArticles", () => {
       currentSlug: "my-slug",
       limit: 5,
     });
-    renderWithChakra(component!);
+    render(component!);
 
     expect(getRelatedArticles).toHaveBeenCalledWith("asset", "my-slug", 5);
   });
@@ -108,7 +103,7 @@ describe("RelatedArticles", () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
     const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
-    renderWithChakra(component!);
+    render(component!);
 
     expect(getRelatedArticles).toHaveBeenCalledWith(
       "tech",
@@ -125,11 +120,11 @@ describe("RelatedArticles", () => {
     expect(component).toBeNull();
   });
 
-  it("renders with horizontal scroll container", async () => {
+  it("renders with grid container", async () => {
     vi.mocked(getRelatedArticles).mockResolvedValue(mockArticles);
 
     const component = await RelatedArticles({ category: "tech", currentSlug: "current-article" });
-    const { container } = renderWithChakra(component!);
+    const { container } = render(component!);
 
     const scrollContainer = container.querySelector(
       '[data-testid="related-articles-scroll"]'

@@ -2,29 +2,20 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  Text,
-  Badge,
-  HStack,
-  VStack,
-} from "@chakra-ui/react";
 import Link from "next/link";
-import { LuArrowLeft, LuPencil, LuTrash2 } from "react-icons/lu";
 import { getArticle, deleteArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
 
-const statusColorMap = {
-  draft: "gray",
-  published: "green",
-  archived: "orange",
+const STATUS_STYLES = {
+  draft:
+    "px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold uppercase",
+  published:
+    "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase",
+  archived:
+    "px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase",
 } as const;
 
-const statusLabelMap = {
+const STATUS_LABELS = {
   draft: "下書き",
   published: "公開",
   archived: "アーカイブ",
@@ -70,106 +61,107 @@ export default function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <Container maxW="container.lg" py={8}>
-        <Box>読み込み中...</Box>
-      </Container>
+      <div className="max-w-4xl mx-auto py-8">
+        <div className="text-on-surface-variant">読み込み中...</div>
+      </div>
     );
   }
 
   if (!article) {
     return (
-      <Container maxW="container.lg" py={8}>
-        <VStack gap={4}>
-          <Heading as="h1" size="lg">
-            記事が見つかりません
-          </Heading>
-          <Link href="/articles">
-            <Button variant="outline">
-              <LuArrowLeft />
-              記事一覧に戻る
-            </Button>
-          </Link>
-        </VStack>
-      </Container>
+      <div className="max-w-4xl mx-auto py-8 space-y-4">
+        <h1 className="text-2xl font-bold font-headline text-on-surface">
+          記事が見つかりません
+        </h1>
+        <Link
+          href="/articles"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
+        >
+          <span className="material-symbols-outlined text-lg">
+            arrow_back
+          </span>
+          記事一覧に戻る
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Container maxW="container.lg" py={8}>
-      <Box mb={6}>
-        <Link href="/articles">
-          <Button variant="ghost" size="sm">
-            <LuArrowLeft />
-            記事一覧に戻る
-          </Button>
+    <div className="max-w-4xl mx-auto py-8">
+      <div className="mb-6">
+        <Link
+          href="/articles"
+          className="inline-flex items-center gap-1 text-on-surface-variant hover:text-on-surface transition-colors text-sm font-medium"
+        >
+          <span className="material-symbols-outlined text-lg">
+            arrow_back
+          </span>
+          記事一覧に戻る
         </Link>
-      </Box>
+      </div>
 
-      <Flex justify="space-between" align="start" mb={4}>
-        <Box flex="1">
-          <HStack gap={2} mb={2}>
-            <Badge colorPalette={statusColorMap[article.status]}>
-              {statusLabelMap[article.status]}
-            </Badge>
-          </HStack>
-          <Heading as="h1" size="xl" mb={4}>
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <div className="flex gap-2 mb-2">
+            <span className={STATUS_STYLES[article.status]}>
+              {STATUS_LABELS[article.status]}
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold font-headline text-on-surface mb-4">
             {article.title || "無題"}
-          </Heading>
-        </Box>
-        <HStack gap={2}>
-          <Link href={`/articles/${article.id}/edit`}>
-            <Button variant="outline" size="sm">
-              <LuPencil />
-              編集
-            </Button>
-          </Link>
-          <Button
-            variant="outline"
-            colorPalette="red"
-            size="sm"
-            onClick={handleDelete}
-            loading={isDeleting}
+          </h1>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href={`/articles/${article.id}/edit`}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
           >
-            <LuTrash2 />
-            削除
-          </Button>
-        </HStack>
-      </Flex>
+            <span className="material-symbols-outlined text-lg">edit</span>
+            編集
+          </Link>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-error/30 rounded-lg text-error hover:bg-error-container transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-lg">delete</span>
+            {isDeleting ? "削除中..." : "削除"}
+          </button>
+        </div>
+      </div>
 
       {article.keywords.length > 0 && (
-        <HStack gap={2} mb={6} flexWrap="wrap">
+        <div className="flex flex-wrap gap-2 mb-6">
           {article.keywords.map((keyword) => (
-            <Badge key={keyword} variant="subtle">
+            <span
+              key={keyword}
+              className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-xs"
+            >
               {keyword}
-            </Badge>
+            </span>
           ))}
-        </HStack>
+        </div>
       )}
 
-      <Box
-        borderWidth="1px"
-        borderRadius="lg"
-        p={6}
-        mb={6}
-        minH="300px"
-        whiteSpace="pre-wrap"
-      >
+      <div className="border border-outline-variant/20 rounded-xl p-6 mb-6 min-h-[300px] whitespace-pre-wrap bg-surface-container-lowest text-on-surface">
         {article.content || (
-          <Text color="gray.400" fontStyle="italic">
-            本文なし
-          </Text>
+          <span className="text-on-surface-variant italic">本文なし</span>
         )}
-      </Box>
+      </div>
 
-      <HStack gap={4} color="gray.500" fontSize="sm">
-        <Text>作成: {new Date(article.createdAt).toLocaleString("ja-JP")}</Text>
-        <Text>更新: {new Date(article.updatedAt).toLocaleString("ja-JP")}</Text>
+      <div className="flex gap-4 text-on-surface-variant text-sm">
+        <span>
+          作成: {new Date(article.createdAt).toLocaleString("ja-JP")}
+        </span>
+        <span>
+          更新: {new Date(article.updatedAt).toLocaleString("ja-JP")}
+        </span>
         {article.publishedAt && (
-          <Text>
+          <span>
             公開: {new Date(article.publishedAt).toLocaleString("ja-JP")}
-          </Text>
+          </span>
         )}
-      </HStack>
-    </Container>
+      </div>
+    </div>
   );
 }
