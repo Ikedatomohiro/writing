@@ -252,11 +252,12 @@ export async function generateMetadata({
 
   const url = `/${category}/${slug}`;
   const fullUrl = `${SITE_CONFIG.url}${url}`;
+  const ogImageUrl = `${SITE_CONFIG.url}/api/og?title=${encodeURIComponent(article.title)}&category=${encodeURIComponent(category)}`;
   const imageUrl = article.thumbnail
     ? article.thumbnail.startsWith("http")
       ? article.thumbnail
       : `${SITE_CONFIG.url}${article.thumbnail}`
-    : `${SITE_CONFIG.url}${SITE_CONFIG.defaultOgImage}`;
+    : ogImageUrl;
 
   return {
     title: article.title,
