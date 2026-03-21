@@ -1,48 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { validateRequest, parseJsonBody } from "@/lib/api/request-guard";
+import { PublishArticleSchema } from "@/lib/api/schemas";
+import type { z } from "zod";
 
-const VALID_CATEGORIES = ["asset", "tech", "health"] as const;
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-type Category = (typeof VALID_CATEGORIES)[number];
-
-interface PublishRequestBody {
-  title: string;
-  content: string;
-  category: Category;
-  slug: string;
-  tags?: string[];
-  description?: string;
-  thumbnail?: string;
-}
+type PublishRequestBody = z.infer<typeof PublishArticleSchema>;
 
 function validateApiKey(request: NextRequest): boolean {
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return false;
   const key = authHeader.slice(7);
   return key === process.env.PUBLISH_API_KEY;
-}
-
-function validateRequiredFields(
-  body: Record<string, unknown>
-): string | null {
-  const required = ["title", "content", "category", "slug"];
-  const missing = required.filter(
-    (field) => !body[field] || typeof body[field] !== "string"
-  );
-  if (missing.length > 0) {
-    return `Missing required fields: ${missing.join(", ")}`;
-  }
-  return null;
-}
-
-function validateCategory(category: string): boolean {
-  return VALID_CATEGORIES.includes(category as Category);
-}
-
-function validateSlug(slug: string): boolean {
-  return SLUG_PATTERN.test(slug);
 }
 
 function buildFrontmatter(body: PublishRequestBody): string {
@@ -84,29 +53,54 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const body = (await request.json()) as Record<string, unknown>;
+  const guardError = validateRequest(request);
+  if (guardError) return guardError;
 
-  const fieldError = validateRequiredFields(body);
-  if (fieldError) {
-    return NextResponse.json({ error: fieldError }, { status: 400 });
-  }
+  const { data: body, error: parseError } = await parseJsonBody(request);
+  if (parseError) return parseError;
 
-  const { category, slug } = body as { category: string; slug: string };
+  const parsed = PublishArticleSchema.safeParse(body);
 
-  if (!validateCategory(category)) {
+  if (!parsed.success) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const missingFields = (parsed.error.issues as any[])
+      .filter((issue) => issue.code === "invalid_type" && issue.received === "undefined")
+      .map((issue) => issue.path[0]);
+
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { error: `Missing required fields: ${missingFields.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    const categoryIssue = parsed.error.issues.find(
+      (issue) => issue.path.includes("category")
+    );
+    if (categoryIssue) {
+      return NextResponse.json(
+        { error: "Invalid category: must be one of asset, tech, health" },
+        { status: 400 }
+      );
+    }
+
+    const slugIssue = parsed.error.issues.find(
+      (issue) => issue.path.includes("slug") && issue.code === "invalid_format"
+    );
+    if (slugIssue) {
+      return NextResponse.json(
+        { error: "Invalid slug: must contain only lowercase alphanumeric characters and hyphens" },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: `Invalid category: must be one of ${VALID_CATEGORIES.join(", ")}` },
+      { error: "Validation failed", details: parsed.error.issues },
       { status: 400 }
     );
   }
 
-  if (!validateSlug(slug)) {
-    return NextResponse.json(
-      { error: "Invalid slug: must contain only lowercase alphanumeric characters and hyphens" },
-      { status: 400 }
-    );
-  }
-
+  const { category, slug } = parsed.data;
   const contentDir = path.join(process.cwd(), "content", category);
   const filePath = path.join(contentDir, `${slug}.mdx`);
 
@@ -117,9 +111,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const typedBody = body as unknown as PublishRequestBody;
-  const frontmatter = buildFrontmatter(typedBody);
-  const fileContent = `${frontmatter}\n\n${typedBody.content}\n`;
+  const frontmatter = buildFrontmatter(parsed.data);
+  const fileContent = `${frontmatter}\n\n${parsed.data.content}\n`;
 
   await fs.mkdir(contentDir, { recursive: true });
   await fs.writeFile(filePath, fileContent, "utf-8");

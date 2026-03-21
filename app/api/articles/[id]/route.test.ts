@@ -44,6 +44,24 @@ describe("GET /api/articles/[id]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+    mockRequireAuth.mockResolvedValue(null);
+  });
+
+  it("未認証の場合は401を返す", async () => {
+    const { NextResponse } = await import("next/server");
+    mockRequireAuth.mockResolvedValue(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/articles/1");
+    const params = { params: Promise.resolve({ id: "1" }) };
+    const response = await GET(request, params);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
+    expect(mockGetArticle).not.toHaveBeenCalled();
   });
 
   it("記事を取得する", async () => {
@@ -92,6 +110,7 @@ describe("PUT /api/articles/[id]", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles/1", {
       method: "PUT",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ title: "Updated" }),
     });
     const params = { params: Promise.resolve({ id: "1" }) };
@@ -113,6 +132,7 @@ describe("PUT /api/articles/[id]", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles/1", {
       method: "PUT",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "Updated Title",
         content: "Updated Content",
@@ -142,7 +162,8 @@ describe("PUT /api/articles/[id]", () => {
       "http://localhost:3000/api/articles/not-found",
       {
         method: "PUT",
-        body: JSON.stringify({
+        headers: { "content-type": "application/json" },
+      body: JSON.stringify({
           title: "Updated Title",
         }),
       }
