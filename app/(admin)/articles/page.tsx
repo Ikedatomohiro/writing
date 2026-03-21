@@ -51,33 +51,71 @@ export default function ArticlesPage() {
     <>
       <StatsGrid articleCount={articles.length} />
 
-      <section className="space-y-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-bold font-headline">Recent Posts</h3>
-          <Link
-            href="/articles"
-            className="text-sm font-semibold text-primary hover:underline"
-          >
-            View all posts
-          </Link>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section className="space-y-4 lg:col-span-2">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-bold font-headline">Recent Posts</h3>
+            <Link
+              href="/articles"
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              View all posts
+            </Link>
+          </div>
 
-        <div className="mb-4">
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="タイトル、本文、キーワードで検索..."
-          />
-        </div>
+          <div className="mb-4">
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="タイトル、本文、キーワードで検索..."
+            />
+          </div>
 
-        {articles.length === 0 && searchQuery ? (
-          <p className="text-on-surface-variant">
-            検索結果が見つかりませんでした
-          </p>
-        ) : (
-          <ArticleTable articles={articles} />
-        )}
-      </section>
+          {articles.length === 0 && searchQuery ? (
+            <p className="text-on-surface-variant">
+              検索結果が見つかりませんでした
+            </p>
+          ) : (
+            <ArticleTable articles={articles} />
+          )}
+        </section>
+
+        <div className="lg:col-span-1">
+          <div className="bg-surface-container-lowest rounded-xl p-6">
+            <h2 className="text-lg font-headline font-bold text-on-surface mb-4">Recent Comments</h2>
+            <div className="space-y-4">
+              <p className="text-sm text-on-surface-variant">No comments yet.</p>
+            </div>
+          </div>
+
+          <div className="bg-inverse-surface text-inverse-on-surface rounded-xl p-5 mt-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-headline font-bold text-sm">System Health</h3>
+              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-inverse-on-surface/70">Server Load</span>
+                  <span>23%</span>
+                </div>
+                <div className="w-full bg-inverse-on-surface/10 rounded-full h-1.5">
+                  <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: "23%" }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-inverse-on-surface/70">Storage Used</span>
+                  <span>67%</span>
+                </div>
+                <div className="w-full bg-inverse-on-surface/10 rounded-full h-1.5">
+                  <div className="bg-amber-400 h-1.5 rounded-full" style={{ width: "67%" }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -33,6 +33,19 @@
   --color-surface-tint: #005db6;
   --color-surface-variant: #e1e2ea;
   --color-surface-dim: #d8dae2;
+  --color-on-secondary-container: #1a2d47;
+  --color-on-tertiary-container: #2e1500;
+  --color-on-primary-fixed: #001b3f;
+  --color-on-primary-fixed-variant: #003a78;
+  --color-on-secondary-fixed: #0b1d33;
+  --color-on-secondary-fixed-variant: #324a67;
+  --color-on-tertiary-fixed: #1f0d00;
+  --color-on-tertiary-fixed-variant: #5b2600;
+  --color-surface-bright: #f9f9ff;
+  --color-secondary-fixed-dim: #b4c8e8;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #410002;
+  --color-inverse-primary: #a9c7ff;
 }
 
 /* Finance Theme */
@@ -148,8 +161,8 @@ body {
 
 /* Selection */
 ::selection {
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
+  background-color: var(--color-primary-fixed);
+  color: var(--color-on-primary-fixed);
 }
 
 /* ===================================

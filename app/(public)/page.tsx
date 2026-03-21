@@ -37,7 +37,7 @@ function HeroSection({ article }: { article: ArticleMeta }) {
     <section className="mb-20" data-testid="hero-section">
       <div className="relative grid md:grid-cols-12 gap-0 items-center">
         <div className="md:col-span-7 z-10">
-          <div className="bg-surface-container-lowest p-8 md:p-16 rounded-xl shadow-2xl shadow-on-surface/5">
+          <div className="bg-surface-container-lowest p-8 md:p-16 rounded-xl shadow-2xl shadow-on-surface/5 backdrop-blur-sm">
             <span className="text-primary font-label text-xs font-bold tracking-widest uppercase mb-4 block">
               注目の記事
             </span>

@@ -21,7 +21,7 @@ export function Sidebar({
       data-sticky={sticky.toString()}
       data-hide-mobile="true"
       aria-label={ariaLabel}
-      className={`w-[300px] hidden lg:flex flex-col gap-6 self-start ${stickyClass} ${className}`}
+      className={`hidden lg:flex flex-col gap-6 self-start ${stickyClass} ${className}`}
     >
       {children}
     </aside>

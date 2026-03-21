@@ -128,6 +128,9 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
               </h1>
 
               <div className="flex items-center gap-6 py-6 border-y border-outline-variant/20">
+                <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-headline font-bold text-lg">
+                  {SITE_CONFIG.name[0]}
+                </div>
                 <div className="flex flex-col">
                   <span className="font-headline font-bold text-on-surface">
                     {SITE_CONFIG.name}
@@ -192,7 +195,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
               </div>
 
               {/* Newsletter CTA */}
-              <div className="bg-primary text-on-primary p-8 rounded-xl relative overflow-hidden mt-10">
+              <div className="bg-gradient-to-br from-primary to-primary-container text-on-primary p-8 rounded-xl relative overflow-hidden mt-10">
                 <div className="relative z-10">
                   <h4 className="text-2xl font-headline font-bold mb-4 tracking-tight">
                     ニュースレター
@@ -200,6 +203,8 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   <p className="text-on-primary/80 text-sm mb-6 leading-relaxed">
                     最新記事をメールでお届けします。
                   </p>
+                  <input type="email" placeholder="your@email.com" className="w-full bg-on-primary/10 border-0 rounded-lg py-3 px-4 text-sm text-on-primary placeholder:text-on-primary/40 focus:outline-none focus:ring-2 focus:ring-on-primary/30 mb-3" />
+                  <button className="w-full bg-surface-container-lowest text-primary font-bold py-3 rounded-lg hover:bg-surface-container-lowest/90 transition-colors text-sm">Subscribe Now</button>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
               </div>

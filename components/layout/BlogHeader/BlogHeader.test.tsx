@@ -35,7 +35,6 @@ describe("BlogHeader", () => {
     it("renders all category navigation links on desktop", () => {
       render(<BlogHeader />);
 
-      // Check desktop navigation links
       expect(screen.getByRole("link", { name: "資産形成" })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "プログラミング" })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "健康" })).toBeInTheDocument();
@@ -50,11 +49,26 @@ describe("BlogHeader", () => {
     });
   });
 
+  describe("search and subscribe", () => {
+    it("renders search input", () => {
+      render(<BlogHeader />);
+      const searchInput = screen.getByTestId("header-search-input");
+      expect(searchInput).toBeInTheDocument();
+      expect(searchInput).toHaveAttribute("placeholder", "Search articles...");
+    });
+
+    it("renders subscribe button linking to /search", () => {
+      render(<BlogHeader />);
+      const subscribeButton = screen.getByTestId("header-subscribe-button");
+      expect(subscribeButton).toBeInTheDocument();
+      expect(subscribeButton).toHaveTextContent("Subscribe");
+      expect(subscribeButton).toHaveAttribute("href", "/search");
+    });
+  });
+
   describe("mobile menu", () => {
     it("renders mobile menu button (hidden on desktop via CSS)", () => {
       render(<BlogHeader />);
-      // The mobile menu button is rendered but hidden via CSS on desktop
-      // We verify it exists in the DOM
       const mobileMenuContainer = document.querySelector('[data-component="blog-header"] button');
       expect(mobileMenuContainer).toBeInTheDocument();
     });
