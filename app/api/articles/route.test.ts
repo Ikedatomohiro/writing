@@ -55,6 +55,23 @@ describe("GET /api/articles", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+    mockRequireAuth.mockResolvedValue(null);
+  });
+
+  it("未認証の場合は401を返す", async () => {
+    const { NextResponse } = await import("next/server");
+    mockRequireAuth.mockResolvedValue(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    );
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/articles");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
+    expect(mockGetArticles).not.toHaveBeenCalled();
   });
 
   it("記事一覧を取得する", async () => {
@@ -129,6 +146,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ title: "Test" }),
     });
 
@@ -156,6 +174,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "New Article",
         content: "New Content",
@@ -182,6 +201,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         content: "Content without title",
       }),
@@ -199,6 +219,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "",
       }),
@@ -216,6 +237,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "Test",
         content: 123,
@@ -245,6 +267,7 @@ describe("POST /api/articles", () => {
 
     const request = new NextRequest("http://localhost:3000/api/articles", {
       method: "POST",
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "Title Only",
       }),
