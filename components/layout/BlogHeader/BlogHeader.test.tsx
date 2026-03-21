@@ -1,10 +1,13 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { BlogHeader } from "./BlogHeader";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
+const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/"),
+  useRouter: vi.fn(() => ({ push: mockPush })),
 }));
 
 afterEach(() => {
@@ -55,6 +58,22 @@ describe("BlogHeader", () => {
       const searchInput = screen.getByTestId("header-search-input");
       expect(searchInput).toBeInTheDocument();
       expect(searchInput).toHaveAttribute("placeholder", "記事を検索...");
+    });
+
+    it("navigates to /search with query on Enter", async () => {
+      const user = userEvent.setup();
+      render(<BlogHeader />);
+      const searchInput = screen.getByTestId("header-search-input");
+      await user.type(searchInput, "テスト記事{enter}");
+      expect(mockPush).toHaveBeenCalledWith("/search?q=%E3%83%86%E3%82%B9%E3%83%88%E8%A8%98%E4%BA%8B");
+    });
+
+    it("does not navigate on Enter with empty query", async () => {
+      const user = userEvent.setup();
+      render(<BlogHeader />);
+      const searchInput = screen.getByTestId("header-search-input");
+      await user.type(searchInput, "   {enter}");
+      expect(mockPush).not.toHaveBeenCalled();
     });
 
     it("renders subscribe button linking to /search", () => {
