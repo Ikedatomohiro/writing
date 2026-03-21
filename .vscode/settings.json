@@ -1,0 +1,8 @@
+{
+  "python.defaultInterpreterPath": "/Users/tomo/Desktop/workspace/writing-project/writing/tools/.venv/bin/python",
+  "python.venvPath": "/Users/tomo/Desktop/workspace/writing-project/writing/tools",
+  "python.venvFolders": [
+    "/Users/tomo/Desktop/workspace/writing-project/writing/tools"
+  ],
+  "jupyter.notebookFileRoot": "/Users/tomo/Desktop/workspace/writing-project/writing/tools"
+}

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { LoginForm } from "./LoginForm";
 
 vi.mock("next-auth/react", () => ({
@@ -9,7 +8,7 @@ vi.mock("next-auth/react", () => ({
 }));
 
 const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
+  return render(ui);
 };
 
 describe("LoginForm", () => {

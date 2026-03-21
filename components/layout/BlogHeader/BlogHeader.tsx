@@ -38,12 +38,13 @@ export function BlogHeader() {
         {/* Search & Subscribe */}
         <div className="hidden md:flex items-center gap-3">
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">
-              search
-            </span>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+            </svg>
             <input
-              placeholder="Search articles..."
-              className="bg-surface-container border-none rounded-full py-1.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 w-48 font-body"
+              placeholder="記事を検索..."
+              className="bg-surface-container border-none rounded-full py-1.5 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 w-48 font-body text-on-surface placeholder:text-on-surface-variant/50"
               data-testid="header-search-input"
             />
           </div>

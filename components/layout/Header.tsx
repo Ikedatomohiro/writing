@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Container, Flex, Text } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -12,26 +11,27 @@ export function Header() {
   };
 
   return (
-    <Box as="header" bg="gray.100" borderBottomWidth="1px">
-      <Container maxW="container.xl">
-        <Flex justify="space-between" align="center" h="16">
-          <Link href="/articles">
-            <Text fontWeight="bold" fontSize="lg">
-              記事管理システム
-            </Text>
+    <header className="bg-surface-container-low border-b border-outline-variant/20">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-between items-center h-16">
+          <Link href="/articles" className="font-headline font-bold text-lg text-on-surface">
+            記事管理システム
           </Link>
           {session?.user && (
-            <Flex align="center" gap={4}>
-              <Text fontSize="sm" color="gray.600">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-on-surface-variant">
                 {session.user.email}
-              </Text>
-              <Button size="sm" variant="outline" onClick={handleLogout}>
+              </span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors"
+              >
                 ログアウト
-              </Button>
-            </Flex>
+              </button>
+            </div>
           )}
-        </Flex>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </header>
   );
 }

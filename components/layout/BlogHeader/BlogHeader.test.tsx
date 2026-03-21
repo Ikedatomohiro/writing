@@ -54,7 +54,7 @@ describe("BlogHeader", () => {
       render(<BlogHeader />);
       const searchInput = screen.getByTestId("header-search-input");
       expect(searchInput).toBeInTheDocument();
-      expect(searchInput).toHaveAttribute("placeholder", "Search articles...");
+      expect(searchInput).toHaveAttribute("placeholder", "記事を検索...");
     });
 
     it("renders subscribe button linking to /search", () => {

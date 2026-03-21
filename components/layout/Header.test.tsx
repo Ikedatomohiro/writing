@@ -2,7 +2,6 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { signOut, useSession } from "next-auth/react";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { Header } from "./Header";
 
 vi.mock("next-auth/react", () => ({
@@ -14,9 +13,7 @@ const mockUseSession = useSession as ReturnType<typeof vi.fn>;
 const mockSignOut = signOut as ReturnType<typeof vi.fn>;
 
 function renderWithProviders(ui: React.ReactElement) {
-  return render(
-    <ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>
-  );
+  return render(ui);
 }
 
 describe("Header", () => {

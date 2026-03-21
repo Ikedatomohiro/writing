@@ -1,7 +1,6 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 
 type Props = {
   error?: string;
@@ -24,49 +23,27 @@ export function LoginForm({ error }: Props) {
   };
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      minH="100vh"
-      bg="gray.50"
-    >
-      <Box
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="md"
-        maxW="400px"
-        w="full"
-      >
-        <VStack gap={6}>
-          <Heading size="lg">管理画面ログイン</Heading>
+    <div className="flex items-center justify-center min-h-screen bg-surface-container-low">
+      <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.06)] max-w-[400px] w-full">
+        <div className="flex flex-col items-center gap-6">
+          <h1 className="font-headline text-2xl font-bold text-on-surface">管理画面ログイン</h1>
 
           {error && (
-            <Box
-              bg="red.50"
-              border="1px"
-              borderColor="red.200"
-              borderRadius="md"
-              p={4}
-              w="full"
-            >
-              <Text color="red.600" fontSize="sm">
+            <div className="bg-error-container border border-error/20 rounded-lg p-4 w-full">
+              <p className="text-error text-sm">
                 {getErrorMessage(error)}
-              </Text>
-            </Box>
+              </p>
+            </div>
           )}
 
-          <Button
-            colorPalette="blue"
-            size="lg"
-            w="full"
+          <button
             onClick={handleGoogleSignIn}
+            className="w-full px-6 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
           >
             Googleでログイン
-          </Button>
-        </VStack>
-      </Box>
-    </Box>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
