@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { TableOfContentsContainer } from "./TableOfContentsContainer";
 
 // Mock useActiveHeading
@@ -22,10 +21,6 @@ vi.mock("@/lib/toc/extractHeadings", () => ({
 import { useActiveHeading } from "@/hooks/useActiveHeading";
 import { extractHeadings } from "@/lib/toc/extractHeadings";
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("TableOfContentsContainer", () => {
   let container: HTMLDivElement;
 
@@ -45,7 +40,7 @@ describe("TableOfContentsContainer", () => {
 
   describe("rendering", () => {
     it("renders TableOfContents component", () => {
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -53,7 +48,7 @@ describe("TableOfContentsContainer", () => {
     });
 
     it("renders title", () => {
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -66,7 +61,7 @@ describe("TableOfContentsContainer", () => {
         { id: "h2", title: "まとめ", level: 2 },
       ]);
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -77,7 +72,7 @@ describe("TableOfContentsContainer", () => {
 
   describe("heading extraction", () => {
     it("calls extractHeadings with content element", () => {
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -87,7 +82,7 @@ describe("TableOfContentsContainer", () => {
     it("handles missing content element gracefully", () => {
       document.body.removeChild(container);
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#nonexistent" />
       );
 
@@ -102,7 +97,7 @@ describe("TableOfContentsContainer", () => {
         { id: "h2", title: "まとめ", level: 2 },
       ]);
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -120,7 +115,7 @@ describe("TableOfContentsContainer", () => {
       ]);
       vi.mocked(useActiveHeading).mockReturnValue("h1");
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -135,7 +130,7 @@ describe("TableOfContentsContainer", () => {
         { id: "h1", title: "はじめに", level: 2 },
       ]);
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 
@@ -150,7 +145,7 @@ describe("TableOfContentsContainer", () => {
     it("renders empty TableOfContents when no headings", () => {
       vi.mocked(extractHeadings).mockReturnValue([]);
 
-      renderWithChakra(
+      render(
         <TableOfContentsContainer contentSelector="#article-content" />
       );
 

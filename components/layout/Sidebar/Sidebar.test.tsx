@@ -1,20 +1,15 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { Sidebar } from "./Sidebar";
 
 afterEach(() => {
   cleanup();
 });
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("Sidebar", () => {
   describe("rendering", () => {
     it("renders children correctly", () => {
-      renderWithChakra(
+      render(
         <Sidebar>
           <div>Widget 1</div>
           <div>Widget 2</div>
@@ -25,7 +20,7 @@ describe("Sidebar", () => {
     });
 
     it("renders as aside element for semantic HTML", () => {
-      renderWithChakra(
+      render(
         <Sidebar>
           <div>Content</div>
         </Sidebar>
@@ -34,7 +29,7 @@ describe("Sidebar", () => {
     });
 
     it("applies correct data-testid", () => {
-      renderWithChakra(
+      render(
         <Sidebar>
           <div>Content</div>
         </Sidebar>
@@ -45,7 +40,7 @@ describe("Sidebar", () => {
 
   describe("sticky behavior", () => {
     it("applies sticky positioning by default", () => {
-      renderWithChakra(
+      render(
         <Sidebar>
           <div>Content</div>
         </Sidebar>
@@ -55,7 +50,7 @@ describe("Sidebar", () => {
     });
 
     it("does not apply sticky positioning when sticky is false", () => {
-      renderWithChakra(
+      render(
         <Sidebar sticky={false}>
           <div>Content</div>
         </Sidebar>
@@ -67,7 +62,7 @@ describe("Sidebar", () => {
 
   describe("responsive behavior", () => {
     it("has data attribute for responsive hiding", () => {
-      renderWithChakra(
+      render(
         <Sidebar>
           <div>Content</div>
         </Sidebar>
@@ -76,22 +71,20 @@ describe("Sidebar", () => {
       expect(sidebar).toHaveAttribute("data-hide-mobile", "true");
     });
 
-    it("has responsive display styles for mobile hiding", () => {
-      renderWithChakra(
+    it("renders the sidebar element", () => {
+      render(
         <Sidebar>
           <div>Content</div>
         </Sidebar>
       );
       const sidebar = screen.getByTestId("sidebar");
-      // Chakra UI applies responsive styles via CSS classes
-      // The component should have responsive display prop
       expect(sidebar).toBeInTheDocument();
     });
   });
 
   describe("accessibility", () => {
     it("has correct aria-label", () => {
-      renderWithChakra(
+      render(
         <Sidebar aria-label="Page sidebar">
           <div>Content</div>
         </Sidebar>

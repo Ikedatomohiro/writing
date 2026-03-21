@@ -2,7 +2,6 @@
 
 import { forwardRef, type ReactNode, type AnchorHTMLAttributes } from "react";
 import NextLink from "next/link";
-import { Link as ChakraLink } from "@chakra-ui/react";
 
 export interface LinkProps
   extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
@@ -12,27 +11,38 @@ export interface LinkProps
 }
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ href, external = false, children, ...props }, ref) => {
+  ({ href, external = false, children, className, ...props }, ref) => {
     const externalProps = external
-      ? { target: "_blank", rel: "noopener noreferrer" }
+      ? { target: "_blank" as const, rel: "noopener noreferrer" }
       : {};
 
+    const linkClasses = `text-primary no-underline hover:underline transition-colors ${className ?? ""}`;
+
+    if (external) {
+      return (
+        <a
+          ref={ref}
+          href={href}
+          className={linkClasses}
+          data-styled="true"
+          {...externalProps}
+          {...props}
+        >
+          {children}
+        </a>
+      );
+    }
+
     return (
-      <ChakraLink
-        as={external ? "a" : NextLink}
+      <NextLink
         ref={ref}
         href={href}
-        color="var(--accent)"
-        textDecoration="none"
-        _hover={{
-          textDecoration: "underline",
-        }}
+        className={linkClasses}
         data-styled="true"
-        {...externalProps}
         {...props}
       >
         {children}
-      </ChakraLink>
+      </NextLink>
     );
   }
 );

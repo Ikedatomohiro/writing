@@ -1,7 +1,5 @@
 "use client";
 
-import { Box, Text } from "@chakra-ui/react";
-
 export type AdVariant = "leaderboard" | "rectangle" | "skyscraper" | "infeed" | "in-article";
 
 export interface AdProps {
@@ -41,23 +39,13 @@ export function AdPlaceholder({ variant, config, minHeight }: AdPlaceholderProps
     : `広告 ${config.width}×${config.height}`;
 
   return (
-    <Box
+    <div
       data-testid="ad-placeholder"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      w="100%"
-      h="100%"
-      minH={minHeight}
-      bg="var(--surface)"
-      border="2px dashed"
-      borderColor="var(--border)"
-      borderRadius="md"
+      className="flex items-center justify-center w-full h-full bg-surface-container border-2 border-dashed border-outline-variant rounded-lg"
+      style={{ minHeight }}
     >
-      <Text color="var(--text-tertiary)" fontSize="sm">
-        {label}
-      </Text>
-    </Box>
+      <span className="text-outline text-sm">{label}</span>
+    </div>
   );
 }
 
@@ -106,34 +94,19 @@ export function Ad({
   const shouldRenderAdsense = isProduction && slotId;
 
   return (
-    <Box
-      as="aside"
+    <aside
       data-testid="ad-container"
       data-variant={variant}
       data-width={isFluid ? "fluid" : config.width}
       data-height={config.height === "auto" ? "auto" : config.height}
       aria-label="広告"
-      className={className}
-      maxW="100%"
-      w={width}
-      h={height}
-      minH={minHeight}
-      bg="var(--surface)"
-      borderRadius="md"
-      overflow="hidden"
-      position="relative"
+      className={`max-w-full bg-surface-container rounded-lg overflow-hidden relative ${className ?? ""}`}
+      style={{ width, height, minHeight }}
     >
       {showLabel && (
-        <Text
-          fontSize="xs"
-          color="var(--text-tertiary)"
-          position="absolute"
-          top={1}
-          left={2}
-          zIndex={1}
-        >
+        <span className="text-xs text-outline absolute top-1 left-2 z-10">
           広告
-        </Text>
+        </span>
       )}
 
       {shouldRenderAdsense ? (
@@ -141,7 +114,7 @@ export function Ad({
       ) : (
         <AdPlaceholder variant={variant} config={config} minHeight={minHeight} />
       )}
-    </Box>
+    </aside>
   );
 }
 

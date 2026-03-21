@@ -1,7 +1,6 @@
 "use client";
 
 import { forwardRef, type ReactNode, type HTMLAttributes } from "react";
-import { Box } from "@chakra-ui/react";
 
 export type TagVariant = "default" | "category";
 export type TagSize = "sm" | "md";
@@ -12,49 +11,28 @@ export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   children: ReactNode;
 }
 
-const variantStyles: Record<
-  TagVariant,
-  { bg: string; color: string }
-> = {
-  default: {
-    bg: "var(--bg-surface)",
-    color: "var(--text-secondary)",
-  },
-  category: {
-    bg: "var(--accent-bg)",
-    color: "var(--accent)",
-  },
+const variantClasses: Record<TagVariant, string> = {
+  default: "bg-surface-container text-on-surface-variant",
+  category: "bg-primary-container text-primary",
 };
 
-const sizeStyles: Record<TagSize, { px: number; py: number; fontSize: string }> = {
-  sm: { px: 2, py: 1, fontSize: "xs" },
-  md: { px: 3, py: 1.5, fontSize: "sm" },
+const sizeClasses: Record<TagSize, string> = {
+  sm: "px-2 py-1 text-xs",
+  md: "px-3 py-1.5 text-sm",
 };
 
 export const Tag = forwardRef<HTMLSpanElement, TagProps>(
-  ({ variant = "default", size = "md", children, ...props }, ref) => {
-    const variantStyle = variantStyles[variant];
-    const sizeStyle = sizeStyles[size];
-
+  ({ variant = "default", size = "md", children, className, ...props }, ref) => {
     return (
-      <Box
-        as="span"
+      <span
         ref={ref}
-        display="inline-flex"
-        alignItems="center"
-        bg={variantStyle.bg}
-        color={variantStyle.color}
-        px={sizeStyle.px}
-        py={sizeStyle.py}
-        fontSize={sizeStyle.fontSize}
-        fontWeight="medium"
-        borderRadius="md"
+        className={`inline-flex items-center font-label font-medium tracking-widest uppercase rounded-full ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ""}`}
         data-variant={variant}
         data-size={size}
         {...props}
       >
         {children}
-      </Box>
+      </span>
     );
   }
 );

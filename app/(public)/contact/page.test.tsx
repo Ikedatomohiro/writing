@@ -1,23 +1,21 @@
-import { screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it, beforeEach } from "vitest";
-import { renderWithChakra } from "@/app/test-utils";
 import ContactPage from "./page";
 import { ContactForm } from "./ContactForm";
 
 describe("ContactPage", () => {
   beforeEach(() => {
-    // Clean up DOM between tests
     document.body.innerHTML = "";
   });
 
   it("renders the page title", () => {
-    renderWithChakra(<ContactPage />);
-    expect(screen.getByRole("heading", { name: /お問い合わせ/i })).toBeInTheDocument();
+    render(<ContactPage />);
+    expect(screen.getByRole("heading", { name: /Get in Touch/i })).toBeInTheDocument();
   });
 
   it("renders the description text", () => {
-    renderWithChakra(<ContactPage />);
-    expect(screen.getByText(/ご質問やご要望がございましたら/i)).toBeInTheDocument();
+    render(<ContactPage />);
+    expect(screen.getByText(/We value your inquiries/i)).toBeInTheDocument();
   });
 });
 
@@ -29,20 +27,22 @@ describe("ContactForm", () => {
   });
 
   it("renders the Google Form iframe when formUrl is provided", () => {
-    renderWithChakra(<ContactForm formUrl={mockFormUrl} />);
-    const iframe = screen.getByTitle("お問い合わせフォーム");
+    render(<ContactForm formUrl={mockFormUrl} />);
+    const iframe = screen.getByTitle("Contact Form");
     expect(iframe).toBeInTheDocument();
     expect(iframe).toHaveAttribute("src", mockFormUrl);
   });
 
-  it("iframe has responsive width style", () => {
-    renderWithChakra(<ContactForm formUrl={mockFormUrl} />);
-    const iframe = screen.getByTitle("お問い合わせフォーム");
-    expect(iframe).toHaveStyle({ width: "100%" });
+  it("iframe has full width style", () => {
+    render(<ContactForm formUrl={mockFormUrl} />);
+    const iframe = screen.getByTitle("Contact Form");
+    expect(iframe).toHaveClass("w-full");
   });
 
-  it("renders loading state when formUrl is empty", () => {
-    renderWithChakra(<ContactForm formUrl="" />);
-    expect(screen.getByText(/フォームを読み込んでいます/i)).toBeInTheDocument();
+  it("renders fallback form fields when formUrl is empty", () => {
+    render(<ContactForm formUrl="" />);
+    expect(screen.getByPlaceholderText("John Doe")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("john@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Send Message")).toBeInTheDocument();
   });
 });

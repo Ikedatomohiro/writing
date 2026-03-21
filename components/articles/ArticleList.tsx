@@ -1,6 +1,5 @@
 "use client";
 
-import { SimpleGrid, Text, Center } from "@chakra-ui/react";
 import { ArticleCard } from "./ArticleCard";
 import type { Article } from "@/lib/articles/types";
 
@@ -11,17 +10,17 @@ interface ArticleListProps {
 export function ArticleList({ articles }: ArticleListProps) {
   if (articles.length === 0) {
     return (
-      <Center py={10}>
-        <Text color="gray.500">記事がありません</Text>
-      </Center>
+      <div className="py-10 text-center">
+        <p className="text-on-surface-variant">記事がありません</p>
+      </div>
     );
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {articles.map((article) => (
         <ArticleCard key={article.id} article={article} />
       ))}
-    </SimpleGrid>
+    </div>
   );
 }

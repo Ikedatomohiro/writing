@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
-import { Box, Container, Flex, Grid, Text, VStack } from "@chakra-ui/react";
 import Link from "next/link";
-import { BlogHeader } from "@/components/layout/BlogHeader/BlogHeader";
-import { Footer } from "@/components/layout/Footer";
+import Image from "next/image";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
-import { AdSlot } from "@/components/layout/Sidebar/AdSlot";
 import { getArticlesByCategory } from "@/lib/content/api";
 import type { Category, ArticleMeta } from "@/lib/content/types";
-import { THEME_CONFIGS } from "@/lib/theme/constants";
-import type { Theme } from "@/lib/theme/types";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 export const metadata: Metadata = {
@@ -28,83 +23,136 @@ export const metadata: Metadata = {
 const CATEGORY_CONFIG: {
   category: Category;
   label: string;
-  theme: Theme;
   href: string;
 }[] = [
-  { category: "asset", label: "資産形成", theme: "investment", href: "/asset" },
-  { category: "tech", label: "プログラミング", theme: "programming", href: "/tech" },
-  { category: "health", label: "健康", theme: "health", href: "/health" },
+  { category: "asset", label: "資産形成", href: "/asset" },
+  { category: "tech", label: "プログラミング", href: "/tech" },
+  { category: "health", label: "健康", href: "/health" },
 ];
 
-interface CategorySectionProps {
-  category: Category;
-  label: string;
-  theme: Theme;
-  href: string;
-  articles: ArticleMeta[];
-}
-
-function CategorySection({
-  category,
-  label,
-  theme,
-  href,
-  articles,
-}: CategorySectionProps) {
-  const themeConfig = THEME_CONFIGS[theme];
+function HeroSection({ article }: { article: ArticleMeta }) {
+  const href = `/${article.category}/${article.slug}`;
 
   return (
-    <Box as="section" data-testid={`section-${category}`}>
-      {/* Section Header */}
-      <Flex justify="space-between" align="center" mb={{ base: 6, lg: 8 }}>
-        <Flex align="center" gap={{ base: 3, lg: 4 }}>
-          <Flex
-            px={3}
-            py={1}
-            borderRadius="4px"
-            bg={themeConfig.accentBg}
-          >
-            <Text
-              fontSize={{ base: "14px", lg: "15px" }}
-              fontWeight="600"
-              color={themeConfig.accent}
-            >
-              {label}
-            </Text>
-          </Flex>
-          <Text
-            fontSize={{ base: "24px", lg: "28px" }}
-            fontWeight="700"
-            color="var(--text-primary)"
-          >
-            {label}の最新記事
-          </Text>
-        </Flex>
-        <Link href={href}>
-          <Text
-            fontSize={{ base: "14px", lg: "15px" }}
-            color="var(--text-secondary)"
-            _hover={{ color: "var(--text-primary)" }}
-          >
-            すべて見る
-          </Text>
-        </Link>
-      </Flex>
+    <section className="mb-20" data-testid="hero-section">
+      <div className="relative grid md:grid-cols-12 gap-0 items-center">
+        <div className="md:col-span-7 z-10">
+          <div className="bg-surface-container-lowest p-8 md:p-16 rounded-xl shadow-2xl shadow-on-surface/5">
+            <span className="text-primary font-label text-xs font-bold tracking-widest uppercase mb-4 block">
+              注目の記事
+            </span>
+            <h1 className="text-4xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-tight mb-6">
+              {article.title}
+            </h1>
+            <p className="text-on-surface-variant text-lg leading-relaxed mb-8 max-w-lg">
+              {article.description}
+            </p>
+            <div className="flex items-center gap-4">
+              <Link
+                href={href}
+                className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+              >
+                記事を読む
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="md:col-span-6 md:-ml-24 mt-8 md:mt-0">
+          <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
+            {article.thumbnail ? (
+              <Image
+                src={article.thumbnail}
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="w-full h-full bg-surface-container" />
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-      {/* Article Cards */}
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-        }}
-        gap={6}
-      >
-        {articles.slice(0, 3).map((article) => (
-          <BlogArticleCard key={article.slug} article={article} />
-        ))}
-      </Grid>
-    </Box>
+function CategoryNavigation() {
+  return (
+    <div className="flex flex-wrap items-center gap-6 mb-12 border-b border-outline-variant/20 pb-6">
+      <span className="text-outline font-label text-[10px] tracking-[0.2em] uppercase font-bold">
+        カテゴリ
+      </span>
+      {CATEGORY_CONFIG.map(({ category, label, href }) => (
+        <Link
+          key={category}
+          href={href}
+          className="text-on-surface-variant font-headline font-bold text-lg hover:text-primary transition-colors"
+        >
+          {label}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function BentoGrid({ articles }: { articles: ArticleMeta[] }) {
+  const [first, second, ...rest] = articles;
+
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Large Card - spans 2 columns */}
+      {first && (
+        <div className="md:col-span-2">
+          <BlogArticleCard article={first} variant="large" />
+        </div>
+      )}
+
+      {/* Square Card */}
+      {second && (
+        <div>
+          <BlogArticleCard article={second} variant="square" />
+        </div>
+      )}
+
+      {/* Standard Cards */}
+      {rest.map((article) => (
+        <div key={article.slug}>
+          <BlogArticleCard article={article} variant="default" />
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function NewsletterSection() {
+  return (
+    <section className="mt-24 bg-surface-container-lowest rounded-xl p-12 md:p-20 text-center border border-outline-variant/10">
+      <h2 className="text-3xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface mb-6">
+        厳選された知見を、
+        <br />
+        毎週お届け。
+      </h2>
+      <p className="text-on-surface-variant text-lg mb-10 max-w-xl mx-auto">
+        最新の記事や厳選されたコンテンツを毎週お届けします。
+      </p>
+      <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+        <input
+          className="flex-1 bg-surface-container border-none rounded-full px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface"
+          placeholder="メールアドレス"
+          type="email"
+        />
+        <button
+          className="bg-primary text-on-primary px-10 py-4 rounded-full font-bold shadow-lg hover:bg-primary-container transition-all"
+          type="submit"
+        >
+          登録
+        </button>
+      </form>
+      <p className="mt-6 text-outline text-[10px] uppercase tracking-widest font-label">
+        スパムはありません。厳選された情報のみ。
+      </p>
+    </section>
   );
 }
 
@@ -116,119 +164,26 @@ export default async function Home() {
     getArticlesByCategory("health"),
   ]);
 
-  const articlesMap: Record<Category, ArticleMeta[]> = {
-    asset: assetArticles,
-    tech: techArticles,
-    health: healthArticles,
-  };
+  // Combine all articles and sort by date for the bento grid
+  const allArticles = [...assetArticles, ...techArticles, ...healthArticles]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // First article is the hero, rest go in the bento grid
+  const [featuredArticle, ...gridArticles] = allArticles;
 
   return (
-    <Box minH="100vh" bg="var(--bg-primary)">
-      {/* Header */}
-      <BlogHeader />
+    <div className="max-w-7xl mx-auto px-6">
+      {/* Hero Section: Content Spotlight */}
+      {featuredArticle && <HeroSection article={featuredArticle} />}
 
-      {/* Ad Slot - Below Header */}
-      <Container maxW="1280px" px={{ base: 4, md: 6 }} py={4}>
-        <AdSlot size="leaderboard" showPlaceholder />
-      </Container>
+      {/* Category Navigation */}
+      <CategoryNavigation />
 
-      {/* Hero Section */}
-      <Box
-        data-testid="hero-section"
-        py={{ base: 12, md: 16, lg: 20 }}
-        bg="var(--bg-surface)"
-      >
-        <Container maxW="1280px" px={{ base: 4, md: 6, lg: 8 }}>
-          <VStack gap={{ base: 6, lg: 8 }} textAlign="center">
-            {/* Site Title */}
-            <Text
-              as="h1"
-              fontSize={{ base: "36px", md: "48px", lg: "56px" }}
-              fontWeight="700"
-              color="var(--text-primary)"
-              fontFamily="'Noto Sans JP', sans-serif"
-            >
-              {SITE_CONFIG.name}
-            </Text>
+      {/* Bento Grid Article List */}
+      {gridArticles.length > 0 && <BentoGrid articles={gridArticles} />}
 
-            {/* Subtitle */}
-            <Text
-              fontSize={{ base: "16px", md: "18px", lg: "20px" }}
-              color="var(--text-secondary)"
-              fontFamily="'Noto Sans JP', sans-serif"
-            >
-              {SITE_CONFIG.description}
-            </Text>
-
-            {/* Category Navigation */}
-            <Flex gap={4} flexWrap="wrap" justify="center">
-              {CATEGORY_CONFIG.map(({ category, label, theme, href }) => {
-                const themeConfig = THEME_CONFIGS[theme];
-                return (
-                  <Link key={category} href={href}>
-                    <Flex
-                      px={4}
-                      py={2}
-                      borderRadius="8px"
-                      bg={themeConfig.accentBg}
-                      _hover={{ opacity: 0.8 }}
-                      transition="opacity 0.2s"
-                    >
-                      <Text
-                        fontSize="14px"
-                        fontWeight="500"
-                        color={themeConfig.accent}
-                      >
-                        {label}
-                      </Text>
-                    </Flex>
-                  </Link>
-                );
-              })}
-            </Flex>
-          </VStack>
-        </Container>
-      </Box>
-
-      {/* Main Content */}
-      <Container maxW="1280px" px={{ base: 4, md: 8, lg: 10 }} py={{ base: 8, md: 12, lg: 16 }}>
-        <VStack gap={{ base: 12, md: 14, lg: 16 }} align="stretch">
-          {/* Investment Section */}
-          <CategorySection
-            category="asset"
-            label="資産形成"
-            theme="investment"
-            href="/asset"
-            articles={articlesMap.asset}
-          />
-
-          {/* Programming Section */}
-          <CategorySection
-            category="tech"
-            label="プログラミング"
-            theme="programming"
-            href="/tech"
-            articles={articlesMap.tech}
-          />
-
-          {/* Ad Slot - Between Sections */}
-          <Box>
-            <AdSlot size="leaderboard" showPlaceholder />
-          </Box>
-
-          {/* Health Section */}
-          <CategorySection
-            category="health"
-            label="健康"
-            theme="health"
-            href="/health"
-            articles={articlesMap.health}
-          />
-        </VStack>
-      </Container>
-
-      {/* Footer */}
-      <Footer />
-    </Box>
+      {/* Newsletter CTA */}
+      <NewsletterSection />
+    </div>
   );
 }

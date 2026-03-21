@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
 export interface ArticleBodyProps {
@@ -17,17 +16,11 @@ export function ArticleBody({ children, className = "" }: ArticleBodyProps) {
   const classes = ["article-body", className].filter(Boolean).join(" ");
 
   return (
-    <Box
-      as="article"
-      className={classes}
+    <div
+      className={`${classes} prose prose-slate max-w-none`}
       data-testid="article-body"
-      borderRadius="lg"
-      bg="var(--bg-card)"
-      p={8}
-      borderWidth="1px"
-      borderColor="var(--border)"
     >
       {children}
-    </Box>
+    </div>
   );
 }

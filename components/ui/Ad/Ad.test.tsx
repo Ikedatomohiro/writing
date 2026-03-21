@@ -1,11 +1,6 @@
 import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { Ad, type AdVariant, getAdsEnabled } from "./Ad";
-
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
 
 describe("Ad", () => {
   describe("when ads are enabled", () => {
@@ -20,12 +15,12 @@ describe("Ad", () => {
 
     describe("rendering", () => {
       it("renders as a container element", () => {
-        renderWithChakra(<Ad variant="rectangle" />);
+        render(<Ad variant="rectangle" />);
         expect(screen.getByTestId("ad-container")).toBeInTheDocument();
       });
 
       it("renders placeholder in development mode", () => {
-        renderWithChakra(<Ad variant="rectangle" />);
+        render(<Ad variant="rectangle" />);
         expect(screen.getByText("広告")).toBeInTheDocument();
       });
     });
@@ -40,7 +35,7 @@ describe("Ad", () => {
       it.each(variantTests)(
         "applies $variant variant with correct dimensions",
         ({ variant, expectedWidth, expectedHeight }) => {
-          renderWithChakra(<Ad variant={variant} />);
+          render(<Ad variant={variant} />);
           const container = screen.getByTestId("ad-container");
           expect(container).toHaveAttribute("data-variant", variant);
           expect(container).toHaveAttribute("data-width", String(expectedWidth));
@@ -49,14 +44,14 @@ describe("Ad", () => {
       );
 
       it("applies infeed variant with fluid width", () => {
-        renderWithChakra(<Ad variant="infeed" />);
+        render(<Ad variant="infeed" />);
         const container = screen.getByTestId("ad-container");
         expect(container).toHaveAttribute("data-variant", "infeed");
         expect(container).toHaveAttribute("data-width", "fluid");
       });
 
       it("applies in-article variant with fluid width", () => {
-        renderWithChakra(<Ad variant="in-article" />);
+        render(<Ad variant="in-article" />);
         const container = screen.getByTestId("ad-container");
         expect(container).toHaveAttribute("data-variant", "in-article");
         expect(container).toHaveAttribute("data-width", "fluid");
@@ -65,19 +60,19 @@ describe("Ad", () => {
 
     describe("ad label", () => {
       it("shows ad label by default", () => {
-        renderWithChakra(<Ad variant="rectangle" />);
+        render(<Ad variant="rectangle" />);
         expect(screen.getByText("広告")).toBeInTheDocument();
       });
 
       it("hides ad label when showLabel is false", () => {
-        renderWithChakra(<Ad variant="rectangle" showLabel={false} />);
+        render(<Ad variant="rectangle" showLabel={false} />);
         expect(screen.queryByText("広告")).not.toBeInTheDocument();
       });
     });
 
     describe("accessibility", () => {
       it("has aria-label for ad container", () => {
-        renderWithChakra(<Ad variant="rectangle" />);
+        render(<Ad variant="rectangle" />);
         expect(screen.getByLabelText("広告")).toBeInTheDocument();
       });
     });
@@ -89,12 +84,12 @@ describe("Ad", () => {
     });
 
     it("returns null when NEXT_PUBLIC_ADS_ENABLED is not true", () => {
-      renderWithChakra(<Ad variant="rectangle" />);
+      render(<Ad variant="rectangle" />);
       expect(screen.queryByTestId("ad-container")).not.toBeInTheDocument();
     });
 
     it("does not render AdPlaceholder when ads are disabled", () => {
-      renderWithChakra(<Ad variant="rectangle" />);
+      render(<Ad variant="rectangle" />);
       expect(screen.queryByTestId("ad-placeholder")).not.toBeInTheDocument();
     });
   });

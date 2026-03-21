@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Container, Flex, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { NavLink } from "./NavLink";
 import { MobileMenu, type NavLinkItem } from "./MobileMenu";
@@ -14,50 +13,33 @@ const NAV_LINKS: NavLinkItem[] = [
 
 export function BlogHeader() {
   return (
-    <Box
-      as="header"
-      bg="var(--bg-card)"
-      borderBottomWidth="1px"
-      borderColor="var(--border)"
+    <header
+      className="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-outline-variant/50 shadow-sm"
       data-component="blog-header"
     >
-      <Container maxW="1280px" px={{ base: 4, md: 6 }}>
-        <Flex
-          justify="space-between"
-          align="center"
-          h={{ base: "56px", md: "64px" }}
+      <div className="flex justify-between items-center h-16 px-4 md:px-6 max-w-7xl mx-auto">
+        {/* Logo / Site Name */}
+        <NextLink
+          href="/"
+          className="font-headline font-bold text-lg md:text-xl text-primary hover:opacity-80 transition-opacity"
         >
-          {/* Logo / Site Name */}
-          <NextLink href="/">
-            <Text
-              fontWeight="bold"
-              fontSize={{ base: "lg", md: "xl" }}
-              color="var(--accent)"
-              _hover={{ opacity: 0.8 }}
-            >
-              {SITE_CONFIG.name}
-            </Text>
-          </NextLink>
+          {SITE_CONFIG.name}
+        </NextLink>
 
-          {/* Desktop Navigation */}
-          <Flex
-            as="nav"
-            gap={1}
-            display={{ base: "none", md: "flex" }}
-          >
-            {NAV_LINKS.map((link) => (
-              <NavLink key={link.href} href={link.href}>
-                {link.label}
-              </NavLink>
-            ))}
-          </Flex>
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map((link) => (
+            <NavLink key={link.href} href={link.href}>
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
 
-          {/* Mobile Menu */}
-          <Box display={{ base: "block", md: "none" }}>
-            <MobileMenu links={NAV_LINKS} />
-          </Box>
-        </Flex>
-      </Container>
-    </Box>
+        {/* Mobile Menu */}
+        <div className="block md:hidden">
+          <MobileMenu links={NAV_LINKS} />
+        </div>
+      </div>
+    </header>
   );
 }

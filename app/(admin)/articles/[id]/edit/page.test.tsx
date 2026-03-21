@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithChakra } from "@/app/test-utils";
 import EditArticlePage from "./page";
 import { getArticle, updateArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
@@ -47,7 +46,7 @@ describe("EditArticlePage", () => {
       () => new Promise(() => {}) // 解決しないPromise
     );
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     expect(screen.getByText("読み込み中...")).toBeInTheDocument();
   });
@@ -55,7 +54,7 @@ describe("EditArticlePage", () => {
   it("記事が見つからない場合のメッセージを表示する", async () => {
     mockGetArticle.mockResolvedValue(null);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
       expect(
@@ -69,30 +68,30 @@ describe("EditArticlePage", () => {
   it("記事のフォームを表示する", async () => {
     mockGetArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("記事のタイトルを入力")).toBeInTheDocument();
     });
   });
 
   it("記事のタイトルがフォームに入力されている", async () => {
     mockGetArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("タイトル")).toHaveValue("テスト記事");
+      expect(screen.getByPlaceholderText("記事のタイトルを入力")).toHaveValue("テスト記事");
     });
   });
 
   it("記事の本文がフォームに入力されている", async () => {
     mockGetArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("本文")).toHaveValue("テスト本文です。");
+      expect(screen.getByPlaceholderText("記事の本文を入力")).toHaveValue("テスト本文です。");
     });
   });
 
@@ -100,7 +99,7 @@ describe("EditArticlePage", () => {
     const user = userEvent.setup();
     mockGetArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
       expect(screen.getByText("キャンセル")).toBeInTheDocument();
@@ -116,14 +115,14 @@ describe("EditArticlePage", () => {
     mockGetArticle.mockResolvedValue(mockArticle);
     mockUpdateArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("記事のタイトルを入力")).toBeInTheDocument();
     });
 
     // タイトルを変更
-    const titleInput = screen.getByLabelText("タイトル");
+    const titleInput = screen.getByPlaceholderText("記事のタイトルを入力");
     await user.clear(titleInput);
     await user.type(titleInput, "更新されたタイトル");
 
@@ -142,10 +141,10 @@ describe("EditArticlePage", () => {
     mockGetArticle.mockResolvedValue(mockArticle);
     mockUpdateArticle.mockResolvedValue(mockArticle);
 
-    renderWithChakra(<EditArticlePage />);
+    render(<EditArticlePage />);
 
     await waitFor(() => {
-      expect(screen.getByLabelText("タイトル")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("記事のタイトルを入力")).toBeInTheDocument();
     });
 
     await user.click(screen.getByRole("button", { name: "更新" }));

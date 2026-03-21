@@ -1,19 +1,14 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { describe, it, expect, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { ArticleBody } from "./ArticleBody";
 
 afterEach(() => {
   cleanup();
 });
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 describe("ArticleBody", () => {
   it("renders children content", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <p>Test paragraph</p>
       </ArticleBody>
@@ -23,7 +18,7 @@ describe("ArticleBody", () => {
   });
 
   it("applies article-body class for styling", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <p>Content</p>
       </ArticleBody>
@@ -34,7 +29,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders headings correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <h2>Section Title</h2>
         <h3>Subsection Title</h3>
@@ -50,7 +45,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders lists correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <ul>
           <li>Item 1</li>
@@ -64,7 +59,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders blockquote correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <blockquote>This is a quote</blockquote>
       </ArticleBody>
@@ -74,7 +69,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders table correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <table>
           <thead>
@@ -97,7 +92,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders inline code correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <p>
           Use <code>npm install</code> to install
@@ -109,7 +104,7 @@ describe("ArticleBody", () => {
   });
 
   it("renders links correctly", () => {
-    renderWithChakra(
+    render(
       <ArticleBody>
         <p>
           Visit <a href="https://example.com">Example</a>
@@ -122,7 +117,7 @@ describe("ArticleBody", () => {
   });
 
   it("applies custom className when provided", () => {
-    renderWithChakra(
+    render(
       <ArticleBody className="custom-class">
         <p>Content</p>
       </ArticleBody>

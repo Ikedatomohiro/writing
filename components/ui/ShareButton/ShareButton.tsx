@@ -1,6 +1,5 @@
 "use client";
 
-import { Text, IconButton, HStack } from "@chakra-ui/react";
 import { FaXTwitter, FaFacebookF, FaLine, FaLink } from "react-icons/fa6";
 import { SiHatenabookmark } from "react-icons/si";
 import { useState, useCallback } from "react";
@@ -25,42 +24,40 @@ export interface ShareButtonGroupProps {
 type PlatformConfig = {
   icon: React.ReactNode;
   label: string;
-  bg: string;
-  color: string;
-  hoverBg?: string;
+  bgClass: string;
+  textClass: string;
 };
 
 const platformConfig: Record<SharePlatform, PlatformConfig> = {
   twitter: {
     icon: <FaXTwitter size={18} />,
     label: "Xでシェア",
-    bg: "#000000",
-    color: "#FFFFFF",
+    bgClass: "bg-black",
+    textClass: "text-white",
   },
   facebook: {
     icon: <FaFacebookF size={18} />,
     label: "Facebookでシェア",
-    bg: "#1877F2",
-    color: "#FFFFFF",
+    bgClass: "bg-[#1877F2]",
+    textClass: "text-white",
   },
   hatena: {
     icon: <SiHatenabookmark size={18} />,
     label: "はてなブックマーク",
-    bg: "#00A4DE",
-    color: "#FFFFFF",
+    bgClass: "bg-[#00A4DE]",
+    textClass: "text-white",
   },
   line: {
     icon: <FaLine size={18} />,
     label: "LINEでシェア",
-    bg: "#06C755",
-    color: "#FFFFFF",
+    bgClass: "bg-[#06C755]",
+    textClass: "text-white",
   },
   copy: {
     icon: <FaLink size={18} />,
     label: "リンクをコピー",
-    bg: "var(--surface)",
-    color: "var(--text-secondary)",
-    hoverBg: "var(--surface-hover)",
+    bgClass: "bg-surface-container-high",
+    textClass: "text-on-surface-variant",
   },
 };
 
@@ -101,30 +98,14 @@ export function ShareButton({ platform, url, title, className }: ShareButtonProp
     window.open(shareUrl, "_blank", "width=600,height=400,noopener,noreferrer");
   }, [platform, url, title]);
 
-  const isCopyButton = platform === "copy";
-  const borderStyle = isCopyButton
-    ? { border: "1px solid", borderColor: "var(--border)" }
-    : {};
-
   return (
-    <IconButton
+    <button
       aria-label={copied ? "コピーしました" : config.label}
       onClick={handleClick}
-      bg={config.bg}
-      color={config.color}
-      borderRadius="md"
-      w={10}
-      h={10}
-      minW={10}
-      _hover={{
-        opacity: 0.8,
-        bg: config.hoverBg || config.bg,
-      }}
-      className={className}
-      {...borderStyle}
+      className={`w-10 h-10 flex items-center justify-center rounded-full ${config.bgClass} ${config.textClass} hover:opacity-80 transition-all ${className || ""}`}
     >
       {config.icon}
-    </IconButton>
+    </button>
   );
 }
 
@@ -146,20 +127,15 @@ export function ShareButtonGroup({
   className,
 }: ShareButtonGroupProps) {
   return (
-    <HStack
+    <div
+      role="group"
       aria-label="シェアボタン"
-      gap={4}
-      align="center"
-      className={className}
+      className={`flex items-center gap-3 ${className || ""}`}
     >
       {showLabel && (
-        <Text
-          fontSize="sm"
-          fontWeight="500"
-          color="var(--text-secondary)"
-        >
+        <span className="text-sm font-medium text-on-surface-variant">
           Share:
-        </Text>
+        </span>
       )}
       {platforms.map((platform) => (
         <ShareButton
@@ -169,7 +145,7 @@ export function ShareButtonGroup({
           title={title}
         />
       ))}
-    </HStack>
+    </div>
   );
 }
 

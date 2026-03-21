@@ -12,3 +12,6 @@ export type { PopularArticlesProps, PopularArticle } from "./PopularArticles";
 
 export { AdSlot } from "./AdSlot";
 export type { AdSlotProps, AdSize } from "./AdSlot";
+
+export { NewsletterSignup } from "./NewsletterSignup";
+export type { NewsletterSignupProps } from "./NewsletterSignup";

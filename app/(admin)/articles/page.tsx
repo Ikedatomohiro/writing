@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { LuPlus } from "react-icons/lu";
-import { ArticleList, SearchInput } from "@/components/articles";
+import { ArticleTable } from "@/components/articles/ArticleTable";
+import { SearchInput } from "@/components/articles";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
 
@@ -34,45 +33,103 @@ export default function ArticlesPage() {
 
   if (error) {
     return (
-      <Container maxW="container.xl" py={8}>
-        <Box color="red.500">{error}</Box>
-      </Container>
+      <div className="max-w-7xl mx-auto py-8">
+        <div className="text-error">{error}</div>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Container maxW="container.xl" py={8}>
-        <Box>読み込み中...</Box>
-      </Container>
+      <div className="max-w-7xl mx-auto py-8">
+        <div className="text-on-surface-variant">読み込み中...</div>
+      </div>
     );
   }
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <Flex justify="space-between" align="center" mb={6}>
-        <Heading as="h1" size="xl">
-          記事一覧
-        </Heading>
-        <Link href="/articles/new">
-          <Button colorPalette="blue">
-            <LuPlus />
-            新規作成
-          </Button>
-        </Link>
-      </Flex>
-      <Box mb={4}>
-        <SearchInput
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="タイトル、本文、キーワードで検索..."
-        />
-      </Box>
-      {articles.length === 0 && searchQuery ? (
-        <Text color="gray.500">検索結果が見つかりませんでした</Text>
-      ) : (
-        <ArticleList articles={articles} />
-      )}
-    </Container>
+    <>
+      <StatsGrid articleCount={articles.length} />
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-bold font-headline">Recent Posts</h3>
+          <Link
+            href="/articles"
+            className="text-sm font-semibold text-primary hover:underline"
+          >
+            View all posts
+          </Link>
+        </div>
+
+        <div className="mb-4">
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="タイトル、本文、キーワードで検索..."
+          />
+        </div>
+
+        {articles.length === 0 && searchQuery ? (
+          <p className="text-on-surface-variant">
+            検索結果が見つかりませんでした
+          </p>
+        ) : (
+          <ArticleTable articles={articles} />
+        )}
+      </section>
+    </>
+  );
+}
+
+function StatsGrid({ articleCount }: { articleCount: number }) {
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="md:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
+        <div>
+          <p className="text-xs font-label uppercase tracking-widest text-slate-500 mb-1">
+            Total Audience Reach
+          </p>
+          <h3 className="text-4xl font-black font-headline text-primary tracking-tighter">
+            142.8k
+          </h3>
+        </div>
+        <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-md">
+          <span className="material-symbols-outlined text-sm">
+            trending_up
+          </span>
+          +12.5% vs last month
+        </div>
+      </div>
+
+      <StatCard icon="article" iconBg="bg-blue-50" iconColor="text-blue-600" label="Total Posts" value={articleCount.toLocaleString()} />
+      <StatCard icon="group" iconBg="bg-orange-50" iconColor="text-orange-600" label="Active Users" value="856" />
+    </section>
+  );
+}
+
+function StatCard({
+  icon,
+  iconBg,
+  iconColor,
+  label,
+  value,
+}: {
+  icon: string;
+  iconBg: string;
+  iconColor: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm">
+      <div
+        className={`w-10 h-10 rounded-lg ${iconBg} flex items-center justify-center ${iconColor} mb-4`}
+      >
+        <span className="material-symbols-outlined">{icon}</span>
+      </div>
+      <p className="text-sm text-slate-500 font-medium">{label}</p>
+      <h3 className="text-2xl font-bold font-headline">{value}</h3>
+    </div>
   );
 }

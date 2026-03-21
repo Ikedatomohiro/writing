@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, screen, waitFor, fireEvent } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithChakra } from "@/app/test-utils";
 import ArticlesPage from "./page";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
@@ -46,17 +45,17 @@ describe("ArticlesPage", () => {
   });
 
   it("ページタイトルを表示する", async () => {
-    renderWithChakra(<ArticlesPage />);
+    render(<ArticlesPage />);
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: "記事一覧" })
+        screen.getByRole("heading", { name: "Recent Posts" })
       ).toBeInTheDocument();
     });
   });
 
   it("検索入力フィールドを表示する", async () => {
-    renderWithChakra(<ArticlesPage />);
+    render(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();
@@ -64,7 +63,7 @@ describe("ArticlesPage", () => {
   });
 
   it("記事一覧を表示する", async () => {
-    renderWithChakra(<ArticlesPage />);
+    render(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByText("TypeScript入門")).toBeInTheDocument();
@@ -73,7 +72,7 @@ describe("ArticlesPage", () => {
   });
 
   it("検索クエリを入力するとgetArticlesが呼ばれる", async () => {
-    renderWithChakra(<ArticlesPage />);
+    render(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();
@@ -95,7 +94,7 @@ describe("ArticlesPage", () => {
       .mockResolvedValueOnce(mockArticles)
       .mockResolvedValue([]);
 
-    renderWithChakra(<ArticlesPage />);
+    render(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();

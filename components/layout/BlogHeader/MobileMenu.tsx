@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  Box,
-  IconButton,
-  VStack,
-  Portal,
-} from "@chakra-ui/react";
+import { createPortal } from "react-dom";
 import { NavLink } from "./NavLink";
 
 export interface NavLinkItem {
@@ -99,71 +94,57 @@ export function MobileMenu({ links }: MobileMenuProps) {
 
   return (
     <>
-      <IconButton
+      <button
         ref={openButtonRef}
         aria-label="メニューを開く"
         aria-expanded={isOpen}
         onClick={handleOpen}
-        variant="ghost"
-        size="md"
+        className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
       >
         <HamburgerIcon />
-      </IconButton>
+      </button>
 
-      {isOpen && (
-        <Portal>
-          {/* Backdrop with fade animation */}
-          <Box
-            position="fixed"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bg="blackAlpha.600"
-            zIndex={1000}
-            onClick={handleClose}
-            opacity={isAnimating ? 1 : 0}
-            transition="opacity 0.3s ease-in-out"
-            data-testid="mobile-menu-backdrop"
-          />
-          {/* Menu with slide animation */}
-          <Box
-            ref={menuRef}
-            as="nav"
-            role="navigation"
-            aria-label="モバイルメニュー"
-            position="fixed"
-            top={0}
-            right={0}
-            bottom={0}
-            width="280px"
-            bg="var(--bg-card)"
-            zIndex={1001}
-            boxShadow="lg"
-            transform={isAnimating ? "translateX(0)" : "translateX(100%)"}
-            transition="transform 0.3s ease-in-out"
-          >
-            <Box p={4} borderBottomWidth="1px" borderColor="var(--border)">
-              <IconButton
-                ref={closeButtonRef}
-                aria-label="メニューを閉じる"
-                onClick={handleClose}
-                variant="ghost"
-                size="md"
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <VStack align="stretch" p={4} gap={2}>
-              {links.map((link) => (
-                <NavLink key={link.href} href={link.href}>
-                  {link.label}
-                </NavLink>
-              ))}
-            </VStack>
-          </Box>
-        </Portal>
-      )}
+      {isOpen &&
+        createPortal(
+          <>
+            {/* Backdrop with fade animation */}
+            <div
+              className={`fixed inset-0 bg-black/50 z-[1000] transition-opacity duration-300 ease-in-out ${
+                isAnimating ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={handleClose}
+              data-testid="mobile-menu-backdrop"
+            />
+            {/* Menu with slide animation */}
+            <div
+              ref={menuRef}
+              role="navigation"
+              aria-label="モバイルメニュー"
+              className={`fixed top-0 right-0 bottom-0 w-[280px] bg-surface-container-lowest z-[1001] shadow-lg transition-transform duration-300 ease-in-out ${
+                isAnimating ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <div className="p-4 border-b border-outline-variant">
+                <button
+                  ref={closeButtonRef}
+                  aria-label="メニューを閉じる"
+                  onClick={handleClose}
+                  className="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+              <div className="flex flex-col gap-2 p-4">
+                {links.map((link) => (
+                  <NavLink key={link.href} href={link.href}>
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          </>,
+          document.body
+        )}
     </>
   );
 }

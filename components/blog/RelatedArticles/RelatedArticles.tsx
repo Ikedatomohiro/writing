@@ -1,4 +1,3 @@
-import { Box, Flex, Heading } from "@chakra-ui/react";
 import type { Category } from "@/lib/content/types";
 import { getRelatedArticles } from "@/lib/content/api";
 import { BlogArticleCard } from "../BlogArticleCard/BlogArticleCard";
@@ -21,43 +20,21 @@ export async function RelatedArticles({
   }
 
   return (
-    <Box as="section" py={8} aria-labelledby="related-articles-heading">
-      <Heading
-        as="h2"
+    <section className="mt-20 pt-12 border-t border-outline-variant/20" aria-labelledby="related-articles-heading">
+      <h2
         id="related-articles-heading"
-        fontSize="xl"
-        fontWeight="600"
-        mb={6}
-        color="gray.800"
+        className="text-3xl font-headline font-bold mb-10 tracking-tight text-on-surface"
       >
         関連記事
-      </Heading>
-      <Flex
+      </h2>
+      <div
+        className="grid grid-cols-1 md:grid-cols-3 gap-8"
         data-testid="related-articles-scroll"
-        gap={4}
-        overflowX="auto"
-        pb={4}
-        css={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "#CBD5E0 transparent",
-          "&::-webkit-scrollbar": {
-            height: "6px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#CBD5E0",
-            borderRadius: "3px",
-          },
-        }}
       >
         {articles.map((article) => (
-          <Box key={article.slug} flexShrink={0}>
-            <BlogArticleCard article={article} />
-          </Box>
+          <BlogArticleCard key={article.slug} article={article} />
         ))}
-      </Flex>
-    </Box>
+      </div>
+    </section>
   );
 }

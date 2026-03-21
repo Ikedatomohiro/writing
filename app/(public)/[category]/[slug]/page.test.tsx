@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen } from "@testing-library/react";
-import { renderWithChakra } from "@/app/test-utils";
+import { render, screen } from "@testing-library/react";
 import ArticleDetailPage, { generateStaticParams, generateMetadata } from "./page";
 import type { Category, Article, ArticleMeta } from "@/lib/content/types";
 
@@ -42,19 +41,13 @@ vi.mock("@/components/ui/Ad", () => ({
 }));
 
 vi.mock("@/components/layout/Sidebar", () => ({
-  Sidebar: ({ children }: { children: React.ReactNode }) => (
-    <aside data-testid="sidebar">{children}</aside>
-  ),
   TableOfContentsContainer: () => <div data-testid="toc">TOC</div>,
-  AdSlot: ({ size }: { size: string }) => (
-    <div data-testid={`ad-slot-${size}`}>Ad Slot</div>
-  ),
 }));
 
-vi.mock("@/components/ui/Tag", () => ({
-  Tag: ({ children }: { children: React.ReactNode }) => (
-    <span data-testid="category-tag">{children}</span>
-  ),
+// Mock SEO utilities
+vi.mock("@/lib/seo/jsonld", () => ({
+  generateArticleJsonLd: vi.fn(() => ({})),
+  generateBreadcrumbJsonLd: vi.fn(() => ({})),
 }));
 
 import { getArticleBySlug, getAllArticles } from "@/lib/content/api";
@@ -99,7 +92,7 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         "テスト記事タイトル"
@@ -116,7 +109,7 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getAllByText(/2026年1月15日/).length).toBeGreaterThan(0);
     });
@@ -131,13 +124,13 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getAllByText(/更新:/).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/2026年1月20日/).length).toBeGreaterThan(0);
     });
 
-    it("renders category tag", async () => {
+    it("renders category in breadcrumbs", async () => {
       vi.mocked(getArticleBySlug).mockResolvedValue(mockArticle);
       vi.mocked(compileMDXContent).mockResolvedValue({
         content: <p>Compiled content</p>,
@@ -147,9 +140,9 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
-      expect(screen.getAllByTestId("category-tag").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("プログラミング").length).toBeGreaterThan(0);
     });
 
     it("renders article body", async () => {
@@ -162,7 +155,7 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getAllByTestId("article-body").length).toBeGreaterThan(0);
     });
@@ -177,7 +170,7 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getAllByTestId("share-buttons").length).toBeGreaterThan(0);
     });
@@ -192,7 +185,7 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
       expect(screen.getAllByTestId("related-articles").length).toBeGreaterThan(0);
     });
@@ -207,9 +200,8 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
-      expect(screen.getAllByTestId("sidebar").length).toBeGreaterThan(0);
       expect(screen.getAllByTestId("toc").length).toBeGreaterThan(0);
     });
 
@@ -223,9 +215,8 @@ describe("ArticleDetailPage", () => {
       const page = await ArticleDetailPage({
         params: Promise.resolve({ category: "tech", slug: "test-article" }),
       });
-      renderWithChakra(page);
+      render(page);
 
-      // 広告が存在すること
       const ads = screen.getAllByTestId(/^ad-/);
       expect(ads.length).toBeGreaterThan(0);
     });

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { MobileMenu } from "./MobileMenu";
 
 vi.mock("next/navigation", () => ({
@@ -12,10 +11,6 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const renderWithChakra = (ui: React.ReactElement) => {
-  return render(<ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>);
-};
-
 const defaultLinks = [
   { href: "/asset", label: "資産形成" },
   { href: "/tech", label: "プログラミング" },
@@ -25,19 +20,19 @@ const defaultLinks = [
 describe("MobileMenu", () => {
   describe("rendering", () => {
     it("renders hamburger button", () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
       expect(screen.getByRole("button", { name: /メニュー/i })).toBeInTheDocument();
     });
 
     it("menu is closed by default", () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
       expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
     });
   });
 
   describe("interactions", () => {
     it("opens menu when hamburger button is clicked", async () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
 
       const button = screen.getByRole("button", { name: /メニュー/i });
       fireEvent.click(button);
@@ -46,7 +41,7 @@ describe("MobileMenu", () => {
     });
 
     it("displays all navigation links when open", async () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
 
       const button = screen.getByRole("button", { name: /メニュー/i });
       fireEvent.click(button);
@@ -57,7 +52,7 @@ describe("MobileMenu", () => {
     });
 
     it("closes menu when close button is clicked", async () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
 
       // Open menu
       const openButton = screen.getByRole("button", { name: /メニュー/i });
@@ -74,7 +69,7 @@ describe("MobileMenu", () => {
     });
 
     it("closes menu when ESC key is pressed", async () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
 
       // Open menu
       const openButton = screen.getByRole("button", { name: /メニュー/i });
@@ -93,7 +88,7 @@ describe("MobileMenu", () => {
     });
 
     it("closes menu when backdrop is clicked", async () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
 
       // Open menu
       const openButton = screen.getByRole("button", { name: /メニュー/i });
@@ -115,13 +110,13 @@ describe("MobileMenu", () => {
 
   describe("accessibility", () => {
     it("hamburger button has aria-label", () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
       const button = screen.getByRole("button", { name: /メニュー/i });
       expect(button).toHaveAttribute("aria-label");
     });
 
     it("hamburger button has aria-expanded attribute", () => {
-      renderWithChakra(<MobileMenu links={defaultLinks} />);
+      render(<MobileMenu links={defaultLinks} />);
       const button = screen.getByRole("button", { name: /メニュー/i });
       expect(button).toHaveAttribute("aria-expanded", "false");
     });

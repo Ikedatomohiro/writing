@@ -1,35 +1,29 @@
-import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
-import { COLORS } from "@/lib/theme/colors";
 import { ContactForm } from "./ContactForm";
+import { ContactInfo } from "./ContactInfo";
 
 export default function ContactPage() {
   const formUrl = process.env.NEXT_PUBLIC_CONTACT_FORM_URL || "";
 
   return (
-    <Box as="main" bg={COLORS.bgPrimary} minH="100vh" py={12}>
-      <Container maxW="container.md">
-        <VStack gap={8} align="stretch">
-          <VStack gap={4} align="center">
-            <Heading
-              as="h1"
-              size="2xl"
-              color={COLORS.textPrimary}
-              fontFamily="Noto Sans JP"
-            >
-              お問い合わせ
-            </Heading>
-            <Text
-              color={COLORS.textSecondary}
-              textAlign="center"
-              fontFamily="Noto Sans JP"
-            >
-              ご質問やご要望がございましたら、下記フォームよりお気軽にお問い合わせください。
-            </Text>
-          </VStack>
+    <main className="pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      <header className="mb-16 md:mb-24 text-center md:text-left max-w-3xl">
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 text-on-surface leading-tight font-headline">
+          Get in Touch
+        </h1>
+        <p className="text-lg md:text-xl text-on-surface-variant font-body leading-relaxed">
+          We value your inquiries and feedback. Please use the form below.
+        </p>
+      </header>
 
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        <section className="lg:col-span-7 bg-surface-container-low p-8 md:p-12 rounded-xl">
           <ContactForm formUrl={formUrl} />
-        </VStack>
-      </Container>
-    </Box>
+        </section>
+
+        <aside className="lg:col-span-5 space-y-12">
+          <ContactInfo />
+        </aside>
+      </div>
+    </main>
   );
 }

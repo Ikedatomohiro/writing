@@ -1,14 +1,7 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { describe, expect, it, afterEach } from "vitest";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { ArticleList } from "./ArticleList";
 import type { Article } from "@/lib/articles/types";
-
-function renderWithProviders(ui: React.ReactElement) {
-  return render(
-    <ChakraProvider value={defaultSystem}>{ui}</ChakraProvider>
-  );
-}
 
 function createTestArticle(overrides: Partial<Article> = {}): Article {
   return {
@@ -30,7 +23,7 @@ describe("ArticleList", () => {
   });
 
   it("記事が空の場合は「記事がありません」を表示する", () => {
-    renderWithProviders(<ArticleList articles={[]} />);
+    render(<ArticleList articles={[]} />);
 
     expect(screen.getByText("記事がありません")).toBeInTheDocument();
   });
@@ -41,7 +34,7 @@ describe("ArticleList", () => {
       createTestArticle({ id: "2", title: "記事2" }),
       createTestArticle({ id: "3", title: "記事3" }),
     ];
-    renderWithProviders(<ArticleList articles={articles} />);
+    render(<ArticleList articles={articles} />);
 
     expect(screen.getByText("記事1")).toBeInTheDocument();
     expect(screen.getByText("記事2")).toBeInTheDocument();
@@ -53,7 +46,7 @@ describe("ArticleList", () => {
       createTestArticle({ id: "article-1", title: "記事1" }),
       createTestArticle({ id: "article-2", title: "記事2" }),
     ];
-    renderWithProviders(<ArticleList articles={articles} />);
+    render(<ArticleList articles={articles} />);
 
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(2);
@@ -66,7 +59,7 @@ describe("ArticleList", () => {
       createTestArticle({ id: "1", status: "draft" }),
       createTestArticle({ id: "2", status: "published" }),
     ];
-    renderWithProviders(<ArticleList articles={articles} />);
+    render(<ArticleList articles={articles} />);
 
     expect(screen.getByText("下書き")).toBeInTheDocument();
     expect(screen.getByText("公開")).toBeInTheDocument();

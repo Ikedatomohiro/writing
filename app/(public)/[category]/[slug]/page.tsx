@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Box, Container, Flex, Heading, Text, VStack, HStack } from "@chakra-ui/react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import type { Category } from "@/lib/content/types";
 import { isValidCategory } from "@/lib/content/types";
@@ -10,8 +10,7 @@ import { ArticleBody } from "@/components/blog/ArticleBody";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { ShareButtonGroup } from "@/components/ui/ShareButton";
 import { Ad } from "@/components/ui/Ad";
-import { Tag } from "@/components/ui/Tag";
-import { Sidebar, TableOfContentsContainer, AdSlot } from "@/components/layout/Sidebar";
+import { TableOfContentsContainer } from "@/components/layout/Sidebar";
 import { ARTICLE_BODY_SELECTOR } from "@/lib/constants/styles";
 import { SITE_CONFIG, CATEGORY_META } from "@/lib/constants/site";
 import { generateArticleJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -53,22 +52,18 @@ function getCategoryLabel(category: Category): string {
 export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const { category, slug } = await params;
 
-  // カテゴリのバリデーション
   if (!isValidCategory(category)) {
     notFound();
   }
 
-  // 記事を取得
   const article = await getArticleBySlug(category as Category, slug);
 
   if (!article) {
     notFound();
   }
 
-  // MDXをコンパイル
   const { content } = await compileMDXContent(article.content);
 
-  // 記事URLを生成（シェアボタン用）
   const articleUrl = `/${article.category}/${article.slug}`;
   const fullUrl = `${SITE_CONFIG.url}${articleUrl}`;
   const imageUrl = article.thumbnail
@@ -77,7 +72,6 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
       : `${SITE_CONFIG.url}${article.thumbnail}`
     : undefined;
 
-  // JSON-LD構造化データを生成
   const articleJsonLd = generateArticleJsonLd({
     title: article.title,
     description: article.description,
@@ -106,68 +100,61 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <Container maxW="container.xl" py={8}>
-      <Flex gap={8} direction={{ base: "column", lg: "row" }}>
-        {/* メインコンテンツ */}
-        <Box flex="1" minW={0}>
-          <VStack align="stretch" gap={6}>
-            {/* 記事ヘッダー */}
-            <Box as="header">
-              {/* カテゴリタグ */}
-              <Box mb={4}>
-                <Tag variant="category">
-                  {getCategoryLabel(article.category)}
-                </Tag>
-              </Box>
 
-              {/* タイトル */}
-              <Heading
-                as="h1"
-                fontSize={{ base: "2xl", md: "3xl" }}
-                fontWeight="700"
-                lineHeight="1.4"
-                mb={4}
-              >
+      <main className="max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-12">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 mb-8 font-label text-on-surface-variant font-medium tracking-wide uppercase text-[10px]">
+          <Link
+            href="/"
+            className="hover:text-primary transition-colors"
+          >
+            ホーム
+          </Link>
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
+          <Link
+            href={`/${article.category}`}
+            className="hover:text-primary transition-colors"
+          >
+            {getCategoryLabel(article.category)}
+          </Link>
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Article Content Column */}
+          <article className="lg:col-span-8">
+            <header className="mb-12">
+              <h1 className="text-4xl md:text-5xl font-headline font-extrabold text-on-surface leading-[1.1] tracking-tight mb-8">
                 {article.title}
-              </Heading>
+              </h1>
 
-              {/* 日付情報 */}
-              <HStack gap={4} color="gray.600" fontSize="sm">
-                <Text>
-                  <Text as="span" fontWeight="500">
-                    投稿:
-                  </Text>{" "}
-                  {formatDate(article.date)}
-                </Text>
-                {article.updatedAt && (
-                  <Text>
-                    <Text as="span" fontWeight="500">
-                      更新:
-                    </Text>{" "}
-                    {formatDate(article.updatedAt)}
-                  </Text>
-                )}
-              </HStack>
-            </Box>
+              <div className="flex items-center gap-6 py-6 border-y border-outline-variant/20">
+                <div className="flex flex-col">
+                  <span className="font-headline font-bold text-on-surface">
+                    {SITE_CONFIG.name}
+                  </span>
+                  <span className="text-sm text-on-surface-variant">
+                    {formatDate(article.date)}
+                    {article.updatedAt && ` (更新: ${formatDate(article.updatedAt)})`}
+                  </span>
+                </div>
 
-            {/* アイキャッチ画像 */}
+                <div className="ml-auto">
+                  <ShareButtonGroup url={articleUrl} title={article.title} />
+                </div>
+              </div>
+            </header>
+
+            {/* Hero Image */}
             {article.thumbnail && (
-              <Box
-                as="figure"
-                borderRadius="lg"
-                overflow="hidden"
-                bg="gray.100"
-                position="relative"
-                h={{ base: "200px", md: "400px" }}
-              >
+              <div className="relative w-full aspect-video mb-12 overflow-hidden rounded-xl">
                 <Image
                   src={article.thumbnail}
                   alt={article.title}
                   fill
-                  style={{ objectFit: "cover" }}
+                  className="object-cover"
                   priority
                 />
-              </Box>
+              </div>
             )}
 
             {/* 広告（記事上部） */}
@@ -177,15 +164,17 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             <ArticleBody>{content}</ArticleBody>
 
             {/* 広告（記事下部） */}
-            <Ad variant="leaderboard" />
+            <div className="mt-12">
+              <Ad variant="leaderboard" />
+            </div>
 
             {/* シェアボタン */}
-            <Box py={6} borderTopWidth="1px" borderColor="gray.200">
-              <Text fontSize="sm" fontWeight="500" mb={4} color="gray.600">
+            <div className="py-8 mt-8 border-t border-outline-variant/20">
+              <p className="text-sm font-label font-medium mb-4 text-on-surface-variant">
                 この記事をシェアする
-              </Text>
+              </p>
               <ShareButtonGroup url={articleUrl} title={article.title} />
-            </Box>
+            </div>
 
             {/* 関連記事 */}
             <RelatedArticles
@@ -193,16 +182,31 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
               currentSlug={article.slug}
               limit={3}
             />
-          </VStack>
-        </Box>
+          </article>
 
-        {/* サイドバー */}
-        <Sidebar>
-          <TableOfContentsContainer contentSelector={ARTICLE_BODY_SELECTOR} />
-          <AdSlot size="rectangle" />
-        </Sidebar>
-      </Flex>
-    </Container>
+          {/* Sidebar */}
+          <aside className="hidden lg:block lg:col-span-4 space-y-10">
+            <div className="sticky top-28">
+              <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+                <TableOfContentsContainer contentSelector={ARTICLE_BODY_SELECTOR} />
+              </div>
+
+              {/* Newsletter CTA */}
+              <div className="bg-primary text-on-primary p-8 rounded-xl relative overflow-hidden mt-10">
+                <div className="relative z-10">
+                  <h4 className="text-2xl font-headline font-bold mb-4 tracking-tight">
+                    ニュースレター
+                  </h4>
+                  <p className="text-on-primary/80 text-sm mb-6 leading-relaxed">
+                    最新記事をメールでお届けします。
+                  </p>
+                </div>
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
     </>
   );
 }

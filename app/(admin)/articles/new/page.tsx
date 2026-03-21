@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Container } from "@chakra-ui/react";
 import { ArticleForm } from "@/components/articles";
 import { createArticle } from "@/lib/articles/storage";
 import type { ArticleStatus } from "@/lib/articles/types";
@@ -32,12 +31,12 @@ export default function NewArticlePage() {
   };
 
   return (
-    <Container maxW="container.lg" py={8}>
+    <div className="max-w-4xl mx-auto py-8">
       <ArticleForm
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={isSubmitting}
       />
-    </Container>
+    </div>
   );
 }

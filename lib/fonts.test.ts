@@ -2,38 +2,40 @@ import { describe, it, expect, vi } from "vitest";
 
 // Mock next/font/google
 vi.mock("next/font/google", () => ({
-  Noto_Sans_JP: vi.fn(() => ({
-    variable: "--font-noto-sans-jp",
-    className: "noto-sans-jp-class",
+  Manrope: vi.fn(() => ({
+    variable: "--font-manrope",
+    className: "manrope-class",
   })),
   Inter: vi.fn(() => ({
     variable: "--font-inter",
     className: "inter-class",
   })),
-  JetBrains_Mono: vi.fn(() => ({
-    variable: "--font-jetbrains-mono",
-    className: "jetbrains-mono-class",
+  Fira_Code: vi.fn(() => ({
+    variable: "--font-fira-code",
+    className: "fira-code-class",
+  })),
+  Noto_Sans_JP: vi.fn(() => ({
+    variable: "--font-noto-sans-jp",
+    className: "noto-sans-jp-class",
   })),
 }));
 
-import { notoSansJP, inter, jetbrainsMono, fontVariables } from "./fonts";
+import { manrope, inter, firaCode, notoSansJP, fontVariables } from "./fonts";
 
 describe("fonts", () => {
-  describe("notoSansJP", () => {
+  describe("manrope", () => {
     it("should have a CSS variable", () => {
-      expect(notoSansJP.variable).toBeDefined();
-      expect(notoSansJP.variable).toContain("--font");
+      expect(manrope.variable).toBe("--font-manrope");
     });
 
     it("should have a className", () => {
-      expect(notoSansJP.className).toBeDefined();
+      expect(manrope.className).toBeDefined();
     });
   });
 
   describe("inter", () => {
     it("should have a CSS variable", () => {
-      expect(inter.variable).toBeDefined();
-      expect(inter.variable).toContain("--font");
+      expect(inter.variable).toBe("--font-inter");
     });
 
     it("should have a className", () => {
@@ -41,22 +43,32 @@ describe("fonts", () => {
     });
   });
 
-  describe("jetbrainsMono", () => {
+  describe("firaCode", () => {
     it("should have a CSS variable", () => {
-      expect(jetbrainsMono.variable).toBeDefined();
-      expect(jetbrainsMono.variable).toContain("--font");
+      expect(firaCode.variable).toBe("--font-fira-code");
     });
 
     it("should have a className", () => {
-      expect(jetbrainsMono.className).toBeDefined();
+      expect(firaCode.className).toBeDefined();
+    });
+  });
+
+  describe("notoSansJP", () => {
+    it("should have a CSS variable", () => {
+      expect(notoSansJP.variable).toBe("--font-noto-sans-jp");
+    });
+
+    it("should have a className", () => {
+      expect(notoSansJP.className).toBeDefined();
     });
   });
 
   describe("fontVariables", () => {
     it("should contain all font variables", () => {
-      expect(fontVariables).toContain(notoSansJP.variable);
+      expect(fontVariables).toContain(manrope.variable);
       expect(fontVariables).toContain(inter.variable);
-      expect(fontVariables).toContain(jetbrainsMono.variable);
+      expect(fontVariables).toContain(firaCode.variable);
+      expect(fontVariables).toContain(notoSansJP.variable);
     });
   });
 });
