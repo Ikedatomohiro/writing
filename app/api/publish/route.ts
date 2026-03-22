@@ -60,7 +60,9 @@ function escapeMdxSpecialChars(content: string): string {
     let escaped = line.replace(/<!--\s*(.*?)\s*-->/g, "{/* $1 */}");
 
     // MDXがJSXとして解釈する中括弧をエスケープ（変換後のMDXコメントは除外）
+    // eslint-disable-next-line no-useless-escape
     escaped = escaped.replace(/(?<!\{\/\*[^}]*)\{(?![\/\*%{])/g, "\\{");
+    // eslint-disable-next-line no-useless-escape
     escaped = escaped.replace(/(?<!\*\/)\}(?![%}])/g, "\\}");
 
     result.push(escaped);
