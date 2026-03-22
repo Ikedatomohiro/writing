@@ -102,20 +102,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const { category, slug } = parsed.data;
   const blobPath = `content/${category}/${slug}.mdx`;
 
-  if (await blobExists(blobPath)) {
-    return NextResponse.json(
-      { error: `Conflict: article with slug "${slug}" already exists` },
-      { status: 409 }
-    );
+  try {
+    if (await blobExists(blobPath)) {
+      return NextResponse.json(
+        { error: `Conflict: article with slug "${slug}" already exists` },
+        { status: 409 }
+      );
+    }
+  } catch (e) {
+    console.error("[publish] blobExists check failed:", e);
+    // 存在チェック失敗時は続行（上書き許容）
   }
 
   const frontmatter = buildFrontmatter(parsed.data);
   const fileContent = `${frontmatter}\n\n${parsed.data.content}\n`;
 
-  await put(blobPath, fileContent, {
-    access: "public",
-    addRandomSuffix: false,
-  });
+  try {
+    await put(blobPath, fileContent, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[publish] Blob put failed:", message);
+    return NextResponse.json(
+      { error: "Failed to save article to storage", detail: message },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json(
     {
