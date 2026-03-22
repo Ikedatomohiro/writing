@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { ArticleTable } from "@/components/articles/ArticleTable";
 import { SearchInput } from "@/components/articles";
+import { AccessRanking } from "./AccessRanking";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/articles/types";
 
@@ -81,12 +82,7 @@ export default function ArticlesPage() {
         </section>
 
         <div className="lg:col-span-1">
-          <div className="bg-surface-container-lowest rounded-xl p-6">
-            <h2 className="text-lg font-headline font-bold text-on-surface mb-4">Recent Comments</h2>
-            <div className="space-y-4">
-              <p className="text-sm text-on-surface-variant">No comments yet.</p>
-            </div>
-          </div>
+          <AccessRanking />
 
           <div className="bg-inverse-surface text-inverse-on-surface rounded-xl p-5 mt-4">
             <div className="flex items-center justify-between mb-4">
