@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { put, head } from "@vercel/blob";
 import { validateRequest, parseJsonBody } from "@/lib/api/request-guard";
 import { PublishArticleSchema } from "@/lib/api/schemas";
 import type { z } from "zod";
@@ -36,9 +35,9 @@ function buildFrontmatter(body: PublishRequestBody): string {
   return lines.join("\n");
 }
 
-async function fileExists(filePath: string): Promise<boolean> {
+async function blobExists(blobPath: string): Promise<boolean> {
   try {
-    await fs.access(filePath);
+    await head(blobPath);
     return true;
   } catch {
     return false;
@@ -101,10 +100,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const { category, slug } = parsed.data;
-  const contentDir = path.join(process.cwd(), "content", category);
-  const filePath = path.join(contentDir, `${slug}.mdx`);
+  const blobPath = `content/${category}/${slug}.mdx`;
 
-  if (await fileExists(filePath)) {
+  if (await blobExists(blobPath)) {
     return NextResponse.json(
       { error: `Conflict: article with slug "${slug}" already exists` },
       { status: 409 }
@@ -114,8 +112,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const frontmatter = buildFrontmatter(parsed.data);
   const fileContent = `${frontmatter}\n\n${parsed.data.content}\n`;
 
-  await fs.mkdir(contentDir, { recursive: true });
-  await fs.writeFile(filePath, fileContent, "utf-8");
+  await put(blobPath, fileContent, {
+    access: "public",
+    addRandomSuffix: false,
+  });
 
   return NextResponse.json(
     {
