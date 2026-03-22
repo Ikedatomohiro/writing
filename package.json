@@ -16,6 +16,8 @@
   "dependencies": {
     "@chakra-ui/react": "^3.31.0",
     "@emotion/react": "^11.14.0",
+    "@google-analytics/data": "^5.2.1",
+    "@next/third-parties": "^16.2.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@vercel/blob": "^2.0.0",
     "gray-matter": "^4.0.3",

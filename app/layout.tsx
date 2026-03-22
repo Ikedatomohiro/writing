@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Providers } from "./providers";
 import { ThemeScript } from "@/lib/theme/ThemeScript";
 import { fontVariables } from "@/lib/fonts";
@@ -47,6 +48,9 @@ export default function RootLayout({
         <ThemeScript />
         <Providers>{children}</Providers>
       </body>
+      {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+      )}
     </html>
   );
 }
