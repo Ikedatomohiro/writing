@@ -35,6 +35,38 @@ function buildFrontmatter(body: PublishRequestBody): string {
   return lines.join("\n");
 }
 
+/**
+ * MDXで特殊扱いされる文字をエスケープする。
+ * コードブロック内はそのまま保持する。
+ */
+function escapeMdxSpecialChars(content: string): string {
+  const lines = content.split("\n");
+  const result: string[] = [];
+  let inCodeBlock = false;
+
+  for (const line of lines) {
+    if (line.trim().startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+      result.push(line);
+      continue;
+    }
+
+    if (inCodeBlock) {
+      result.push(line);
+      continue;
+    }
+
+    // MDXがJSXとして解釈する中括弧をエスケープ
+    // ただしMarkdownリンクの一部やHTMLコメントは除外
+    let escaped = line.replace(/(?<!\[)\{(?![%{])/g, "\\{");
+    escaped = escaped.replace(/(?<![%}])\}(?!\])/g, "\\}");
+
+    result.push(escaped);
+  }
+
+  return result.join("\n");
+}
+
 async function blobExists(blobPath: string): Promise<boolean> {
   try {
     await head(blobPath);
@@ -115,7 +147,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const frontmatter = buildFrontmatter(parsed.data);
-  const fileContent = `${frontmatter}\n\n${parsed.data.content}\n`;
+  const escapedContent = escapeMdxSpecialChars(parsed.data.content);
+  const fileContent = `${frontmatter}\n\n${escapedContent}\n`;
 
   try {
     await put(blobPath, fileContent, {
