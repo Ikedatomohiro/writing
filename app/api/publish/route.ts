@@ -56,10 +56,12 @@ function escapeMdxSpecialChars(content: string): string {
       continue;
     }
 
-    // MDXがJSXとして解釈する中括弧をエスケープ
-    // ただしMarkdownリンクの一部やHTMLコメントは除外
-    let escaped = line.replace(/(?<!\[)\{(?![%{])/g, "\\{");
-    escaped = escaped.replace(/(?<![%}])\}(?!\])/g, "\\}");
+    // HTMLコメント <!-- --> を MDXコメント {/* */} に変換
+    let escaped = line.replace(/<!--\s*(.*?)\s*-->/g, "{/* $1 */}");
+
+    // MDXがJSXとして解釈する中括弧をエスケープ（変換後のMDXコメントは除外）
+    escaped = escaped.replace(/(?<!\{\/\*[^}]*)\{(?![\/\*%{])/g, "\\{");
+    escaped = escaped.replace(/(?<!\*\/)\}(?![%}])/g, "\\}");
 
     result.push(escaped);
   }
