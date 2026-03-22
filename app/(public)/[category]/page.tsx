@@ -44,10 +44,10 @@ interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }
 
-export async function generateStaticParams() {
-  const categories: Category[] = ["asset", "tech", "health"];
-  return categories.map((category) => ({ category }));
-}
+/**
+ * 動的レンダリング（Vercel Blobの記事を即時反映するため）
+ */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

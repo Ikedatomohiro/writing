@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import type { Category } from "@/lib/content/types";
 import { isValidCategory } from "@/lib/content/types";
-import { getArticleBySlug, getAllArticles } from "@/lib/content/api";
+import { getArticleBySlug } from "@/lib/content/api";
 import { compileMDXContent } from "@/lib/content/mdx";
 import { ArticleBody } from "@/components/blog/ArticleBody";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
@@ -217,16 +217,11 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 }
 
 /**
- * 静的パラメータ生成（SSG用）
+ * 動的レンダリング（Vercel Blobから記事を読み込むため、SSGではなくSSR）
+ * 新しい記事がBlobに追加されたとき、再デプロイなしで表示される
  */
-export async function generateStaticParams() {
-  const articles = await getAllArticles();
-
-  return articles.map((article) => ({
-    category: article.category,
-    slug: article.slug,
-  }));
-}
+export const dynamicParams = true;
+export const dynamic = "force-dynamic";
 
 /**
  * メタデータ生成
