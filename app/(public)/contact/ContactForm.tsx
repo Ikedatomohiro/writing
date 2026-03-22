@@ -1,47 +1,89 @@
 "use client";
 
-interface ContactFormProps {
-  formUrl: string;
-}
+import { useState } from "react";
 
-export function ContactForm({ formUrl }: ContactFormProps) {
-  if (!formUrl) {
-    return <ContactFormFields />;
+type Status = "idle" | "sending" | "success" | "error";
+
+export function ContactForm() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("sending");
+    setErrorMessage("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const body = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      subject: formData.get("subject"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "送信に失敗しました");
+      }
+
+      setStatus("success");
+      form.reset();
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "送信に失敗しました"
+      );
+      setStatus("error");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="text-center py-12" data-testid="success-message">
+        <span className="material-symbols-outlined text-5xl text-primary mb-4 block">
+          check_circle
+        </span>
+        <h3 className="text-xl font-bold font-headline mb-2">
+          送信が完了しました
+        </h3>
+        <p className="text-on-surface-variant">
+          お問い合わせいただきありがとうございます。
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-surface-container-low rounded-xl overflow-hidden">
-      <iframe
-        src={formUrl}
-        title="Contact Form"
-        className="w-full border-none"
-        style={{ height: "800px" }}
-      />
-    </div>
-  );
-}
-
-function ContactFormFields() {
-  return (
-    <form className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-2">
           <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
-            Name
+            お名前 (Name)
           </label>
           <input
             type="text"
-            placeholder="John Doe"
+            name="name"
+            required
+            placeholder="山田 太郎"
             className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
           />
         </div>
         <div className="space-y-2">
           <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
-            Email Address
+            メールアドレス (Email Address)
           </label>
           <input
             type="email"
-            placeholder="john@example.com"
+            name="email"
+            required
+            placeholder="taro@example.com"
             className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
           />
         </div>
@@ -49,32 +91,45 @@ function ContactFormFields() {
 
       <div className="space-y-2">
         <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
-          Subject
+          お問い合わせ項目 (Subject)
         </label>
-        <select className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface appearance-none">
-          <option>General</option>
-          <option>Health</option>
-          <option>Finance</option>
-          <option>Tech</option>
+        <select
+          name="subject"
+          required
+          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface appearance-none"
+        >
+          <option value="一般">一般</option>
+          <option value="記事について">記事について</option>
+          <option value="不具合報告">不具合報告</option>
+          <option value="その他">その他</option>
         </select>
       </div>
 
       <div className="space-y-2">
         <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
-          Message
+          メッセージ (Message)
         </label>
         <textarea
-          placeholder="How can we help you?"
+          name="message"
+          required
+          placeholder="どのようなご用件でしょうか？"
           rows={6}
           className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline resize-none"
         />
       </div>
 
+      {status === "error" && (
+        <p className="text-error text-sm" data-testid="error-message">
+          {errorMessage}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="w-full md:w-auto px-10 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+        disabled={status === "sending"}
+        className="px-10 py-4 bg-primary text-on-primary font-bold rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200 disabled:opacity-50"
       >
-        Send Message
+        {status === "sending" ? "送信中..." : "メッセージを送信"}
       </button>
     </form>
   );
