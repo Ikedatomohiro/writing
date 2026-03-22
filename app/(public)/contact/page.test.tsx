@@ -1,48 +1,49 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import ContactPage from "./page";
 import { ContactForm } from "./ContactForm";
+
+vi.spyOn(global, "fetch").mockImplementation(() => new Promise(() => {}));
 
 describe("ContactPage", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
 
-  it("renders the page title", () => {
+  it("renders the page title in Japanese", () => {
     render(<ContactPage />);
-    expect(screen.getByRole("heading", { name: /Get in Touch/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /お問い合わせ/i })
+    ).toBeInTheDocument();
   });
 
   it("renders the description text", () => {
     render(<ContactPage />);
-    expect(screen.getByText(/We value your inquiries/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/運営へのご質問やフィードバック/i)
+    ).toBeInTheDocument();
   });
 });
 
 describe("ContactForm", () => {
-  const mockFormUrl = "https://docs.google.com/forms/d/e/test-form-id/viewform?embedded=true";
-
   beforeEach(() => {
     document.body.innerHTML = "";
   });
 
-  it("renders the Google Form iframe when formUrl is provided", () => {
-    render(<ContactForm formUrl={mockFormUrl} />);
-    const iframe = screen.getByTitle("Contact Form");
-    expect(iframe).toBeInTheDocument();
-    expect(iframe).toHaveAttribute("src", mockFormUrl);
+  it("renders form fields in Japanese", () => {
+    render(<ContactForm />);
+    expect(screen.getByPlaceholderText("山田 太郎")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("taro@example.com")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("どのようなご用件でしょうか？")
+    ).toBeInTheDocument();
+    expect(screen.getByText("メッセージを送信")).toBeInTheDocument();
   });
 
-  it("iframe has full width style", () => {
-    render(<ContactForm formUrl={mockFormUrl} />);
-    const iframe = screen.getByTitle("Contact Form");
-    expect(iframe).toHaveClass("w-full");
-  });
-
-  it("renders fallback form fields when formUrl is empty", () => {
-    render(<ContactForm formUrl="" />);
-    expect(screen.getByPlaceholderText("John Doe")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("john@example.com")).toBeInTheDocument();
-    expect(screen.getByText("Send Message")).toBeInTheDocument();
+  it("renders subject dropdown with Japanese options", () => {
+    render(<ContactForm />);
+    expect(screen.getByText("一般")).toBeInTheDocument();
+    expect(screen.getByText("記事について")).toBeInTheDocument();
+    expect(screen.getByText("不具合報告")).toBeInTheDocument();
   });
 });
