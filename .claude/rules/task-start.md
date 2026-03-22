@@ -37,7 +37,7 @@ gh issue view 5 --repo Ikedatomohiro/writing-task
 
 #### B. Issueが指定されていない場合
 
-ユーザーから「タスクを開始して」「フロントエンドのタスク」「AIエージェントのタスク」などと言われた場合、**まず既存の作業状態を確認し、その後ロードマップを確認する**。
+ユーザーから「タスクを開始して」「タスク」などと言われた場合、**まず既存の作業状態を確認し、その後ロードマップを確認する**。
 
 ##### B-1. 既存の作業状態を確認（優先）
 
@@ -76,14 +76,10 @@ git branch -r --no-merged origin/main | grep -v HEAD
 | 分野 | Issue# | タイトル |
 |------|--------|----------|
 | フロントエンド | #33 | 【ロードマップ】ブログUI設計・実装 |
-| AIエージェント | #45 | 【ロードマップ】AIエージェント開発 |
 
 ```bash
 # フロントエンドのロードマップを確認
 gh issue view 33 --repo Ikedatomohiro/writing-task
-
-# AIエージェントのロードマップを確認
-gh issue view 45 --repo Ikedatomohiro/writing-task
 ```
 
 **ロードマップから読み取る情報**:
@@ -167,11 +163,9 @@ cd .worktrees/<ディレクトリ名>
 
 # 環境変数のコピー（メインリポジトリから）
 cp ../../.env .env 2>/dev/null || true
-cp ../../tools/.env tools/.env 2>/dev/null || true
 
 # 依存関係のインストール
 npm install
-(cd tools && uv sync)  # サブシェルで実行
 ```
 
 ### 3. 環境変数の確認（追加設定が必要な場合）
