@@ -1,9 +1,3 @@
-# Python
-.venv/
-__pycache__/
-*.pyc
-.coverage
-
 # Environment
 .env
 
@@ -21,9 +15,6 @@ coverage/
 .vercel/
 .vercel
 .env*.local
-
-# Data files
-tools/data/keywords/
 
 # Git worktrees
 .worktrees/
