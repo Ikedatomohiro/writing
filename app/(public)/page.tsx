@@ -57,8 +57,8 @@ function HeroSection({ article }: { article: ArticleMeta }) {
             </div>
           </div>
         </div>
-        <div className="md:col-span-6 md:-ml-24 mt-8 md:mt-0">
-          <div className="aspect-[4/5] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
+        <div className="md:col-span-5 mt-8 md:mt-0">
+          <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
             {article.thumbnail ? (
               <Image
                 src={article.thumbnail}
