@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap');
 @import "tailwindcss";
 
 /* Tailwind v4 Theme Configuration */
@@ -193,9 +194,6 @@
   --md3-surface: #f9f9ff;
   --md3-surface-tint: #005db6;
 }
-
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap');
 
 /* Font Variables (set by next/font in layout.tsx, fallbacks here) */
 :root {
