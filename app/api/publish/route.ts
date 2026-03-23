@@ -40,35 +40,21 @@ function buildFrontmatter(body: PublishRequestBody): string {
  * コードブロック内はそのまま保持する。
  */
 function escapeMdxSpecialChars(content: string): string {
-  const lines = content.split("\n");
-  const result: string[] = [];
-  let inCodeBlock = false;
+  // 1. 複数行HTMLコメントを丸ごと削除（メタ情報コメント等）
+  let escaped = content.replace(/<!--[\s\S]*?-->/g, "");
 
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
-      inCodeBlock = !inCodeBlock;
-      result.push(line);
-      continue;
-    }
+  // 2. コードブロック外の中括弧をエスケープ
+  const parts = escaped.split(/(```[\s\S]*?```)/g);
+  escaped = parts
+    .map((part, i) => {
+      // 奇数インデックスはコードブロック内 → そのまま
+      if (i % 2 === 1) return part;
+      // コードブロック外 → 中括弧をエスケープ
+      return part.replace(/\{/g, "\\{").replace(/\}/g, "\\}");
+    })
+    .join("");
 
-    if (inCodeBlock) {
-      result.push(line);
-      continue;
-    }
-
-    // HTMLコメント <!-- --> を MDXコメント {/* */} に変換
-    let escaped = line.replace(/<!--\s*(.*?)\s*-->/g, "{/* $1 */}");
-
-    // MDXがJSXとして解釈する中括弧をエスケープ（変換後のMDXコメントは除外）
-    // eslint-disable-next-line no-useless-escape
-    escaped = escaped.replace(/(?<!\{\/\*[^}]*)\{(?![\/\*%{])/g, "\\{");
-    // eslint-disable-next-line no-useless-escape
-    escaped = escaped.replace(/(?<!\*\/)\}(?![%}])/g, "\\}");
-
-    result.push(escaped);
-  }
-
-  return result.join("\n");
+  return escaped;
 }
 
 async function blobExists(blobPath: string): Promise<boolean> {
