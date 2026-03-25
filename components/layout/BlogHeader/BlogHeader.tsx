@@ -69,7 +69,7 @@ export function BlogHeader() {
             className="inline-flex px-5 py-2 bg-primary text-on-primary rounded-full text-sm font-semibold hover:bg-primary-container transition-colors"
             data-testid="header-subscribe-button"
           >
-            Subscribe
+            購読
           </NextLink>
         </div>
 

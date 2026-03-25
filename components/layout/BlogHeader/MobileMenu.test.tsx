@@ -108,6 +108,28 @@ describe("MobileMenu", () => {
     });
   });
 
+  describe("menu design", () => {
+    it("displays site name at the top of the menu", async () => {
+      render(<MobileMenu links={defaultLinks} />);
+      fireEvent.click(screen.getByRole("button", { name: /メニュー/i }));
+      await screen.findByRole("navigation");
+      expect(screen.getByTestId("mobile-menu-site-name")).toBeInTheDocument();
+    });
+
+    it("renders menu-specific link styles instead of NavLink", async () => {
+      render(<MobileMenu links={defaultLinks} />);
+      fireEvent.click(screen.getByRole("button", { name: /メニュー/i }));
+      await screen.findByRole("navigation");
+
+      const menuLinks = screen.getAllByTestId("mobile-menu-link");
+      expect(menuLinks).toHaveLength(3);
+      // Links should exist as anchor elements
+      menuLinks.forEach((link) => {
+        expect(link.tagName).toBe("A");
+      });
+    });
+  });
+
   describe("accessibility", () => {
     it("hamburger button has aria-label", () => {
       render(<MobileMenu links={defaultLinks} />);

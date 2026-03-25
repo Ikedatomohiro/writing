@@ -204,7 +204,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                     最新記事をメールでお届けします。
                   </p>
                   <input type="email" placeholder="your@email.com" className="w-full bg-on-primary/10 border-0 rounded-lg py-3 px-4 text-sm text-on-primary placeholder:text-on-primary/40 focus:outline-none focus:ring-2 focus:ring-on-primary/30 mb-3" />
-                  <button className="w-full bg-surface-container-lowest text-primary font-bold py-3 rounded-lg hover:bg-surface-container-lowest/90 transition-colors text-sm">Subscribe Now</button>
+                  <button className="w-full bg-surface-container-lowest text-primary font-bold py-3 rounded-lg hover:bg-surface-container-lowest/90 transition-colors text-sm">登録する</button>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
               </div>

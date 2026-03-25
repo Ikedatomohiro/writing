@@ -113,6 +113,54 @@ describe("Home (Top Page)", () => {
     expect(cards.length).toBe(2);
   });
 
+  it("limits displayed articles to 9 (1 hero + 8 grid) when there are many articles", async () => {
+    // Create 15 articles total
+    const manyArticles = Array.from({ length: 15 }, (_, i) => ({
+      slug: `article-${i}`,
+      title: `記事${i}`,
+      description: `説明${i}`,
+      date: `2026-01-${String(i + 1).padStart(2, "0")}`,
+      category: "tech" as const,
+      tags: [],
+      published: true,
+    }));
+
+    vi.mocked(getArticlesByCategory).mockImplementation(async (category) => {
+      if (category === "tech") return manyArticles;
+      return [];
+    });
+
+    render(await Home());
+    // 1 hero + max 8 in grid = 9 total, so grid should have 8 cards
+    const cards = screen.getAllByTestId(/^article-card-/);
+    expect(cards.length).toBe(8);
+  });
+
+  it("shows 'view all articles' link when articles exceed limit", async () => {
+    const manyArticles = Array.from({ length: 15 }, (_, i) => ({
+      slug: `article-${i}`,
+      title: `記事${i}`,
+      description: `説明${i}`,
+      date: `2026-01-${String(i + 1).padStart(2, "0")}`,
+      category: "tech" as const,
+      tags: [],
+      published: true,
+    }));
+
+    vi.mocked(getArticlesByCategory).mockImplementation(async (category) => {
+      if (category === "tech") return manyArticles;
+      return [];
+    });
+
+    render(await Home());
+    expect(screen.getByText("すべての記事を見る")).toBeInTheDocument();
+  });
+
+  it("does not show 'view all articles' link when articles are within limit", async () => {
+    render(await Home());
+    expect(screen.queryByText("すべての記事を見る")).not.toBeInTheDocument();
+  });
+
   it("renders newsletter section", async () => {
     render(await Home());
     expect(screen.getByText(/厳選された知見を/)).toBeInTheDocument();
