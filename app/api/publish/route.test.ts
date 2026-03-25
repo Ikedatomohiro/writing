@@ -3,23 +3,12 @@ import { NextRequest } from "next/server";
 
 const TEST_API_KEY = "test-api-key-12345";
 
-const mockExists = vi.fn();
-const mockWriteFile = vi.fn();
-const mockMkdir = vi.fn();
+const mockPut = vi.fn();
+const mockHead = vi.fn();
 
-vi.mock("fs", () => ({
-  default: {
-    promises: {
-      access: (...args: unknown[]) => mockExists(...args),
-      writeFile: (...args: unknown[]) => mockWriteFile(...args),
-      mkdir: (...args: unknown[]) => mockMkdir(...args),
-    },
-  },
-  promises: {
-    access: (...args: unknown[]) => mockExists(...args),
-    writeFile: (...args: unknown[]) => mockWriteFile(...args),
-    mkdir: (...args: unknown[]) => mockMkdir(...args),
-  },
+vi.mock("@vercel/blob", () => ({
+  put: (...args: unknown[]) => mockPut(...args),
+  head: (...args: unknown[]) => mockHead(...args),
 }));
 
 function createRequest(
@@ -49,9 +38,9 @@ const validBody = {
 describe("POST /api/publish", () => {
   beforeEach(() => {
     vi.stubEnv("PUBLISH_API_KEY", TEST_API_KEY);
-    mockExists.mockRejectedValue(new Error("ENOENT"));
-    mockWriteFile.mockResolvedValue(undefined);
-    mockMkdir.mockResolvedValue(undefined);
+    // Default: blob does not exist (head throws)
+    mockHead.mockRejectedValue(new Error("not_found"));
+    mockPut.mockResolvedValue({ url: "https://blob.vercel-storage.com/content/tech/test-article.mdx" });
   });
 
   afterEach(() => {
@@ -114,7 +103,8 @@ describe("POST /api/publish", () => {
   });
 
   it("returns 409 when slug already exists", async () => {
-    mockExists.mockResolvedValue(undefined);
+    // Blob exists (head succeeds)
+    mockHead.mockResolvedValue({ url: "https://blob.vercel-storage.com/content/tech/test-article.mdx" });
 
     const { POST } = await import("./route");
     const request = createRequest(validBody, TEST_API_KEY);
@@ -136,8 +126,8 @@ describe("POST /api/publish", () => {
     expect(json.slug).toBe("test-article");
     expect(json.url).toBe("/tech/test-article");
 
-    expect(mockWriteFile).toHaveBeenCalledOnce();
-    const writtenContent = mockWriteFile.mock.calls[0][1] as string;
+    expect(mockPut).toHaveBeenCalledOnce();
+    const writtenContent = mockPut.mock.calls[0][1] as string;
     expect(writtenContent).toContain("title: \"テスト記事\"");
     expect(writtenContent).toContain("category: \"tech\"");
     expect(writtenContent).toContain("tags: [\"TypeScript\", \"テスト\"]");
@@ -154,7 +144,7 @@ describe("POST /api/publish", () => {
     const response = await POST(request);
 
     expect(response.status).toBe(201);
-    const writtenContent = mockWriteFile.mock.calls[0][1] as string;
+    const writtenContent = mockPut.mock.calls[0][1] as string;
     expect(writtenContent).toContain(
       'thumbnail: "https://example.com/image.png"'
     );
@@ -165,7 +155,7 @@ describe("POST /api/publish", () => {
     const request = createRequest(validBody, TEST_API_KEY);
     await POST(request);
 
-    const writtenContent = mockWriteFile.mock.calls[0][1] as string;
+    const writtenContent = mockPut.mock.calls[0][1] as string;
     expect(writtenContent).not.toContain("thumbnail:");
   });
 });

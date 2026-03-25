@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import ArticleDetailPage, { generateStaticParams, generateMetadata } from "./page";
+import ArticleDetailPage, { generateMetadata } from "./page";
 import type { Category, Article, ArticleMeta } from "@/lib/content/types";
 
 // Mock content API
@@ -239,23 +239,6 @@ describe("ArticleDetailPage", () => {
           params: Promise.resolve({ category: "invalid", slug: "test-article" }),
         })
       ).rejects.toThrow();
-    });
-  });
-
-  describe("generateStaticParams", () => {
-    it("returns all published articles as params", async () => {
-      vi.mocked(getAllArticles).mockResolvedValue([
-        { ...mockArticleMeta, category: "tech", slug: "article-1" },
-        { ...mockArticleMeta, category: "asset", slug: "article-2" },
-        { ...mockArticleMeta, category: "health", slug: "article-3" },
-      ]);
-
-      const params = await generateStaticParams();
-
-      expect(params).toHaveLength(3);
-      expect(params).toContainEqual({ category: "tech", slug: "article-1" });
-      expect(params).toContainEqual({ category: "asset", slug: "article-2" });
-      expect(params).toContainEqual({ category: "health", slug: "article-3" });
     });
   });
 
