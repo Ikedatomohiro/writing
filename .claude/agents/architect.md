@@ -46,21 +46,17 @@ model: opus
 
 ## 推奨パターン
 
-### バックエンド（Python）
-- Repository パターン: データアクセスの抽象化
-- Service Layer: ビジネスロジックの分離
-- Dependency Injection: テスタビリティの向上
-- Event-driven: 疎結合な非同期処理
-
-### フロントエンド
+### Next.js / React
+- App Router: レイアウト・ページ・コンポーネントの階層設計
+- Server Components: サーバーサイドレンダリングの活用
 - Component Composition: 再利用可能なUIコンポーネント
 - Custom Hooks: ロジックの再利用
 - Code Splitting: パフォーマンス最適化
 
-### データ
-- 正規化されたスキーマ設計
-- キャッシュ戦略（Redis等）
-- 結果整合性の考慮
+### データ取得
+- Server Components でのデータフェッチ
+- キャッシュ戦略（Next.js Cache / ISR）
+- ストリーミングとSuspense
 
 ## ADRテンプレート
 
