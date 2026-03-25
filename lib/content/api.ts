@@ -25,15 +25,17 @@ export async function getArticlesByCategory(
   const { includeDrafts = false } = options;
 
   const files = await listArticleFiles(category);
+  const results = await Promise.all(
+    files.map((file) => {
+      const slug = file.replace(/\.mdx$/, "");
+      return readArticleFile(category, slug);
+    })
+  );
+
   const articles: ArticleMeta[] = [];
-
-  for (const file of files) {
-    const slug = file.replace(/\.mdx$/, "");
-    const article = await readArticleFile(category, slug);
-
+  for (const article of results) {
     if (article && (includeDrafts || article.published)) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { content, ...meta } = article;
+      const { content: _, ...meta } = article;
       articles.push(meta);
     }
   }
@@ -50,24 +52,13 @@ export async function getAllArticles(
 ): Promise<ArticleMeta[]> {
   const { includeDrafts = false } = options;
   const categories: Category[] = ["asset", "tech", "health"];
-  const allArticles: ArticleMeta[] = [];
 
-  // 各カテゴリからソートなしで記事を取得
-  for (const category of categories) {
-    const files = await listArticleFiles(category);
-    for (const file of files) {
-      const slug = file.replace(/\.mdx$/, "");
-      const article = await readArticleFile(category, slug);
-      if (article && (includeDrafts || article.published)) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { content, ...meta } = article;
-        allArticles.push(meta);
-      }
-    }
-  }
+  // 全カテゴリを並列で取得
+  const categoryResults = await Promise.all(
+    categories.map((category) => getArticlesByCategory(category, { includeDrafts }))
+  );
 
-  // 全体で1回だけソート
-  return sortByDateDesc(allArticles);
+  return sortByDateDesc(categoryResults.flat());
 }
 
 /**
