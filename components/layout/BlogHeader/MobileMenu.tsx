@@ -85,6 +85,14 @@ export function MobileMenu({ links }: MobileMenuProps) {
     return () => menu.removeEventListener("keydown", handleTabKey);
   }, [isOpen]);
 
+  // Close menu on route change
+  useEffect(() => {
+    if (isOpen) {
+      handleClose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   // Trigger animation after mount
   useEffect(() => {
     if (isOpen) {
