@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ArticleDetailPage, { generateMetadata } from "./page";
-import type { Category, Article, ArticleMeta } from "@/lib/content/types";
+import type { Category, Article } from "@/lib/content/types";
 
 // Mock content API
 vi.mock("@/lib/content/api", () => ({
   getArticleBySlug: vi.fn(),
   getRelatedArticles: vi.fn(),
-  getAllArticles: vi.fn(),
 }));
 
 // Mock MDX compiler
@@ -50,7 +49,7 @@ vi.mock("@/lib/seo/jsonld", () => ({
   generateBreadcrumbJsonLd: vi.fn(() => ({})),
 }));
 
-import { getArticleBySlug, getAllArticles } from "@/lib/content/api";
+import { getArticleBySlug } from "@/lib/content/api";
 import { compileMDXContent } from "@/lib/content/mdx";
 
 const mockArticle: Article = {
@@ -66,15 +65,6 @@ const mockArticle: Article = {
   content: "# 記事本文\n\nこれはテスト記事です。",
 };
 
-const mockArticleMeta: ArticleMeta = {
-  slug: "test-article",
-  title: "テスト記事タイトル",
-  description: "テスト記事の説明文です",
-  date: "2026-01-15",
-  category: "tech" as Category,
-  tags: ["React"],
-  published: true,
-};
 
 describe("ArticleDetailPage", () => {
   beforeEach(() => {

@@ -35,7 +35,8 @@ export async function getArticlesByCategory(
   const articles: ArticleMeta[] = [];
   for (const article of results) {
     if (article && (includeDrafts || article.published)) {
-      const { content: _, ...meta } = article;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { content, ...meta } = article;
       articles.push(meta);
     }
   }
