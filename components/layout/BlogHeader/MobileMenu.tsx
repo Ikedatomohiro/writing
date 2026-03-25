@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { NavLink } from "./NavLink";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 export interface NavLinkItem {
   href: string;
@@ -19,6 +21,7 @@ export function MobileMenu({ links }: MobileMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openButtonRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
 
   const handleOpen = () => {
     setIsAnimating(true);
@@ -124,7 +127,13 @@ export function MobileMenu({ links }: MobileMenuProps) {
                 isAnimating ? "translate-x-0" : "translate-x-full"
               }`}
             >
-              <div className="p-4 border-b border-outline-variant">
+              <div className="flex items-center justify-between p-4 border-b border-outline-variant">
+                <span
+                  className="font-headline text-lg font-extrabold tracking-tighter text-on-surface"
+                  data-testid="mobile-menu-site-name"
+                >
+                  {SITE_CONFIG.name}
+                </span>
                 <button
                   ref={closeButtonRef}
                   aria-label="メニューを閉じる"
@@ -134,12 +143,27 @@ export function MobileMenu({ links }: MobileMenuProps) {
                   <CloseIcon />
                 </button>
               </div>
-              <div className="flex flex-col gap-2 p-4">
-                {links.map((link) => (
-                  <NavLink key={link.href} href={link.href}>
-                    {link.label}
-                  </NavLink>
-                ))}
+              <div className="flex flex-col py-4">
+                {links.map((link) => {
+                  const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                  return (
+                    <NextLink
+                      key={link.href}
+                      href={link.href}
+                      data-testid="mobile-menu-link"
+                      aria-current={isActive ? "page" : undefined}
+                      className={`
+                        px-6 py-4 text-xl font-headline font-bold transition-colors
+                        ${isActive
+                          ? "bg-primary-container text-on-primary-container"
+                          : "text-on-surface hover:bg-surface-container"
+                        }
+                      `}
+                    >
+                      {link.label}
+                    </NextLink>
+                  );
+                })}
               </div>
             </div>
           </>,

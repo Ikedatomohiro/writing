@@ -262,9 +262,10 @@ body {
    =================================== */
 .article-body {
   font-family: var(--font-inter), var(--font-noto-sans-jp), sans-serif;
-  font-size: 1rem;
+  font-size: 1.0625rem;
   line-height: 1.8;
   color: var(--md3-on-surface);
+  max-width: 720px;
 }
 
 /* Headings in article body */
@@ -273,7 +274,7 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.4;
-  margin-top: 2.5rem;
+  margin-top: 3.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--md3-primary);
@@ -284,7 +285,7 @@ body {
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.4;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   margin-bottom: 0.75rem;
 }
 

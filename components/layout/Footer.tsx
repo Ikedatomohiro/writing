@@ -2,11 +2,11 @@ import Link from "next/link";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 const FOOTER_LINKS = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
-  { label: "Careers", href: "/careers" },
-  { label: "Contact", href: "/contact" },
-  { label: "Newsletter", href: "/newsletter" },
+  { label: "プライバシーポリシー", href: "/privacy" },
+  { label: "利用規約", href: "/terms" },
+  { label: "採用情報", href: "/careers" },
+  { label: "お問い合わせ", href: "/contact" },
+  { label: "ニュースレター", href: "/newsletter" },
 ] as const;
 
 const SOCIAL_ICONS = [
@@ -27,7 +27,7 @@ export function Footer() {
               {SITE_CONFIG.name}
             </span>
             <p className="font-label text-xs tracking-wider text-on-surface-variant mt-1">
-              The Editorial Manuscript.
+              知見を綴る、ひとりの時間。
             </p>
             <p className="font-label text-[10px] tracking-wider text-on-surface-variant/50 mt-2">
               &copy; {currentYear} {SITE_CONFIG.name}. All rights reserved.

@@ -96,31 +96,44 @@ function CategoryNavigation() {
   );
 }
 
-function BentoGrid({ articles }: { articles: ArticleMeta[] }) {
+function BentoGrid({ articles, hasMore }: { articles: ArticleMeta[]; hasMore: boolean }) {
   const [first, second, ...rest] = articles;
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Large Card - spans 2 columns */}
-      {first && (
-        <div className="md:col-span-2">
-          <BlogArticleCard article={first} variant="large" />
+    <section>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+        {/* Large Card - spans 2 columns */}
+        {first && (
+          <div className="col-span-2 md:col-span-2">
+            <BlogArticleCard article={first} variant="large" />
+          </div>
+        )}
+
+        {/* Square Card */}
+        {second && (
+          <div>
+            <BlogArticleCard article={second} variant="square" />
+          </div>
+        )}
+
+        {/* Standard Cards */}
+        {rest.map((article) => (
+          <div key={article.slug}>
+            <BlogArticleCard article={article} variant="default" />
+          </div>
+        ))}
+      </div>
+
+      {hasMore && (
+        <div className="mt-12 text-center">
+          <Link
+            href="/asset"
+            className="inline-flex px-8 py-3 border border-outline-variant text-on-surface-variant rounded-full font-headline font-bold hover:bg-surface-container transition-colors"
+          >
+            すべての記事を見る
+          </Link>
         </div>
       )}
-
-      {/* Square Card */}
-      {second && (
-        <div>
-          <BlogArticleCard article={second} variant="square" />
-        </div>
-      )}
-
-      {/* Standard Cards */}
-      {rest.map((article) => (
-        <div key={article.slug}>
-          <BlogArticleCard article={article} variant="default" />
-        </div>
-      ))}
     </section>
   );
 }
@@ -168,8 +181,11 @@ export default async function Home() {
   const allArticles = [...assetArticles, ...techArticles, ...healthArticles]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // First article is the hero, rest go in the bento grid
-  const [featuredArticle, ...gridArticles] = allArticles;
+  // First article is the hero, rest go in the bento grid (max 9 total: 1 hero + 8 grid)
+  const MAX_DISPLAY = 9;
+  const hasMore = allArticles.length > MAX_DISPLAY;
+  const displayedArticles = allArticles.slice(0, MAX_DISPLAY);
+  const [featuredArticle, ...gridArticles] = displayedArticles;
 
   return (
     <div className="max-w-7xl mx-auto px-6">
@@ -180,7 +196,7 @@ export default async function Home() {
       <CategoryNavigation />
 
       {/* Bento Grid Article List */}
-      {gridArticles.length > 0 && <BentoGrid articles={gridArticles} />}
+      {gridArticles.length > 0 && <BentoGrid articles={gridArticles} hasMore={hasMore} />}
 
       {/* Newsletter CTA */}
       <NewsletterSection />

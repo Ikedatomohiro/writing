@@ -13,27 +13,27 @@ describe("Footer", () => {
     expect(screen.getByText(SITE_CONFIG.name)).toBeInTheDocument();
   });
 
-  it("サブタイトルが表示される", () => {
+  it("サブタイトルが日本語で表示される", () => {
     render(<Footer />);
-    expect(screen.getByText("The Editorial Manuscript.")).toBeInTheDocument();
+    expect(screen.getByText("知見を綴る、ひとりの時間。")).toBeInTheDocument();
   });
 
-  it("フッターリンクが表示される", () => {
+  it("フッターリンクが日本語で表示される", () => {
     render(<Footer />);
-    expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
-    expect(screen.getByText("Terms of Service")).toBeInTheDocument();
-    expect(screen.getByText("Careers")).toBeInTheDocument();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
-    expect(screen.getByText("Newsletter")).toBeInTheDocument();
+    expect(screen.getByText("プライバシーポリシー")).toBeInTheDocument();
+    expect(screen.getByText("利用規約")).toBeInTheDocument();
+    expect(screen.getByText("採用情報")).toBeInTheDocument();
+    expect(screen.getByText("お問い合わせ")).toBeInTheDocument();
+    expect(screen.getByText("ニュースレター")).toBeInTheDocument();
   });
 
   it("フッターリンクが正しいhrefを持つ", () => {
     render(<Footer />);
-    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
-    expect(screen.getByRole("link", { name: "Terms of Service" })).toHaveAttribute("href", "/terms");
-    expect(screen.getByRole("link", { name: "Careers" })).toHaveAttribute("href", "/careers");
-    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
-    expect(screen.getByRole("link", { name: "Newsletter" })).toHaveAttribute("href", "/newsletter");
+    expect(screen.getByRole("link", { name: "プライバシーポリシー" })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("link", { name: "採用情報" })).toHaveAttribute("href", "/careers");
+    expect(screen.getByRole("link", { name: "お問い合わせ" })).toHaveAttribute("href", "/contact");
+    expect(screen.getByRole("link", { name: "ニュースレター" })).toHaveAttribute("href", "/newsletter");
   });
 
   it("コピーライトが表示される", () => {

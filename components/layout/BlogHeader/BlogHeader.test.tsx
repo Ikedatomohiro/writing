@@ -76,11 +76,11 @@ describe("BlogHeader", () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it("renders subscribe button linking to /search", () => {
+    it("renders subscribe button with Japanese text linking to /search", () => {
       render(<BlogHeader />);
       const subscribeButton = screen.getByTestId("header-subscribe-button");
       expect(subscribeButton).toBeInTheDocument();
-      expect(subscribeButton).toHaveTextContent("Subscribe");
+      expect(subscribeButton).toHaveTextContent("購読");
       expect(subscribeButton).toHaveAttribute("href", "/search");
     });
   });
