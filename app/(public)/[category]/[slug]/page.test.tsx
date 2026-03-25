@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import ArticleDetailPage, { generateStaticParams, generateMetadata } from "./page";
-import type { Category, Article, ArticleMeta } from "@/lib/content/types";
+import ArticleDetailPage, { generateMetadata } from "./page";
+import type { Category, Article } from "@/lib/content/types";
 
 // Mock content API
 vi.mock("@/lib/content/api", () => ({
   getArticleBySlug: vi.fn(),
   getRelatedArticles: vi.fn(),
-  getAllArticles: vi.fn(),
 }));
 
 // Mock MDX compiler
@@ -50,7 +49,7 @@ vi.mock("@/lib/seo/jsonld", () => ({
   generateBreadcrumbJsonLd: vi.fn(() => ({})),
 }));
 
-import { getArticleBySlug, getAllArticles } from "@/lib/content/api";
+import { getArticleBySlug } from "@/lib/content/api";
 import { compileMDXContent } from "@/lib/content/mdx";
 
 const mockArticle: Article = {
@@ -66,15 +65,6 @@ const mockArticle: Article = {
   content: "# 記事本文\n\nこれはテスト記事です。",
 };
 
-const mockArticleMeta: ArticleMeta = {
-  slug: "test-article",
-  title: "テスト記事タイトル",
-  description: "テスト記事の説明文です",
-  date: "2026-01-15",
-  category: "tech" as Category,
-  tags: ["React"],
-  published: true,
-};
 
 describe("ArticleDetailPage", () => {
   beforeEach(() => {
@@ -239,23 +229,6 @@ describe("ArticleDetailPage", () => {
           params: Promise.resolve({ category: "invalid", slug: "test-article" }),
         })
       ).rejects.toThrow();
-    });
-  });
-
-  describe("generateStaticParams", () => {
-    it("returns all published articles as params", async () => {
-      vi.mocked(getAllArticles).mockResolvedValue([
-        { ...mockArticleMeta, category: "tech", slug: "article-1" },
-        { ...mockArticleMeta, category: "asset", slug: "article-2" },
-        { ...mockArticleMeta, category: "health", slug: "article-3" },
-      ]);
-
-      const params = await generateStaticParams();
-
-      expect(params).toHaveLength(3);
-      expect(params).toContainEqual({ category: "tech", slug: "article-1" });
-      expect(params).toContainEqual({ category: "asset", slug: "article-2" });
-      expect(params).toContainEqual({ category: "health", slug: "article-3" });
     });
   });
 

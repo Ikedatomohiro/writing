@@ -25,31 +25,28 @@ export function getContentDirectory(): string {
 export async function listArticleFiles(category: Category): Promise<string[]> {
   const filesSet = new Set<string>();
 
-  // 1. ファイルシステムから取得
+  // ファイルシステムとVercel Blobから並列で取得
   const dir = path.join(getContentDirectory(), category);
-  try {
-    const files = await fs.readdir(dir);
-    for (const file of files) {
-      if (file.endsWith(".mdx")) {
-        filesSet.add(file);
-      }
-    }
-  } catch {
-    // ディレクトリが存在しない場合はスキップ
-  }
+  const prefix = `content/${category}/`;
 
-  // 2. Vercel Blobから取得
-  try {
-    const prefix = `content/${category}/`;
-    const result = await list({ prefix });
-    for (const blob of result.blobs) {
-      const fileName = blob.pathname.replace(prefix, "");
-      if (fileName.endsWith(".mdx") && !fileName.includes("/")) {
-        filesSet.add(fileName);
-      }
+  const [fsFiles, blobFiles] = await Promise.all([
+    fs.readdir(dir).catch(() => [] as string[]),
+    list({ prefix })
+      .then((result) =>
+        result.blobs
+          .map((blob) => blob.pathname.replace(prefix, ""))
+          .filter((name) => name.endsWith(".mdx") && !name.includes("/"))
+      )
+      .catch(() => [] as string[]),
+  ]);
+
+  for (const file of fsFiles) {
+    if (file.endsWith(".mdx")) {
+      filesSet.add(file);
     }
-  } catch {
-    // Blob未設定やエラー時はスキップ
+  }
+  for (const file of blobFiles) {
+    filesSet.add(file);
   }
 
   return Array.from(filesSet);
