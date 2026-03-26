@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import { ThemeScript } from "@/lib/theme/ThemeScript";
 import { fontVariables } from "@/lib/fonts";
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ThemeScript />
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
       {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
