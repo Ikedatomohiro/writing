@@ -162,16 +162,14 @@ function ResultItem({ article }: { article: ArticleMeta }) {
             </span>
           </div>
         </div>
-        {article.thumbnail && (
-          <div className="w-full md:w-48 h-32 rounded-lg bg-surface-container-highest overflow-hidden shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt={article.title}
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-              src={article.thumbnail}
-            />
-          </div>
-        )}
+        <div className="w-full md:w-48 h-32 rounded-lg bg-surface-container-highest overflow-hidden shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt={article.title}
+            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+            src={article.thumbnail || SITE_CONFIG.defaultOgImage}
+          />
+        </div>
       </Link>
     </article>
   );

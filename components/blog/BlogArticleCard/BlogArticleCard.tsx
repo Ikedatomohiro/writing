@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { ArticleMeta, Category } from "@/lib/content/types";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 export interface BlogArticleCardProps {
   article: ArticleMeta;
@@ -53,6 +54,7 @@ export function BlogArticleCard({
 }: BlogArticleCardProps) {
   const categoryLabel = CATEGORY_LABELS[article.category];
   const href = `/${article.category}/${article.slug}`;
+  const thumbnailSrc = article.thumbnail || SITE_CONFIG.defaultOgImage;
   const aspectClass = getAspectClass(variant);
   const titleClass = getTitleClass(variant);
   const paddingClass = getPaddingClass(variant);
@@ -66,19 +68,12 @@ export function BlogArticleCard({
       >
         {/* Thumbnail */}
         <div className={`${aspectClass} overflow-hidden bg-surface-container relative`}>
-          {article.thumbnail ? (
-            <Image
-              src={article.thumbnail}
-              alt={article.title}
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          ) : (
-            <div
-              className="w-full h-full bg-surface-container"
-              data-testid="thumbnail-placeholder"
-            />
-          )}
+          <Image
+            src={thumbnailSrc}
+            alt={article.title}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         </div>
 
         {/* Content */}

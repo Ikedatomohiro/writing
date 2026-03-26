@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
 import { PopularArticles } from "@/components/layout/Sidebar/PopularArticles";
 import { NewsletterSignup } from "@/components/layout/Sidebar/NewsletterSignup";
 import { AdSlot } from "@/components/layout/Sidebar/AdSlot";
-import { CATEGORY_META } from "@/lib/constants/site";
+import { CATEGORY_META, SITE_CONFIG } from "@/lib/constants/site";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -138,16 +138,12 @@ function TechGlassCard({
     >
       <article className="glass-card neo-glow rounded-xl overflow-hidden h-full flex flex-col transition-all duration-500">
         <div className="aspect-[16/9] overflow-hidden bg-surface-container relative">
-          {article.thumbnail ? (
-            <Image
-              src={article.thumbnail}
-              alt={article.title}
-              fill
-              className="object-cover grayscale hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full bg-surface-container grayscale hover:grayscale-0 transition-all duration-500" />
-          )}
+          <Image
+            src={article.thumbnail || SITE_CONFIG.defaultOgImage}
+            alt={article.title}
+            fill
+            className="object-cover grayscale hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+          />
         </div>
         <div className="p-6 flex-1">
           <span className="font-mono text-primary font-label text-xs font-bold tracking-widest uppercase">
