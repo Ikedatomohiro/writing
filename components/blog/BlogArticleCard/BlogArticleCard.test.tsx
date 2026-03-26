@@ -61,12 +61,13 @@ describe("BlogArticleCard", () => {
       expect(img).toHaveAttribute("alt", article.title);
     });
 
-    it("サムネイルがない場合はプレースホルダーを表示する", () => {
+    it("サムネイルがない場合はデフォルト画像を表示する", () => {
       const article = createTestArticle({ thumbnail: undefined });
       render(<BlogArticleCard article={article} />);
 
-      expect(screen.queryByRole("img")).not.toBeInTheDocument();
-      expect(screen.getByTestId("thumbnail-placeholder")).toBeInTheDocument();
+      const img = screen.getByRole("img");
+      expect(img).toHaveAttribute("alt", article.title);
+      expect(screen.queryByTestId("thumbnail-placeholder")).not.toBeInTheDocument();
     });
   });
 

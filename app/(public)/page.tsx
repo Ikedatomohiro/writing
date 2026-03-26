@@ -59,17 +59,13 @@ function HeroSection({ article }: { article: ArticleMeta }) {
         </div>
         <div className="md:col-span-5 mt-8 md:mt-0">
           <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
-            {article.thumbnail ? (
-              <Image
-                src={article.thumbnail}
-                alt={article.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full bg-surface-container" />
-            )}
+            <Image
+              src={article.thumbnail || SITE_CONFIG.defaultOgImage}
+              alt={article.title}
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
         </div>
       </div>
