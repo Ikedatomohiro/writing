@@ -154,6 +154,8 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   src={article.thumbnail}
                   alt={article.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  unoptimized={article.thumbnail.startsWith("http")}
                   className="object-cover"
                   priority
                 />

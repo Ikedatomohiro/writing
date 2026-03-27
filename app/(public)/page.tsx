@@ -30,8 +30,13 @@ const CATEGORY_CONFIG: {
   { category: "health", label: "健康", href: "/health" },
 ];
 
+function isExternalUrl(src: string): boolean {
+  return src.startsWith("http://") || src.startsWith("https://");
+}
+
 function HeroSection({ article }: { article: ArticleMeta }) {
   const href = `/${article.category}/${article.slug}`;
+  const thumbnailSrc = article.thumbnail || SITE_CONFIG.defaultOgImage;
 
   return (
     <section className="mb-20" data-testid="hero-section">
@@ -60,9 +65,11 @@ function HeroSection({ article }: { article: ArticleMeta }) {
         <div className="md:col-span-5 mt-8 md:mt-0">
           <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
             <Image
-              src={article.thumbnail || SITE_CONFIG.defaultOgImage}
+              src={thumbnailSrc}
               alt={article.title}
               fill
+              sizes="(max-width: 768px) 100vw, 40vw"
+              unoptimized={isExternalUrl(thumbnailSrc)}
               className="object-cover"
               priority
             />
