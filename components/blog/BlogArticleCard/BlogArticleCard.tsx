@@ -47,6 +47,10 @@ function getPaddingClass(variant: "default" | "large" | "square"): string {
   return variant === "default" ? "p-6" : "p-8";
 }
 
+function isExternalUrl(src: string): boolean {
+  return src.startsWith("http://") || src.startsWith("https://");
+}
+
 export function BlogArticleCard({
   article,
   readingTime,
@@ -72,6 +76,8 @@ export function BlogArticleCard({
             src={thumbnailSrc}
             alt={article.title}
             fill
+            sizes="(max-width: 768px) 50vw, 33vw"
+            unoptimized={isExternalUrl(thumbnailSrc)}
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
