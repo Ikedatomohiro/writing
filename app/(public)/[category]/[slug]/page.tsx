@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Category } from "@/lib/content/types";
@@ -149,15 +148,12 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
             {/* Hero Image */}
             {article.thumbnail && (
-              <div className="relative w-full aspect-video mb-12 overflow-hidden rounded-xl">
-                <Image
+              <div className="w-full aspect-video mb-12 overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={article.thumbnail}
                   alt={article.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  unoptimized={article.thumbnail.startsWith("http")}
-                  className="object-cover"
-                  priority
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}

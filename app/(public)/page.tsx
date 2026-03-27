@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
 import { getArticlesByCategory } from "@/lib/content/api";
 import type { Category, ArticleMeta } from "@/lib/content/types";
@@ -29,10 +28,6 @@ const CATEGORY_CONFIG: {
   { category: "tech", label: "プログラミング", href: "/tech" },
   { category: "health", label: "健康", href: "/health" },
 ];
-
-function isExternalUrl(src: string): boolean {
-  return src.startsWith("http://") || src.startsWith("https://");
-}
 
 function HeroSection({ article }: { article: ArticleMeta }) {
   const href = `/${article.category}/${article.slug}`;
@@ -63,15 +58,12 @@ function HeroSection({ article }: { article: ArticleMeta }) {
           </div>
         </div>
         <div className="md:col-span-5 mt-8 md:mt-0">
-          <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-xl bg-surface-container-high relative">
-            <Image
+          <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-xl bg-surface-container-high">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={thumbnailSrc}
               alt={article.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 40vw"
-              unoptimized={isExternalUrl(thumbnailSrc)}
-              className="object-cover"
-              priority
+              className="w-full h-full object-cover"
             />
           </div>
         </div>
