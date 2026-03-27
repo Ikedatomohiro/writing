@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { ArticleMeta, Category } from "@/lib/content/types";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
@@ -47,10 +46,6 @@ function getPaddingClass(variant: "default" | "large" | "square"): string {
   return variant === "default" ? "p-6" : "p-8";
 }
 
-function isExternalUrl(src: string): boolean {
-  return src.startsWith("http://") || src.startsWith("https://");
-}
-
 export function BlogArticleCard({
   article,
   readingTime,
@@ -71,14 +66,12 @@ export function BlogArticleCard({
         data-testid="article-card"
       >
         {/* Thumbnail */}
-        <div className={`${aspectClass} overflow-hidden bg-surface-container relative`}>
-          <Image
+        <div className={`${aspectClass} overflow-hidden bg-surface-container`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={thumbnailSrc}
             alt={article.title}
-            fill
-            sizes="(max-width: 768px) 50vw, 33vw"
-            unoptimized={isExternalUrl(thumbnailSrc)}
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
 
