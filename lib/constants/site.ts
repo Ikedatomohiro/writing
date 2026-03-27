@@ -6,7 +6,7 @@ export const SITE_CONFIG = {
   description: "ひとり暮らしを楽しむためのライフスタイルブログ",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://ohitorisama-life.com",
   locale: "ja_JP",
-  defaultOgImage: "/images/og-default.png",
+  defaultOgImage: "/images/solo-life-hero.png",
 } as const;
 
 /**
