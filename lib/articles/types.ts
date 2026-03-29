@@ -27,7 +27,7 @@ export interface ArticleUpdateInput {
 
 export interface ArticleListOptions {
   status?: ArticleStatus;
-  sortBy?: "createdAt" | "updatedAt" | "title";
+  sortBy?: "publishedAt" | "createdAt" | "updatedAt" | "title";
   sortOrder?: "asc" | "desc";
   searchQuery?: string;
 }

@@ -97,7 +97,51 @@ describe("ArticleService", () => {
       expect(results).toHaveLength(2);
     });
 
-    it("作成日時でソートできる（降順がデフォルト）", async () => {
+    it("公開日時でソートできる（降順がデフォルト）", async () => {
+      backend._data.articles = [
+        createMockArticle({
+          id: "1",
+          title: "古い記事",
+          publishedAt: "2024-01-01T00:00:00.000Z",
+        }),
+        createMockArticle({
+          id: "2",
+          title: "新しい記事",
+          publishedAt: "2024-01-03T00:00:00.000Z",
+        }),
+        createMockArticle({
+          id: "3",
+          title: "中間の記事",
+          publishedAt: "2024-01-02T00:00:00.000Z",
+        }),
+      ];
+
+      const articles = await service.getArticles();
+      expect(articles[0].title).toBe("新しい記事");
+      expect(articles[1].title).toBe("中間の記事");
+      expect(articles[2].title).toBe("古い記事");
+    });
+
+    it("publishedAtがnullの記事は末尾に来る", async () => {
+      backend._data.articles = [
+        createMockArticle({
+          id: "1",
+          title: "下書き記事",
+          publishedAt: null,
+        }),
+        createMockArticle({
+          id: "2",
+          title: "公開済み記事",
+          publishedAt: "2024-01-01T00:00:00.000Z",
+        }),
+      ];
+
+      const articles = await service.getArticles();
+      expect(articles[0].title).toBe("公開済み記事");
+      expect(articles[1].title).toBe("下書き記事");
+    });
+
+    it("createdAtでソートできる", async () => {
       backend._data.articles = [
         createMockArticle({
           id: "1",
@@ -111,7 +155,7 @@ describe("ArticleService", () => {
         }),
       ];
 
-      const articles = await service.getArticles();
+      const articles = await service.getArticles({ sortBy: "createdAt" });
       expect(articles[0].title).toBe("新しい記事");
       expect(articles[1].title).toBe("古い記事");
     });

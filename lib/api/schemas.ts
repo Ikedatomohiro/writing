@@ -16,7 +16,7 @@ export const UpdateArticleSchema = z.object({
 
 export const ArticleQuerySchema = z.object({
   status: z.enum(["draft", "published", "archived"]).optional(),
-  sortBy: z.enum(["createdAt", "updatedAt", "title"]).optional(),
+  sortBy: z.enum(["publishedAt", "createdAt", "updatedAt", "title"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
   searchQuery: z.string().max(200).optional(),
 });

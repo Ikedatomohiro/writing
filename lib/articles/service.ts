@@ -10,7 +10,7 @@ export class ArticleService {
   constructor(private backend: StorageBackend) {}
 
   async getArticles(options: ArticleListOptions = {}): Promise<Article[]> {
-    const { status, sortBy = "createdAt", sortOrder = "desc", searchQuery } = options;
+    const { status, sortBy = "publishedAt", sortOrder = "desc", searchQuery } = options;
     const data = await this.backend.load();
     let articles = data.articles;
 
@@ -29,8 +29,13 @@ export class ArticleService {
       if (sortBy === "title") {
         comparison = a.title.localeCompare(b.title);
       } else {
+        const aValue = a[sortBy];
+        const bValue = b[sortBy];
+        if (aValue === null && bValue === null) return 0;
+        if (aValue === null) return 1;
+        if (bValue === null) return -1;
         comparison =
-          new Date(a[sortBy]).getTime() - new Date(b[sortBy]).getTime();
+          new Date(aValue).getTime() - new Date(bValue).getTime();
       }
       return sortOrder === "asc" ? comparison : -comparison;
     });
