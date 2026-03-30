@@ -18,7 +18,7 @@ function truncateTitle(title: string, maxLen: number): string {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const title = searchParams.get("title") || "おひとりさまライフ";
+  const title = searchParams.get("title") || "ライフハック・ラボ — 生活改善の実験室";
   const category = searchParams.get("category") || "";
   const theme = CATEGORY_THEMES[category] || DEFAULT_THEME;
   const isDark = category === "tech";
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
                 letterSpacing: "-0.02em",
               }}
             >
-              おひとりさまライフ
+              ライフハック・ラボ
             </div>
             <div
               style={{

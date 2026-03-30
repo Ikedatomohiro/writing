@@ -106,9 +106,9 @@ describe("PrivacyPolicyPage", () => {
 
   // Issue #55: 新規追加テスト
   describe("運営者情報", () => {
-    it("サイト名「おひとりさまライフ」が表示される", () => {
+    it("サイト名「ライフハック・ラボ — 生活改善の実験室」が表示される", () => {
       render(<PrivacyPolicyPage />);
-      const elements = screen.getAllByText(/おひとりさまライフ/);
+      const elements = screen.getAllByText(/ライフハック・ラボ/);
       expect(elements.length).toBeGreaterThan(0);
     });
   });
