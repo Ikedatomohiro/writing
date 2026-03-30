@@ -2,8 +2,8 @@
  * サイト情報の定数
  */
 export const SITE_CONFIG = {
-  name: "おひとりさまライフ",
-  description: "ひとり暮らしを楽しむためのライフスタイルブログ",
+  name: "ライフハック・ラボ — 生活改善の実験室",
+  description: "日常をもっと快適にするライフハック実験ブログ",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://ohitorisama-life.com",
   locale: "ja_JP",
   defaultOgImage: "/images/solo-life-hero.png",

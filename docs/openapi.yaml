@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: Writing Project API
   description: |
-    記事作成支援Webアプリ「おひとりさまライフ」のAPI仕様書。
+    記事作成支援Webアプリ「ライフハック・ラボ — 生活改善の実験室」のAPI仕様書。
 
     ## 概要
 
@@ -541,11 +541,11 @@ paths:
           required: false
           description: |
             OGP画像に表示するタイトル。
-            省略した場合は「おひとりさまライフ」がデフォルト値として使用されます。
+            省略した場合は「ライフハック・ラボ — 生活改善の実験室」がデフォルト値として使用されます。
             40文字を超える場合は自動的に切り詰められます。
           schema:
             type: string
-            default: "おひとりさまライフ"
+            default: "ライフハック・ラボ — 生活改善の実験室"
           example: "Next.js 15の新機能まとめ"
         - name: category
           in: query
