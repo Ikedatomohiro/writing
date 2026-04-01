@@ -24,12 +24,9 @@ export async function getArticlesByCategory(
 ): Promise<ArticleMeta[]> {
   const { includeDrafts = false } = options;
 
-  const files = await listArticleFiles(category);
+  const slugs = await listArticleFiles(category);
   const results = await Promise.all(
-    files.map((file) => {
-      const slug = file.replace(/\.mdx$/, "");
-      return readArticleFile(category, slug);
-    })
+    slugs.map((slug) => readArticleFile(category, slug))
   );
 
   const articles: ArticleMeta[] = [];

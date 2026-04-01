@@ -1,195 +1,156 @@
-import { describe, it, expect, beforeAll, afterAll, vi, beforeEach, afterEach } from "vitest";
-import * as fs from "fs";
-import * as path from "path";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const TEST_CONTENT_DIR = path.join(process.cwd(), "test-content-reader");
+// Mock the supabase module before importing reader
+const mockSelect = vi.fn();
+const mockEq = vi.fn();
+const mockSingle = vi.fn();
+const mockFrom = vi.fn();
 
-// テスト用のコンテンツディレクトリを使用
-process.env.CONTENT_DIR = TEST_CONTENT_DIR;
-
-const mockList = vi.fn();
-const mockHead = vi.fn();
-
-vi.mock("@vercel/blob", () => ({
-  list: (...args: unknown[]) => mockList(...args),
-  head: (...args: unknown[]) => mockHead(...args),
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    from: (...args: unknown[]) => mockFrom(...args),
+  },
 }));
 
-import { readArticleFile, listArticleFiles, getContentDirectory } from "./reader";
-
-describe("getContentDirectory", () => {
-  it("returns the content directory path", () => {
-    const dir = getContentDirectory();
-    expect(dir).toContain("content");
-  });
-});
+import { readArticleFile, listArticleFiles } from "./reader";
 
 describe("listArticleFiles", () => {
-  beforeAll(() => {
-    // テスト用のディレクトリとファイルを作成
-    fs.mkdirSync(path.join(TEST_CONTENT_DIR, "asset"), { recursive: true });
-    fs.writeFileSync(
-      path.join(TEST_CONTENT_DIR, "asset", "test-article.mdx"),
-      `---
-title: テスト記事
-description: テスト
-date: 2026-01-24
-category: asset
----
-
-本文
-`
-    );
-  });
-
-  afterAll(() => {
-    // テスト用ファイルとディレクトリを削除
-    fs.rmSync(TEST_CONTENT_DIR, { recursive: true, force: true });
-  });
-
   beforeEach(() => {
-    // Default: Blob returns empty
-    mockList.mockRejectedValue(new Error("not configured"));
-    mockHead.mockRejectedValue(new Error("not found"));
-  });
-
-  afterEach(() => {
     vi.clearAllMocks();
+    // Set up chain: from().select().eq().eq()
+    mockFrom.mockReturnValue({ select: mockSelect });
+    mockSelect.mockReturnValue({ eq: mockEq });
   });
 
-  it("lists mdx files in a category directory", async () => {
-    const files = await listArticleFiles("asset");
-
-    expect(files).toContain("test-article.mdx");
-  });
-
-  it("returns empty array for non-existent category", async () => {
-    const files = await listArticleFiles("nonexistent" as "asset");
-
-    expect(files).toEqual([]);
-  });
-
-  it("merges files from Blob storage", async () => {
-    mockList.mockResolvedValue({
-      blobs: [
-        { pathname: "content/asset/blob-article.mdx" },
-        { pathname: "content/asset/test-article.mdx" }, // duplicate with FS
-      ],
+  it("returns slugs for published articles in a category", async () => {
+    const mockSecondEq = vi.fn().mockResolvedValue({
+      data: [{ slug: "article-one" }, { slug: "article-two" }],
+      error: null,
     });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
 
-    const files = await listArticleFiles("asset");
+    const slugs = await listArticleFiles("tech");
 
-    expect(files).toContain("test-article.mdx");
-    expect(files).toContain("blob-article.mdx");
-    // Deduplication: test-article.mdx appears only once
-    expect(files.filter((f) => f === "test-article.mdx")).toHaveLength(1);
+    expect(mockFrom).toHaveBeenCalledWith("articles");
+    expect(mockSelect).toHaveBeenCalledWith("slug");
+    expect(mockEq).toHaveBeenCalledWith("category", "tech");
+    expect(mockSecondEq).toHaveBeenCalledWith("published", true);
+    expect(slugs).toEqual(["article-one", "article-two"]);
   });
 
-  it("returns only Blob files when FS directory does not exist", async () => {
-    mockList.mockResolvedValue({
-      blobs: [{ pathname: "content/health/blob-only.mdx" }],
+  it("returns empty array when no articles exist", async () => {
+    const mockSecondEq = vi.fn().mockResolvedValue({
+      data: [],
+      error: null,
     });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
 
-    const files = await listArticleFiles("health");
+    const slugs = await listArticleFiles("health");
 
-    expect(files).toContain("blob-only.mdx");
+    expect(slugs).toEqual([]);
   });
 
-  it("filters out non-mdx and nested files from Blob", async () => {
-    mockList.mockResolvedValue({
-      blobs: [
-        { pathname: "content/asset/valid.mdx" },
-        { pathname: "content/asset/image.png" },
-        { pathname: "content/asset/sub/nested.mdx" },
-      ],
+  it("returns empty array on supabase error", async () => {
+    const mockSecondEq = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: "connection failed" },
     });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
 
-    const files = await listArticleFiles("asset");
+    const slugs = await listArticleFiles("asset");
 
-    expect(files).toContain("valid.mdx");
-    expect(files).not.toContain("image.png");
-    expect(files).not.toContain("nested.mdx");
+    expect(slugs).toEqual([]);
   });
 });
 
 describe("readArticleFile", () => {
-  beforeAll(() => {
-    fs.mkdirSync(path.join(TEST_CONTENT_DIR, "tech"), { recursive: true });
-    fs.writeFileSync(
-      path.join(TEST_CONTENT_DIR, "tech", "sample.mdx"),
-      `---
-title: サンプル記事
-description: サンプルです
-date: 2026-01-25
-category: tech
-tags: [TypeScript, React]
----
-
-# サンプル本文
-
-これはサンプルです。
-`
-    );
-  });
-
-  afterAll(() => {
-    // テスト用ファイルとディレクトリを削除
-    fs.rmSync(TEST_CONTENT_DIR, { recursive: true, force: true });
-  });
-
   beforeEach(() => {
-    mockHead.mockRejectedValue(new Error("not found"));
-  });
-
-  afterEach(() => {
     vi.clearAllMocks();
+    // Set up chain: from().select().eq().eq().single()
+    mockFrom.mockReturnValue({ select: mockSelect });
+    mockSelect.mockReturnValue({ eq: mockEq });
   });
 
-  it("reads and parses an mdx file from filesystem", async () => {
+  it("reads an article by category and slug", async () => {
+    const mockSecondEq = vi.fn().mockReturnValue({ single: mockSingle });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
+    mockSingle.mockResolvedValue({
+      data: {
+        slug: "sample",
+        category: "tech",
+        title: "Sample Article",
+        description: "A sample",
+        content: "# Sample content",
+        date: "2026-01-25T00:00:00Z",
+        tags: ["TypeScript", "React"],
+        thumbnail: null,
+        published: true,
+      },
+      error: null,
+    });
+
     const article = await readArticleFile("tech", "sample");
 
     expect(article).not.toBeNull();
-    expect(article?.title).toBe("サンプル記事");
+    expect(article?.title).toBe("Sample Article");
     expect(article?.slug).toBe("sample");
     expect(article?.category).toBe("tech");
     expect(article?.tags).toEqual(["TypeScript", "React"]);
-    expect(article?.content).toContain("# サンプル本文");
+    expect(article?.content).toBe("# Sample content");
+    expect(article?.published).toBe(true);
+    expect(mockFrom).toHaveBeenCalledWith("articles");
+    expect(mockSelect).toHaveBeenCalledWith("*");
+    expect(mockEq).toHaveBeenCalledWith("category", "tech");
+    expect(mockSecondEq).toHaveBeenCalledWith("slug", "sample");
   });
 
-  it("falls back to Blob when file not on filesystem", async () => {
-    const blobContent = `---
-title: Blob記事
-description: Blobから取得
-date: 2026-02-01
-category: tech
-tags: [Blob]
-published: true
----
-
-# Blob本文
-`;
-    mockHead.mockResolvedValue({
-      url: "https://blob.vercel-storage.com/content/tech/blob-article.mdx",
+  it("returns null when article not found", async () => {
+    const mockSecondEq = vi.fn().mockReturnValue({ single: mockSingle });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
+    mockSingle.mockResolvedValue({
+      data: null,
+      error: { message: "not found", code: "PGRST116" },
     });
 
-    // Mock global fetch for Blob URL
-    const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(blobContent, { status: 200 })
-    );
-
-    const article = await readArticleFile("tech", "blob-article");
-
-    expect(article).not.toBeNull();
-    expect(article?.title).toBe("Blob記事");
-    expect(article?.content).toContain("# Blob本文");
-    expect(mockHead).toHaveBeenCalledWith("content/tech/blob-article.mdx");
-
-    mockFetch.mockRestore();
-  });
-
-  it("returns null for non-existent file", async () => {
     const article = await readArticleFile("tech", "nonexistent");
 
     expect(article).toBeNull();
+  });
+
+  it("returns null on supabase error", async () => {
+    const mockSecondEq = vi.fn().mockReturnValue({ single: mockSingle });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
+    mockSingle.mockResolvedValue({
+      data: null,
+      error: { message: "connection error" },
+    });
+
+    const article = await readArticleFile("asset", "some-article");
+
+    expect(article).toBeNull();
+  });
+
+  it("maps date field correctly", async () => {
+    const mockSecondEq = vi.fn().mockReturnValue({ single: mockSingle });
+    mockEq.mockReturnValue({ eq: mockSecondEq });
+    mockSingle.mockResolvedValue({
+      data: {
+        slug: "dated",
+        category: "asset",
+        title: "Dated Article",
+        description: "Has a date",
+        content: "body",
+        date: "2026-03-15T09:30:00Z",
+        tags: [],
+        thumbnail: "https://example.com/thumb.jpg",
+        published: true,
+      },
+      error: null,
+    });
+
+    const article = await readArticleFile("asset", "dated");
+
+    expect(article?.date).toBe("2026-03-15T09:30:00Z");
+    expect(article?.thumbnail).toBe("https://example.com/thumb.jpg");
   });
 });

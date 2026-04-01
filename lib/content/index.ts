@@ -7,7 +7,6 @@ export type { ParseResult } from "./parser";
 
 // Reader
 export {
-  getContentDirectory,
   listArticleFiles,
   readArticleFile,
 } from "./reader";
