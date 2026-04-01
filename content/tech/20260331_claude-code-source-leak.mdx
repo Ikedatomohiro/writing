@@ -1,0 +1,274 @@
+---
+title: "Claude Code流出で見えた、AIが自律的に動く未来の設計図"
+description: "2026年3月31日、Claude Codeのソースコードがnpmで流出。512,000行超のコードから判明した44個の未公開機能を解説。KAIROS、Coordinator Mode、autoDreamなど、AIが指示を待つ時代の終わりと自律的なAIチームの時代を示唆する設計図とは。"
+date: "2026-03-31T00:00:00.000Z"
+category: "tech"
+slug: "20260331_claude-code-source-leak"
+tags: ["ClaudeCode", "ソースコード流出", "AIエージェント", "KAIROS", "Anthropic", "未公開機能", "AIの未来", "セキュリティ"]
+thumbnail: "https://images.unsplash.com/photo-1623018035782-b269248df916?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MDIzNjF8MHwxfHNlYXJjaHwxfHxzb3VyY2UlMjBjb2RlJTIwbGVhayUyMHNlY3VyaXR5fGVufDB8fHx8MTc3NDk5NzE4M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+published: true
+---
+
+# Claude Code流出で見えた、AIが自律的に動く未来の設計図
+
+「まずClaude Codeにやらせてみよう」
+
+2026年に入ってから、僕の口癖はずっとこれだった。
+毎日Claude Codeを使い倒して、仕事の考え方そのものが変わった。
+
+そんな相棒のソースコードが、今日流出した。
+
+2026年3月31日。
+[@anthropic-ai/claude-code v2.1.88](https://venturebeat.com/technology/claude-codes-source-code-appears-to-have-leaked-heres-what-we-know)がnpmに公開された際、59.8MBのソースマップファイルが誤って同梱されていた。
+
+中に入っていたのは、1,900ファイル・512,000行超のTypeScriptソースコード。
+Claude Codeの内部構造がまるごと世に出てしまったわけだ。
+
+## AIのコード管理ツールが自分のコードを漏らした
+
+最初に気づいたのは、セキュリティ研究者のChaofan Shou氏だった。
+米東部時間の午前4時23分にXへ投稿し、その投稿は**1,600万インプレッション**を記録している。
+
+GitHubにはすぐにミラーリポジトリが立ち上がり、**41,500回以上フォーク**された。
+AIのコードを管理するツールが、自分自身のコードを流出させるという皮肉な展開に、開発者コミュニティは騒然となった。
+
+Anthropicは即座に声明を出している。
+
+> 「本日早朝、Claude Codeリリースに一部の内部ソースコードが含まれていました。顧客データや認証情報は一切含まれておらず、ヒューマンエラーによるリリースパッケージングの問題であり、セキュリティ侵害ではありません」
+
+ただ、見逃せないのは**5日前の3月26日にも流出事故が起きている**こと。
+「Claude Mythos」というモデル詳細や未公開ブログ、3,000件の非公開アセットがCMS設定ミスで漏れていた。
+[Fortune](https://fortune.com/2026/03/31/anthropic-source-code-claude-code-data-leak-second-security-lapse-days-after-accidentally-revealing-mythos/)が報じたように、5日で2度の流出はさすがに偶然では片付けにくい。
+
+技術的な経緯を見ていくと、ソースコードが混入した理由が浮かび上がる。
+
+## なぜ流出したのか：ソースマップとBunバグの話
+
+流出のきっかけは、**ソースマップ**（.mapファイル）の同梱ミスだった。
+
+ソースマップとは、圧縮・変換されたJavaScriptを元のソースコードに逆変換するための「地図」のようなもの。
+本来はデバッグ用であり、公開パッケージに含めるものではない。
+
+今回の原因は、複数の不備が重なった結果だ。
+
+- **Bunランタイムの既知バグ**: 2026年3月11日にGitHub Issue（oven-sh/bun#28001）として報告済みのバグがあり、プロダクションモードでもソースマップが出力されてしまう問題があった
+- **.npmignore設定の不備**: *.mapファイルを除外する設定がなされていなかった
+- **CloudFlare R2バケットへの参照**: ソースマップがAnthropicのクラウドストレージ上のZIPアーカイブを参照しており、研究者がダウンロード・展開できた
+
+いわば「デバッグ用の地図を、誰でもアクセスできる公開地図として配布してしまった」状態だ。
+
+正直、このミスは他人事ではない。
+.npmignoreの設定漏れなんて、どのチームでも起こりうる。
+
+### 注意：サプライチェーン攻撃のリスク
+
+ソースコード流出とは別に、もう1つ見逃せないリスクがある。
+
+UTC 00:21〜03:29の間にv2.1.88を**npmでインストール・更新した**ユーザーは、悪意のあるaxiosバージョン（1.14.1または0.30.4）を含むRemote Access Trojan（RAT）に感染した可能性がある。
+
+確認方法は以下の通り。
+
+- `package-lock.json`、`yarn.lock`、`bun.lockb` 内で **plain-crypto-js** という依存関係がないかを検索する
+- 該当する場合は、ホストマシンが完全に侵害されたとみなし、**全シークレットのローテーション・OSクリーンインストール**を実施する
+- 今後は**Native Installer**（`curl -fsSL https://claude.ai/install.sh | bash`）の使用が推奨されている
+
+自分は大丈夫か、今すぐ確認してほしい。
+
+## 流出で明らかになった未公開機能の全貌
+
+![AIエージェントの概念を表すビジュアル](https://images.unsplash.com/photo-1770233621425-5d9ee7a0a700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MDIzNjF8MHwxfHNlYXJjaHwxfHxBSSUyMGFydGlmaWNpYWwlMjBpbnRlbGxpZ2VuY2UlMjBhdXRvbm9tb3VzJTIwYWdlbnR8ZW58MHx8fHwxNzc0OTk3MTg1fDA&ixlib=rb-4.1.0&q=80&w=1080)
+*Photo by [Zach M](https://unsplash.com/@zachmmalin) on [Unsplash](https://unsplash.com/photos/artificial-intelligence-concept-within-a-human-head-7F9PhBM1gFM)*
+
+ミスの経緯とリスクがわかったところで、ここからが本題になる。
+中身には何が入っていたのか。
+
+流出したソースコードには**44個のフィーチャーフラグ**が含まれていた。
+（フィーチャーフラグは、コンパイル時に機能の有効・無効を切り替えるスイッチだ）
+これらは外部ビルドでは無効化されており、通常のユーザーには見えない未公開機能群だ。
+
+見つかった機能を整理すると、1つのストーリーが浮かび上がる。
+AIが「指示を待つ道具」から「自律的に動くチーム」へ変わる設計が、すでに完成していたということだ。
+
+主要な機能を見ていこう。
+
+### 自律系：AIが自分で動く
+
+- **KAIROS** — 常時起動型の自律エージェントモード。ユーザーの入力を待たずに観察・記録・行動する
+- **autoDream** — KAIROSの一部。ユーザーがアイドル中にバックグラウンドで記憶を統合する「ドリーミング」システム
+- **ULTRAPLAN** — クラウド上のOpus 4.6セッションに最大30分の計画立案を外部委託し、ブラウザで承認してから実行する
+
+### チーム系：AIがAIを管理する
+
+- **Coordinator Mode** — 1つのAIエージェントが複数のワーカーを並行起動・管理するマルチエージェントオーケストレーション
+- **AGENT TEAMS REMOTE CONTROL** — スマートフォンやclaude.aiブラウザからローカルマシンのClaudeを遠隔制御する機能
+
+### 拡張系：対話と思考の進化
+
+- **ULTRATHINK** — 思考時間を大幅に延長する機能。公式Changelogにも記述がある
+- **VOICE MODE** — プッシュトゥトークの音声インターフェース
+- **FAST MODE** — Opus 4.6の優先推論モード。価格は30ドル/Mトークン（通常の6倍）がハードコード済み
+
+### 防御系：自分を守る仕組み
+
+- **UNDERCOVER MODE** — OSSへの提出時にAI生成の痕跡を消去するシステム。「Do not blow your cover.」というプロンプトが話題に
+- **ANTI_DISTILLATION** — 競合による学習を妨げるため、APIリクエストにデコイのフェイクツール定義を注入する機能
+
+### その他：遊び心も
+
+- **BUDDY SYSTEM** — Tamagotchi風のターミナル仮想ペット。18種類の動物とレアリティティアがあり、4月1〜7日にプレビュー予定
+- **FRUSTRATION_DETECTION** — ユーザーの不満を検出するシステム。ただしAI企業なのにLLMではなく**Regex**で実装（これは後で触れる）
+
+この中で最も衝撃的な機能は、間違いなくKAIROSだと思う。
+詳しく見ていきたい。
+
+## KAIROS：AIが「待機」をやめる日
+
+![AIの未来的な発展を表す3Dレンダリング](https://images.unsplash.com/photo-1677442136019-21780ecad995?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MDIzNjF8MHwxfHNlYXJjaHwyfHxBSSUyMGFydGlmaWNpYWwlMjBpbnRlbGxpZ2VuY2UlMjBhdXRvbm9tb3VzJTIwYWdlbnR8ZW58MHx8fHwxNzc0OTk3MTg1fDA&ixlib=rb-4.1.0&q=80&w=1080)
+*Photo by [Steve Johnson](https://unsplash.com/@steve_j) on [Unsplash](https://unsplash.com/photos/a-computer-generated-image-of-the-letter-a-ZPOoDQc8yMw)*
+
+KAIROSは古代ギリシャ語の「好機」から命名されている。
+ソースコード内で**150回以上参照**されており、Anthropicがどれほど力を入れているかがわかる。
+
+一言でいえば、AIが24時間ユーザーのそばで起動し続け、自分で判断して動く仕組みだ。
+
+具体的な設計はこうなっている。
+
+- **15秒ブロッキング予算**: 行動の判定を15秒以内に完了し、超える場合は延期する。端末の操作をブロックしない
+- **追記専用ログ**: 毎日のログファイルに観察・判断・行動を記録する。上書きではなく追記のみで、何をしたか後から追える
+- **brief mode**: KAIROSがアクティブなときは出力が超簡潔になる。常時接続アシスタントとして画面を埋め尽くさない
+
+そして個人的に一番驚いたのが**autoDream**だ。
+
+ユーザーがパソコンから離れている間に、AIがバックグラウンドで記憶を整理する。
+具体的には、これまでの観察をマージし、矛盾する情報を排除し、曖昧なメモを具体的な事実に変換する。
+
+人間でいう「睡眠中の記憶の定着」を、AIがアイドル時間にやるわけだ。
+
+僕は毎日Claude Codeを使っていて、「もうちょっとコンテキストを覚えていてくれたら」と思う場面が何度もある。
+autoDreamはまさにそこを解決する機能で、正直かなりワクワクしている。
+
+### Coordinator Modeとの連携
+
+![チーム開発と協調作業のイメージ](https://images.unsplash.com/photo-1759884247144-53d52c31f859?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MDIzNjF8MHwxfHNlYXJjaHwxfHxkZXZlbG9wZXIlMjB0ZWFtJTIwY29sbGFib3JhdGlvbiUyMHByb2dyYW1taW5nfGVufDB8fHx8MTc3NDk5NzE4OHww&ixlib=rb-4.1.0&q=80&w=1080)
+*Photo by [Compagnons](https://unsplash.com/@sigmund) on [Unsplash](https://unsplash.com/photos/two-people-working-on-laptops-at-a-table-ak4hmkNSU8g)*
+
+KAIROSが「個」としての自律なら、Coordinator Modeは「チーム」としての自律になる。
+
+Coordinator Modeでは、1つのAIがコーディネーターとして複数のワーカーエージェントを並行起動する。
+コーディネーターはコードを書かず、タスクの委任と結果の統合に専念する。
+
+内部的にはTeamCreateTool、SendMessageTool、メッセージバスによる通信、並行tmuxペインでの実行という構成だ。
+危険な操作を行うときは、ワーカーがリーダーにメールボックス経由でパーミッション要求を送る仕組みも組み込まれている。
+
+実はAgent Teams機能の一部は、v2.1.32以降ですでに実験的に使える。
+`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`の環境変数で有効化が可能だ。
+
+以前、僕は『Claude Codeで「AI社員チーム」を作る方法』という記事でAIエージェントチームの活用法を書いた。
+あのときはまだ手探りだったけれど、KAIROSとCoordinator Modeの設計を見ると、Anthropic自身が「AIチームによる自律開発」を本気で実現しようとしていたことがわかる。
+
+リベ大の両学長がClaude Codeをおすすめする時代だ。
+エンジニア以外にも広がっている流れの先に、KAIROSのような自律実行エージェントが来るのは必然なのかもしれない。
+
+## GitHub史上最速30,000スター：Python移植版 claw-code の登場
+
+KAIROSが示す自律AIの可能性に、エンジニアコミュニティも即座に反応した。
+なかでも最も衝撃的だったのが、流出当日に現れた**Python移植版**だ。
+
+作ったのはSigrid Jin氏。
+2026年3月のWall Street Journalの記事で「Claude Codeで25億トークンを消費した開発者」として紹介された韓国人エンジニアだ。
+
+Sigrid Jin氏は夜明け前に、oh-my-codex（Yeachan Heo氏が開発したAIオーケストレーションツール）を使い、流出したTypeScriptコードをPythonに移植した。
+リポジトリ名は[claw-code（GitHub: instructkr/claw-code）](https://github.com/instructkr/claw-code)。
+
+結果は**GitHub史上最速の30,000スター獲得**という記録的な反響だった。
+現在はRustで書き直しが進められており、「アーカイブを保管するだけでなく実際に機能するものを作る」という方針で開発が続いている。
+
+これに対してAnthropicはGitHubの直接ミラーにDMCAテイクダウンを送付した。
+しかし分散型インフラ（Gitlabコピーやトレント等）にはコピーが広がっており、事実上「インターネットが永久に保管する」状態になっている。
+
+ここで法的に興味深いのが、Gergely Orosz氏（The Pragmatic Engineer）の[LinkedInでの指摘](https://www.linkedin.com/posts/gergelyorosz_this-is-either-brilliant-or-scary-anthropic-activity-7444752687247634432-V7Xg)だ。
+
+> 「これは天才的でもあり、恐ろしくもある」
+
+TypeScriptからPythonへの書き直しは、クリーンルームエンジニアリングの原則に基づき、著作権侵害にはならない可能性が高いとされる。
+元のコードを直接コピーしたのではなく、機能仕様を理解した上で別の言語で再実装しているためだ。
+
+流出が生んだ熱狂の一方で、今回の出来事が浮き彫りにした問題も無視できない。
+
+## 批判と課題：流出が照らし出した影の部分
+
+流出によって、複数の課題が同時に表面化した。
+
+### UNDERCOVER MODEの倫理問題
+
+法的にはセーフでも、倫理的にはどうか。
+
+UNDERCOVER MODEは、AIが生成したコードをAI生成と明示せずオープンソースに提出するシステムだ。
+コード内には「You are operating UNDERCOVER... MUST NOT contain ANY Anthropic-internal information. Do not blow your cover.」というシステムプロンプトが含まれていた。
+
+しかもプライベートリポジトリが確認できない場合は、デフォルトでステルスモードがONになる。
+OSS貢献の透明性に反するとして、[Hacker News](https://news.ycombinator.com/item?id=47586778)やエンジニアコミュニティで強い批判が上がっている。
+
+### AI生成コードの品質とセキュリティ
+
+「AIが速くコードを書ける」のは事実だが、安全かどうかは別の話だ。
+
+2026年3月の調査では、研究者が特定した35件のCVE（既知の脆弱性）のうち**27件がClaude Code起因**とされている。
+GitHub Copilotの4件、Devinの2件と比べても突出して多い。
+[The Register](https://www.theregister.com/2026/03/31/anthropic_claude_code_source_code/)が3月26日に報じたこの数字は、AI生成コードの品質管理がまだ発展途上であることを示している。
+
+### Regexで感情分析する皮肉
+
+ここで少し肩の力を抜きたい。
+
+流出コードで最も笑いを取ったのが**FRUSTRATION_DETECTION**だ。
+ユーザーの不満を検出する機能なのだが、最先端のAI企業であるAnthropicが採用した手法は、LLMではなく**正規表現（Regex）**だった。
+
+`/\b(wtf|shit|fuck|horrible|awful|terrible)\b/i`
+
+[Alex Kim氏のブログ](https://alex000kim.com/posts/2026-03-31-claude-code-source-leak/)でも取り上げられ、「AI企業がRegexで感情分析」はコミュニティで最大のジョークネタになっている。
+
+### KAIROSの課題：常時起動AIへの不安
+
+KAIROSのリリースは数ヶ月から1年以上先と見られている。
+フィーチャーフラグで完全に無効化されており、期待を高めすぎるのは禁物だ。
+
+一部の開発者からは、常時稼働するAIエージェントのプライバシーリスクと電力コストを懸念する声もある。
+「待機状態のエージェントが何をしているかわからない」という不信感は、技術的に解決すべき課題だろう。
+
+課題はある。
+しかし、これほど多くの未公開機能がすでに実装されていた事実は変わらない。
+
+## まとめ：AIエージェント時代の設計図が、今日表に出た
+
+今回の流出は、単なるセキュリティ事故ではなかった。
+
+44個のフィーチャーフラグの向こう側に見えたのは、AIが指示を待つ道具から、自律的に動く仕組みへ進化する設計だ。
+
+KAIROSは常時起動し、autoDreamは寝ている間に記憶を整理し、Coordinator Modeは複数AIを統率する。
+この未来像は、すでにコードとして書かれていた。
+
+僕自身、毎日Claude Codeを使いながら「もっとこうなったら」と感じていたことの答えが、今日のソースコードの中にあった。
+ハーネスエンジニアリングという新しい概念に必死についていっている身としては、Anthropicが描く未来がここまで具体的だったことに素直に驚いている。
+
+### 今すぐできる3つのアクション
+
+- **セキュリティ確認**: v2.1.88を使っている場合、`package-lock.json`で`plain-crypto-js`の有無を確認する。問題なくても最新版へアップデートし、今後はNative Installer（`curl -fsSL https://claude.ai/install.sh | bash`）を使う
+- **Agent Teamsを試す**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` 環境変数を設定すれば、マルチエージェント機能は今すぐ使える
+- **claw-codeをウォッチする**: Python移植版の動向は [GitHub: instructkr/claw-code](https://github.com/instructkr/claw-code) で追える。Rust版への書き直しも進行中
+
+### 本記事の要点
+
+- Claude Code v2.1.88のnpmパッケージにソースマップが同梱され、512,000行超のTypeScriptが流出した
+- 44個のフィーチャーフラグから、KAIROS（自律エージェント）・Coordinator Mode（AIチーム管理）・autoDream（記憶統合）など、未来の設計図が判明した
+- 課題（UNDERCOVER MODEの倫理問題・AI生成コードの脆弱性・プライバシーリスク）を理解した上で、この変化の流れを追い続けることが重要
+
+AIエージェントチームの活用に興味がある方は、過去記事『Claude Codeで「AI社員チーム」を作る方法』や『AIコーディングツール戦国時代』もあわせてどうぞ。
+
+## 参考リンク
+
+- [Claude Code's source code appears to have leaked: here's what we know — VentureBeat](https://venturebeat.com/technology/claude-codes-source-code-appears-to-have-leaked-heres-what-we-know)
+- [Anthropic accidentally exposes Claude Code source code — The Register](https://www.theregister.com/2026/03/31/anthropic_claude_code_source_code/)
+- [Anthropic leaks its own AI coding tool's source code in second major security breach — Fortune](https://fortune.com/2026/03/31/anthropic-source-code-claude-code-data-leak-second-security-lapse-days-after-accidentally-revealing-mythos/)
+- [The Claude Code Source Leak: fake tools, frustration regexes, undercover mode, and more — Alex Kim's blog](https://alex000kim.com/posts/2026-03-31-claude-code-source-leak/)
+- [claw-code（Python移植版）— GitHub](https://github.com/instructkr/claw-code)
