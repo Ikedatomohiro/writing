@@ -24,7 +24,7 @@ function isValidDateString(date: string): boolean {
 function formatDate(date: Date | string | undefined): string | undefined {
   if (date === undefined) return undefined;
   if (date instanceof Date) {
-    return date.toISOString().split("T")[0];
+    return date.toISOString();
   }
   const dateStr = String(date);
   if (!isValidDateString(dateStr)) {

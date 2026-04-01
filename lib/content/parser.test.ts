@@ -21,8 +21,8 @@ published: true
 
     expect(result.frontmatter.title).toBe("テスト記事");
     expect(result.frontmatter.description).toBe("これはテスト記事です");
-    expect(result.frontmatter.date).toBe("2026-01-24");
-    expect(result.frontmatter.updatedAt).toBe("2026-01-25");
+    expect(result.frontmatter.date).toBe("2026-01-24T00:00:00.000Z");
+    expect(result.frontmatter.updatedAt).toBe("2026-01-25T00:00:00.000Z");
     expect(result.frontmatter.category).toBe("asset");
     expect(result.frontmatter.tags).toEqual(["投資", "節約"]);
     expect(result.frontmatter.thumbnail).toBe("/images/test.jpg");
@@ -84,7 +84,7 @@ tags: [投資]
     expect(result.slug).toBe("test-article");
     expect(result.title).toBe("テスト記事");
     expect(result.description).toBe("これはテスト記事です");
-    expect(result.date).toBe("2026-01-24");
+    expect(result.date).toBe("2026-01-24T00:00:00.000Z");
     expect(result.category).toBe("asset");
     expect(result.tags).toEqual(["投資"]);
     expect(result.published).toBe(true); // デフォルト値

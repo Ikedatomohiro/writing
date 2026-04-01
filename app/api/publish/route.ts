@@ -14,7 +14,7 @@ function validateApiKey(request: NextRequest): boolean {
 }
 
 function buildFrontmatter(body: PublishRequestBody): string {
-  const date = new Date().toISOString().split("T")[0];
+  const date = new Date().toISOString();
   const tags = body.tags ?? [];
   const tagsStr = `[${tags.map((t) => `"${t}"`).join(", ")}]`;
 
