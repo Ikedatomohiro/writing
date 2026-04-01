@@ -34,6 +34,11 @@ export function Footer() {
             </p>
           </div>
 
+          {/* Amazon Associates Disclosure */}
+          <p className="font-label text-[10px] tracking-wider text-on-surface-variant/50 md:text-right max-w-xs">
+            当サイトはAmazonアソシエイト・プログラムの参加者です。適格販売により収入を得ることがあります。
+          </p>
+
           {/* Links Row */}
           <div className="flex flex-col gap-4">
             <nav className="flex flex-wrap gap-x-6 gap-y-2">
