@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
@@ -46,6 +45,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={fontVariables} suppressHydrationWarning>
+      <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2474857545411323"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body suppressHydrationWarning>
         <ThemeScript />
         <Providers>{children}</Providers>
@@ -54,12 +61,6 @@ export default function RootLayout({
       {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
       )}
-      <Script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2474857545411323"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
     </html>
   );
 }
