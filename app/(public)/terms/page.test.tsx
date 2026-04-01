@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import TermsPage, { metadata } from "./page";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 afterEach(() => {
   cleanup();
@@ -24,10 +25,11 @@ describe("TermsPage", () => {
     );
   });
 
-  it("サイト名「おひとりさまライフ」が表示される", () => {
+  it("サイト名が表示される", () => {
     render(<TermsPage />);
-    const elements = screen.getAllByText(/おひとりさまライフ/);
-    expect(elements.length).toBeGreaterThan(0);
+    const element = screen.getByRole("heading", { level: 1 });
+    expect(element).toBeInTheDocument();
+    expect(document.body.textContent).toContain(SITE_CONFIG.name);
   });
 
   describe("8つのセクション", () => {
