@@ -102,7 +102,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
       <main className="max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-12">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 mb-8 font-label text-on-surface-variant font-medium tracking-wide uppercase text-[10px]">
+        <nav className="flex items-center gap-2 mb-8 font-label text-on-surface-variant font-medium tracking-wide uppercase text-sm">
           <Link
             href="/"
             className="hover:text-primary transition-colors"
