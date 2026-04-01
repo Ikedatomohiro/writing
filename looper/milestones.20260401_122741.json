@@ -1,0 +1,78 @@
+{
+  "source": "design/newsletter",
+  "milestones": [
+    {
+      "milestone": 1,
+      "goal": "ストレージ層が動作し、`newsletter/subscribers.json` への購読者データの保存・読み込み・重複チェックが Vercel Blob 上で実際に動作する",
+      "verification": "npx vitest run lib/newsletter",
+      "done": true,
+      "plan_doc": "docs/tasks/milestone1-20260331_2358.md",
+      "tasks": [
+        {
+          "id": "m1-t1",
+          "wave": 1,
+          "description": "lib/newsletter/types.ts に Subscriber・SubscribersData 型と createEmptySubscribersData() ファクトリ関数を作成。lib/newsletter/types.test.ts でファクトリ関数のテストを書いてから実装する（TDD）",
+          "done": true
+        },
+        {
+          "id": "m1-t2",
+          "wave": 2,
+          "description": "lib/newsletter/storage.test.ts を作成。@vercel/blob をモックし、loadSubscribers()（空データ・既存データ）、saveSubscribers()、addSubscriber()（新規追加・重複検出・UUID自動生成）の全テストケースを書く。テストが Red であることを確認する",
+          "done": true
+        },
+        {
+          "id": "m1-t3",
+          "wave": 3,
+          "description": "lib/newsletter/storage.ts を実装。loadSubscribers()（head→fetch→JSON parse、エラー時は空データ）、saveSubscribers()（updatedAt更新→put）、addSubscriber()（load→重複チェック→UUID生成→save）を実装し、m1-t2 のテストを Green にする",
+          "done": true
+        },
+        {
+          "id": "m1-t4",
+          "wave": 3,
+          "description": "npx vitest run lib/newsletter で全テスト通過を確認。npx tsc --noEmit で型エラーがないことを確認する",
+          "done": true
+        }
+      ]
+    },
+    {
+      "milestone": 2,
+      "goal": "POST /api/newsletter/subscribe が動作し、新規メールアドレスを送信すると購読者データが保存され、Gmail SMTP 経由で実際の登録確認メールが届く",
+      "verification": "npx vitest run app/api/newsletter && npx tsc --noEmit",
+      "done": false,
+      "plan_doc": "docs/tasks/milestone2-20260401_0045.md",
+      "tasks": [
+        {
+          "id": "m2-t1",
+          "wave": 1,
+          "description": "lib/newsletter/email-templates.test.ts を作成し、getConfirmationEmail() の全テストケース（件名・本文にメールアドレス含有・サイトURL含有・HTMLリンク含有）を書く。テストが Red であることを確認後、lib/newsletter/email-templates.ts を実装して Green にする",
+          "done": false
+        },
+        {
+          "id": "m2-t2",
+          "wave": 1,
+          "description": "app/api/newsletter/subscribe/route.test.ts を作成。storage・nodemailer をモックし、正常系（200）・重複（409）・バリデーション失敗（400）・空ボディ（400）・環境変数未設定（500）・メール送信失敗でも登録成功・ストレージエラー（500）の全テストケースを書く。テストが Red であることを確認する",
+          "done": false
+        },
+        {
+          "id": "m2-t3",
+          "wave": 2,
+          "description": "app/api/newsletter/subscribe/route.ts を実装。環境変数チェック → Zod メールバリデーション → addSubscriber() → nodemailer 確認メール送信（getConfirmationEmail テンプレート使用）→ レスポンス返却。メール送信失敗でも登録成功扱い（ベストエフォート）。m2-t2 のテストを Green にする",
+          "done": false
+        },
+        {
+          "id": "m2-t4",
+          "wave": 3,
+          "description": "npx vitest run app/api/newsletter && npx vitest run lib/newsletter で全テスト通過を確認。npx tsc --noEmit で型エラーがないことを確認。Milestone 1 のテストが壊れていないことも検証する",
+          "done": false
+        }
+      ]
+    },
+    {
+      "milestone": 3,
+      "goal": "サイドバーの NewsletterSignup フォームとトップページの NewsletterSection から実際にメールアドレスを登録でき、成功・エラー・ローディング状態が UI に表示される",
+      "verification": "npx vitest run && npx tsc --noEmit && npm run build",
+      "done": false,
+      "tasks": []
+    }
+  ]
+}

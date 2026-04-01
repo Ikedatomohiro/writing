@@ -1,0 +1,19 @@
+{
+  "source": "design/terms-and-profile",
+  "milestones": [
+    {
+      "milestone": 1,
+      "goal": "/terms にアクセスすると利用規約ページが表示され、適用範囲・禁止事項・免責事項・著作権など8セクションの内容とメタデータ（title・canonical）が正しく設定されている",
+      "verification": "npx vitest run app/\\(public\\)/terms && npx tsc --noEmit",
+      "done": false,
+      "tasks": []
+    },
+    {
+      "milestone": 2,
+      "goal": "/profile にアクセスするとプロフィールページが表示され、自己紹介・経歴・ブログについて・お問い合わせCTAの各セクションとメタデータが正しく設定されている",
+      "verification": "npx vitest run app/\\(public\\)/profile && npx tsc --noEmit && npm run build",
+      "done": false,
+      "tasks": []
+    }
+  ]
+}
