@@ -59,6 +59,14 @@ export default function ProfilePage() {
           よりご連絡ください。
         </p>
       </section>
+
+      <section style={sectionStyle}>
+        <h2 style={headingStyle}>Amazonアソシエイトについて</h2>
+        <p>
+          当サイトはAmazonアソシエイト・プログラムの参加者です。
+          適格販売により収入を得ることがあります。
+        </p>
+      </section>
     </main>
   );
 }
