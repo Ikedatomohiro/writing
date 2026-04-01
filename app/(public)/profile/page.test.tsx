@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import ProfilePage, { metadata } from "./page";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 afterEach(() => {
   cleanup();
@@ -24,10 +25,9 @@ describe("ProfilePage", () => {
     );
   });
 
-  it("サイト名「おひとりさまライフ」が表示される", () => {
+  it("サイト名が表示される", () => {
     render(<ProfilePage />);
-    const elements = screen.getAllByText(/おひとりさまライフ/);
-    expect(elements.length).toBeGreaterThan(0);
+    expect(document.body.textContent).toContain(SITE_CONFIG.name);
   });
 
   describe("セクション見出し", () => {
