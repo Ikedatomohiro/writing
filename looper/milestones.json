@@ -4,16 +4,56 @@
     {
       "milestone": 1,
       "goal": "/terms にアクセスすると利用規約ページが表示され、適用範囲・禁止事項・免責事項・著作権など8セクションの内容とメタデータ（title・canonical）が正しく設定されている",
-      "verification": "npx vitest run app/\\(public\\)/terms && npx tsc --noEmit",
-      "done": false,
-      "tasks": []
+      "verification": "npx vitest run app/\\(public\\)/terms",
+      "done": true,
+      "plan_doc": "docs/tasks/milestone1-20260401_1229.md",
+      "tasks": [
+        {
+          "id": "m1-t1",
+          "wave": 1,
+          "description": "利用規約ページのテストファイル作成 (app/(public)/terms/page.test.tsx)。h1見出し、8セクションの見出し確認、/contactと/privacyへのリンク確認、制定日表示、サイト名表示のテストケースを作成。privacy/page.test.tsxのパターンに倣う。テスト実行時にすべて失敗することを確認（Red）。",
+          "done": true
+        },
+        {
+          "id": "m1-t2",
+          "wave": 2,
+          "description": "利用規約ページ実装 (app/(public)/terms/page.tsx)。privacy/page.tsxの構造・スタイルを踏襲し、metadata（title: 利用規約、canonical: /terms）を設定。適用範囲・禁止事項・免責事項・著作権・リンクについて・プライバシーポリシー・規約の変更・お問い合わせの8セクションを実装。制定日・最終改定日を表記。m1-t1のテストがすべてパスすることを確認（Green）。",
+          "done": true
+        },
+        {
+          "id": "m1-t3",
+          "wave": 3,
+          "description": "統合検証。npx vitest run app/(public)/terms でテスト全パス、npx tsc --noEmit で型エラーなし、metadataのtitle・canonicalが正しく設定されていることを確認。Milestone 1のゴール達成を検証。",
+          "done": true
+        }
+      ]
     },
     {
       "milestone": 2,
       "goal": "/profile にアクセスするとプロフィールページが表示され、自己紹介・経歴・ブログについて・お問い合わせCTAの各セクションとメタデータが正しく設定されている",
-      "verification": "npx vitest run app/\\(public\\)/profile && npx tsc --noEmit && npm run build",
-      "done": false,
-      "tasks": []
+      "verification": "npx vitest run app/\\(public\\)/profile && npm run build",
+      "done": true,
+      "plan_doc": "docs/tasks/milestone2-20260401_1240.md",
+      "tasks": [
+        {
+          "id": "m2-t1",
+          "wave": 1,
+          "description": "プロフィールページのテストファイル作成 (app/(public)/profile/page.test.tsx)。terms/page.test.tsxのパターンに倣い、metadata検証（title: プロフィール、canonical: /profile）、h1見出し表示、サイト名表示、自己紹介・経歴・ブログについての各セクションh2見出し確認、/contactへのリンク確認のテストケースを作成。テスト実行時にすべて失敗することを確認（Red）。",
+          "done": true
+        },
+        {
+          "id": "m2-t2",
+          "wave": 2,
+          "description": "プロフィールページ実装 (app/(public)/profile/page.tsx)。about/page.tsxのレイアウトパターン（Tailwind CSS + MD3カラートークン）を踏襲。metadata設定（title: プロフィール、description、canonical: /profile）。HeroSection（運営者名・キャッチコピー）、IntroSection（自己紹介テキスト+画像プレースホルダー、grid md:grid-cols-2）、BackgroundSection（経歴・箇条書き）、BlogStorySection（ブログを始めた理由）、CTASection（/contactへのリンク、gradient背景）の5セクションを実装。m2-t1のテストがすべてパスすることを確認（Green）。",
+          "done": true
+        },
+        {
+          "id": "m2-t3",
+          "wave": 3,
+          "description": "統合検証。npx vitest run app/(public)/profile でテスト全パス、npx tsc --noEmit で型エラーなし、npm run build でビルドエラーなし。metadataのtitle・canonicalが正しく設定されていることを確認。Milestone 2のゴール達成を検証。",
+          "done": true
+        }
+      ]
     }
   ]
 }
