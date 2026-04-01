@@ -4,6 +4,9 @@ import { SITE_CONFIG } from "@/lib/constants/site";
 export const metadata = {
   title: "利用規約",
   description: `${SITE_CONFIG.name}の利用規約について`,
+  alternates: {
+    canonical: "/terms",
+  },
 };
 
 const sectionStyle = {
@@ -54,15 +57,6 @@ export default function TermsPage() {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>知的財産権</h2>
-        <p>
-          当サイトに掲載されている文章、画像、デザインその他のコンテンツに関する知的財産権は、
-          当サイト運営者またはコンテンツ提供者に帰属します。
-          これらを無断で使用、複製、転載することを禁じます。
-        </p>
-      </section>
-
-      <section style={sectionStyle}>
         <h2 style={headingStyle}>免責事項</h2>
         <p style={{ marginBottom: "1rem" }}>
           当サイトに掲載された情報の正確性、完全性、有用性について保証するものではありません。
@@ -75,6 +69,15 @@ export default function TermsPage() {
       </section>
 
       <section style={sectionStyle}>
+        <h2 style={headingStyle}>著作権</h2>
+        <p>
+          当サイトに掲載されている文章、画像、デザインその他のコンテンツに関する著作権は、
+          当サイト運営者またはコンテンツ提供者に帰属します。
+          これらを無断で使用、複製、転載することを禁じます。
+        </p>
+      </section>
+
+      <section style={sectionStyle}>
         <h2 style={headingStyle}>リンクについて</h2>
         <p>
           当サイトへのリンクは、原則として自由に行っていただけます。
@@ -83,15 +86,16 @@ export default function TermsPage() {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>準拠法・管轄裁判所</h2>
+        <h2 style={headingStyle}>プライバシーポリシー</h2>
         <p>
-          本規約の解釈は日本法に準拠するものとし、
-          紛争が生じた場合は日本国の裁判所を専属的合意管轄裁判所とします。
+          個人情報の取扱いについては、
+          <Link href="/privacy">プライバシーポリシー</Link>
+          をご確認ください。
         </p>
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>利用規約の変更</h2>
+        <h2 style={headingStyle}>規約の変更</h2>
         <p>
           当サイトは、必要に応じて本規約を変更することがあります。
           変更後の利用規約は、当ページに掲載した時点で効力を生じるものとします。
@@ -100,15 +104,10 @@ export default function TermsPage() {
 
       <section style={sectionStyle}>
         <h2 style={headingStyle}>お問い合わせ</h2>
-        <p style={{ marginBottom: "1rem" }}>
+        <p>
           利用規約に関するお問い合わせは、
           <Link href="/contact">お問い合わせページ</Link>
           よりお願いいたします。
-        </p>
-        <p>
-          個人情報の取扱いについては、
-          <Link href="/privacy">プライバシーポリシー</Link>
-          をご確認ください。
         </p>
       </section>
 
@@ -122,6 +121,7 @@ export default function TermsPage() {
         }}
       >
         <p>制定日: 2026年4月1日</p>
+        <p>最終改定日: 2026年4月1日</p>
       </div>
     </main>
   );
