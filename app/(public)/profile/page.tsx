@@ -36,24 +36,18 @@ export default function ProfilePage() {
       <section style={sectionStyle}>
         <h2 style={headingStyle}>自己紹介</h2>
         <p>
-          はじめまして。「{SITE_CONFIG.name}
-          」を運営しています。ひとり暮らしの日常や、暮らしを豊かにするための情報を発信しています。
-        </p>
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={headingStyle}>経歴</h2>
-        <p>
-          Web開発やプログラミングに携わりながら、資産形成や健康管理にも取り組んでいます。
-          これまでの経験を活かし、実用的な情報をお届けします。
+          40代のエンジニア。
+          過去に投資で大きな失敗を経験したことをきっかけに、
+          お金・技術・健康について真剣に向き合うようになりました。
+          失敗から学んだことを等身大で発信しています。
         </p>
       </section>
 
       <section style={sectionStyle}>
         <h2 style={headingStyle}>ブログについて</h2>
         <p>
-          このブログでは、ひとり暮らしを楽しむためのライフスタイル情報を中心に、
-          プログラミング、資産形成、健康に関する記事を掲載しています。
+          このブログでは、プログラミング・資産形成・健康を中心に、
+          実体験をもとにした情報を発信しています。
           ご質問やご要望がありましたら、
           <Link href="/contact">お問い合わせ</Link>
           よりご連絡ください。
