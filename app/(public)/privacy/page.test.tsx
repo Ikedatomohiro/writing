@@ -39,22 +39,6 @@ describe("PrivacyPolicyPage", () => {
     expect(elements.length).toBeGreaterThan(0);
   });
 
-  it("Amazonアソシエイトについてのセクションが表示される", () => {
-    render(<PrivacyPolicyPage />);
-    expect(
-      screen.getByRole("heading", { name: /Amazonアソシエイトについて/ })
-    ).toBeInTheDocument();
-  });
-
-  it("Amazonアソシエイトの必須文言が含まれる", () => {
-    render(<PrivacyPolicyPage />);
-    expect(
-      screen.getByText(
-        /Amazon\.co\.jpを宣伝しリンクすることによってサイトが紹介料を獲得できる手段を提供することを目的に設定されたアフィリエイトプログラムである、Amazonアソシエイト・プログラムの参加者です/
-      )
-    ).toBeInTheDocument();
-  });
-
   it("個人情報の第三者提供についてのセクションが表示される", () => {
     render(<PrivacyPolicyPage />);
     expect(

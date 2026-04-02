@@ -118,13 +118,6 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>Amazonアソシエイトについて</h2>
-        <p>
-          当サイトは、Amazon.co.jpを宣伝しリンクすることによってサイトが紹介料を獲得できる手段を提供することを目的に設定されたアフィリエイトプログラムである、Amazonアソシエイト・プログラムの参加者です。
-        </p>
-      </section>
-
-      <section style={sectionStyle}>
         <h2 style={headingStyle}>外部送信規律について（改正電気通信事業法）</h2>
         <p style={{ marginBottom: "1rem" }}>
           当サイトでは、2023年6月に施行された改正電気通信事業法に基づき、
@@ -133,7 +126,6 @@ export default function PrivacyPolicyPage() {
         <ul style={{ paddingLeft: "1.5rem" }}>
           <li>Google Analytics（アクセス解析）</li>
           <li>Google AdSense（広告配信）</li>
-          <li>Amazonアソシエイト（アフィリエイト）</li>
         </ul>
       </section>
 
