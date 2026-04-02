@@ -24,8 +24,8 @@ const CATEGORY_CONFIG: {
   label: string;
   href: string;
 }[] = [
-  { category: "asset", label: "資産形成", href: "/asset" },
   { category: "tech", label: "プログラミング", href: "/tech" },
+  { category: "asset", label: "資産形成", href: "/asset" },
   { category: "health", label: "健康", href: "/health" },
 ];
 
