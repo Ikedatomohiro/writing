@@ -5,13 +5,9 @@ import { useState } from "react";
 import NextLink from "next/link";
 import { NavLink } from "./NavLink";
 import { MobileMenu, type NavLinkItem } from "./MobileMenu";
-import { SITE_CONFIG } from "@/lib/constants/site";
+import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
 
-const NAV_LINKS: NavLinkItem[] = [
-  { href: "/tech", label: "プログラミング" },
-  { href: "/asset", label: "資産形成" },
-  { href: "/health", label: "健康" },
-];
+const NAV_LINKS: NavLinkItem[] = CATEGORIES.map(({ href, label }) => ({ href, label }));
 
 export function BlogHeader() {
   const router = useRouter();

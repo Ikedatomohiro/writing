@@ -10,6 +10,15 @@ export const SITE_CONFIG = {
 } as const;
 
 /**
+ * カテゴリの表示順（ここだけ変えれば全体に反映される）
+ */
+export const CATEGORIES = [
+  { slug: "tech", label: "プログラミング", href: "/tech" },
+  { slug: "asset", label: "資産形成", href: "/asset" },
+  { slug: "health", label: "健康", href: "/health" },
+] as const;
+
+/**
  * カテゴリ情報
  */
 export const CATEGORY_META = {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
 import { getArticlesByCategory } from "@/lib/content/api";
 import type { Category, ArticleMeta } from "@/lib/content/types";
-import { SITE_CONFIG } from "@/lib/constants/site";
+import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
 
 export const metadata: Metadata = {
   title: SITE_CONFIG.name,
@@ -19,15 +19,11 @@ export const metadata: Metadata = {
   },
 };
 
-const CATEGORY_CONFIG: {
-  category: Category;
-  label: string;
-  href: string;
-}[] = [
-  { category: "tech", label: "プログラミング", href: "/tech" },
-  { category: "asset", label: "資産形成", href: "/asset" },
-  { category: "health", label: "健康", href: "/health" },
-];
+const CATEGORY_CONFIG = CATEGORIES.map(({ slug, label, href }) => ({
+  category: slug as Category,
+  label,
+  href,
+}));
 
 function HeroSection({ article }: { article: ArticleMeta }) {
   const href = `/${article.category}/${article.slug}`;

@@ -1,5 +1,6 @@
 import type { Category, Article, ArticleMeta } from "./types";
 import { listArticleFiles, readArticleFile } from "./reader";
+import { CATEGORIES } from "@/lib/constants/site";
 
 /**
  * 記事取得オプション
@@ -49,7 +50,7 @@ export async function getAllArticles(
   options: GetArticlesOptions = {}
 ): Promise<ArticleMeta[]> {
   const { includeDrafts = false } = options;
-  const categories: Category[] = ["asset", "tech", "health"];
+  const categories: Category[] = CATEGORIES.map((c) => c.slug as Category);
 
   // 全カテゴリを並列で取得
   const categoryResults = await Promise.all(
