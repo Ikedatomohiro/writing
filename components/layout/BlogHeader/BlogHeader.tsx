@@ -8,8 +8,8 @@ import { MobileMenu, type NavLinkItem } from "./MobileMenu";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 const NAV_LINKS: NavLinkItem[] = [
-  { href: "/asset", label: "資産形成" },
   { href: "/tech", label: "プログラミング" },
+  { href: "/asset", label: "資産形成" },
   { href: "/health", label: "健康" },
 ];
 
