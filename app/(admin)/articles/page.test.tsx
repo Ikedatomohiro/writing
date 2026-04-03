@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ArticlesPage from "./page";
-import { getArticles } from "@/lib/articles/storage";
+import { getArticles, deleteArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/content/types";
 
 vi.mock("@/lib/articles/storage", () => ({
