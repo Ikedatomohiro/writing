@@ -11,11 +11,14 @@ const NAV_ITEMS = [
   { icon: "settings", label: "Settings", href: "/articles" },
 ] as const;
 
-export function AdminSidebar() {
+export function AdminSidebar({ open }: { open: boolean }) {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-64 border-r border-slate-200 bg-slate-50 flex flex-col py-6 px-4 shrink-0 sticky top-0">
+    <aside
+      data-testid="admin-sidebar"
+      className={`h-screen w-64 border-r border-slate-200 bg-slate-50 flex flex-col py-6 px-4 shrink-0 sticky top-0${open ? "" : " hidden"}`}
+    >
       <div className="mb-10 px-3">
         <h1 className="text-lg font-bold text-slate-900 font-headline">
           Editorial Admin
@@ -53,6 +56,7 @@ export function AdminSidebar() {
           <span className="material-symbols-outlined text-sm">add</span>
           New Post
         </Link>
+        <SidebarLink icon="account_circle" label="Account" />
         <SidebarLink icon="help" label="Help" />
         <SidebarLink icon="logout" label="Logout" />
       </div>
