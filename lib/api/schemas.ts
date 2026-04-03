@@ -2,22 +2,25 @@ import { z } from "zod";
 
 export const CreateArticleSchema = z.object({
   title: z.string().min(1, "Title is required").max(500),
-  content: z.string().max(100000).default(""),
-  keywords: z.array(z.string().max(50)).max(20).default([]),
-  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  description: z.string().min(1, "Description is required").max(1000),
+  content: z.string().max(200000).default(""),
+  category: z.enum(["asset", "tech", "health"]),
+  tags: z.array(z.string().max(50)).max(20).default([]),
+  thumbnail: z.string().url().max(500).optional(),
+  published: z.boolean().default(false),
 });
 
 export const UpdateArticleSchema = z.object({
   title: z.string().min(1).max(500).optional(),
-  content: z.string().max(100000).optional(),
-  keywords: z.array(z.string().max(50)).max(20).optional(),
-  status: z.enum(["draft", "published", "archived"]).optional(),
+  description: z.string().min(1).max(1000).optional(),
+  content: z.string().max(200000).optional(),
+  category: z.enum(["asset", "tech", "health"]).optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+  thumbnail: z.string().url().max(500).optional(),
+  published: z.boolean().optional(),
 });
 
 export const ArticleQuerySchema = z.object({
-  status: z.enum(["draft", "published", "archived"]).optional(),
-  sortBy: z.enum(["publishedAt", "createdAt", "updatedAt", "title"]).optional(),
-  sortOrder: z.enum(["asc", "desc"]).optional(),
   searchQuery: z.string().max(200).optional(),
 });
 

@@ -10,9 +10,11 @@ describe("CreateArticleSchema", () => {
   it("validates a valid create article request", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Test Article",
+      description: "A test description",
       content: "Some content",
-      keywords: ["test"],
-      status: "draft",
+      category: "tech",
+      tags: ["test"],
+      published: false,
     });
     expect(result.success).toBe(true);
     if (result.success) {
@@ -23,18 +25,21 @@ describe("CreateArticleSchema", () => {
   it("applies defaults for optional fields", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Title Only",
+      description: "Description",
+      category: "tech",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.content).toBe("");
-      expect(result.data.keywords).toEqual([]);
-      expect(result.data.status).toBe("draft");
+      expect(result.data.tags).toEqual([]);
+      expect(result.data.published).toBe(false);
     }
   });
 
   it("rejects missing title", () => {
     const result = CreateArticleSchema.safeParse({
-      content: "No title here",
+      description: "No title here",
+      category: "tech",
     });
     expect(result.success).toBe(false);
   });
@@ -42,6 +47,8 @@ describe("CreateArticleSchema", () => {
   it("rejects empty title", () => {
     const result = CreateArticleSchema.safeParse({
       title: "",
+      description: "Desc",
+      category: "tech",
     });
     expect(result.success).toBe(false);
   });
@@ -49,6 +56,8 @@ describe("CreateArticleSchema", () => {
   it("rejects title exceeding max length", () => {
     const result = CreateArticleSchema.safeParse({
       title: "a".repeat(501),
+      description: "Desc",
+      category: "tech",
     });
     expect(result.success).toBe(false);
   });
@@ -56,39 +65,48 @@ describe("CreateArticleSchema", () => {
   it("rejects content exceeding max length", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Valid",
-      content: "a".repeat(100001),
+      description: "Desc",
+      category: "tech",
+      content: "a".repeat(200001),
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects invalid status", () => {
+  it("rejects invalid category", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Valid",
-      status: "unknown",
+      description: "Desc",
+      category: "unknown",
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects non-string keywords", () => {
+  it("rejects non-string tags", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Valid",
-      keywords: [123],
+      description: "Desc",
+      category: "tech",
+      tags: [123],
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects too many keywords", () => {
+  it("rejects too many tags", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Valid",
-      keywords: Array.from({ length: 21 }, (_, i) => `tag${i}`),
+      description: "Desc",
+      category: "tech",
+      tags: Array.from({ length: 21 }, (_, i) => `tag${i}`),
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects keyword exceeding max length", () => {
+  it("rejects tag exceeding max length", () => {
     const result = CreateArticleSchema.safeParse({
       title: "Valid",
-      keywords: ["a".repeat(51)],
+      description: "Desc",
+      category: "tech",
+      tags: ["a".repeat(51)],
     });
     expect(result.success).toBe(false);
   });
@@ -98,7 +116,7 @@ describe("UpdateArticleSchema", () => {
   it("validates a valid update request", () => {
     const result = UpdateArticleSchema.safeParse({
       title: "Updated Title",
-      status: "published",
+      published: true,
     });
     expect(result.success).toBe(true);
   });
@@ -115,55 +133,32 @@ describe("UpdateArticleSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects invalid status", () => {
+  it("rejects invalid category", () => {
     const result = UpdateArticleSchema.safeParse({
-      status: "invalid",
+      category: "invalid",
     });
     expect(result.success).toBe(false);
   });
 
   it("rejects content exceeding max length", () => {
     const result = UpdateArticleSchema.safeParse({
-      content: "a".repeat(100001),
+      content: "a".repeat(200001),
     });
     expect(result.success).toBe(false);
   });
 });
 
 describe("ArticleQuerySchema", () => {
-  it("validates valid query params", () => {
-    const result = ArticleQuerySchema.safeParse({
-      status: "published",
-      sortBy: "createdAt",
-      sortOrder: "desc",
-    });
-    expect(result.success).toBe(true);
-  });
-
   it("allows empty params", () => {
     const result = ArticleQuerySchema.safeParse({});
     expect(result.success).toBe(true);
   });
 
-  it("rejects invalid status", () => {
+  it("validates searchQuery", () => {
     const result = ArticleQuerySchema.safeParse({
-      status: "invalid",
+      searchQuery: "test",
     });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects invalid sortBy", () => {
-    const result = ArticleQuerySchema.safeParse({
-      sortBy: "invalid",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects invalid sortOrder", () => {
-    const result = ArticleQuerySchema.safeParse({
-      sortOrder: "invalid",
-    });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it("rejects searchQuery exceeding max length", () => {

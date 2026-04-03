@@ -1,24 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import type { Article, ArticleStatus } from "@/lib/articles/types";
+import type { Article, Category } from "@/lib/content/types";
+import type { ArticleCreateInput } from "@/lib/content/repository";
 
 interface ArticleFormProps {
   article?: Article;
-  onSubmit: (data: {
-    title: string;
-    content: string;
-    keywords: string[];
-    status: ArticleStatus;
-  }) => void;
+  onSubmit: (data: ArticleCreateInput) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
 
-const STATUS_OPTIONS: { value: ArticleStatus; label: string }[] = [
-  { value: "draft", label: "下書き" },
-  { value: "published", label: "公開" },
-  { value: "archived", label: "アーカイブ" },
+const CATEGORY_OPTIONS: { value: Category; label: string }[] = [
+  { value: "tech", label: "プログラミング" },
+  { value: "asset", label: "資産形成" },
+  { value: "health", label: "健康" },
 ];
 
 export function ArticleForm({
@@ -28,34 +24,45 @@ export function ArticleForm({
   isSubmitting = false,
 }: ArticleFormProps) {
   const [title, setTitle] = useState(article?.title ?? "");
+  const [description, setDescription] = useState(article?.description ?? "");
   const [content, setContent] = useState(article?.content ?? "");
-  const [keywords, setKeywords] = useState<string[]>(article?.keywords ?? []);
-  const [keywordInput, setKeywordInput] = useState("");
-  const [status, setStatus] = useState<ArticleStatus>(
-    article?.status ?? "draft"
+  const [category, setCategory] = useState<Category>(
+    article?.category ?? "tech"
   );
+  const [tags, setTags] = useState<string[]>(article?.tags ?? []);
+  const [tagInput, setTagInput] = useState("");
+  const [thumbnail, setThumbnail] = useState(article?.thumbnail ?? "");
+  const [published, setPublished] = useState(article?.published ?? false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ title, content, keywords, status });
+    onSubmit({
+      title,
+      description,
+      content,
+      category,
+      tags,
+      thumbnail: thumbnail || undefined,
+      published,
+    });
   };
 
-  const addKeyword = () => {
-    const trimmed = keywordInput.trim();
-    if (trimmed && !keywords.includes(trimmed)) {
-      setKeywords([...keywords, trimmed]);
-      setKeywordInput("");
+  const addTag = () => {
+    const trimmed = tagInput.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      setTags([...tags, trimmed]);
+      setTagInput("");
     }
   };
 
-  const removeKeyword = (keyword: string) => {
-    setKeywords(keywords.filter((k) => k !== keyword));
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
   };
 
-  const handleKeywordKeyDown = (e: React.KeyboardEvent) => {
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      addKeyword();
+      addTag();
     }
   };
 
@@ -70,49 +77,80 @@ export function ArticleForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="記事のタイトルを入力"
+          required
           className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline"
         />
       </FormField>
 
-      <FormField label="本文">
+      <FormField label="説明">
         <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="記事の本文を入力"
-          rows={15}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="記事の概要を入力"
+          required
+          rows={3}
           className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline resize-y"
         />
       </FormField>
 
-      <FormField label="キーワード">
+      <FormField label="カテゴリ">
+        <div className="flex gap-2">
+          {CATEGORY_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setCategory(option.value)}
+              className={
+                category === option.value
+                  ? "px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium"
+                  : "px-4 py-2 rounded-lg border border-outline-variant text-on-surface text-sm font-medium hover:bg-surface-container transition-colors"
+              }
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </FormField>
+
+      <FormField label="本文（MDX）">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="記事の本文を入力（MDX形式）"
+          rows={15}
+          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline resize-y font-mono text-sm"
+        />
+      </FormField>
+
+      <FormField label="タグ">
         <div className="flex gap-2">
           <input
-            value={keywordInput}
-            onChange={(e) => setKeywordInput(e.target.value)}
-            onKeyDown={handleKeywordKeyDown}
-            placeholder="キーワードを入力してEnter"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            placeholder="タグを入力してEnter"
             className="flex-1 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline"
           />
           <button
             type="button"
-            onClick={addKeyword}
+            onClick={addTag}
             className="px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
           >
             追加
           </button>
         </div>
-        {keywords.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {keywords.map((keyword) => (
+            {tags.map((tag) => (
               <span
-                key={keyword}
+                key={tag}
                 className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-on-primary text-sm font-medium"
               >
-                {keyword}
+                {tag}
                 <button
                   type="button"
-                  aria-label={`${keyword}を削除`}
-                  onClick={() => removeKeyword(keyword)}
+                  aria-label={`${tag}を削除`}
+                  onClick={() => removeTag(tag)}
                   className="ml-1 hover:opacity-70 transition-opacity"
                 >
                   <span className="material-symbols-outlined text-sm">
@@ -125,23 +163,28 @@ export function ArticleForm({
         )}
       </FormField>
 
-      <FormField label="ステータス">
-        <div className="flex gap-2">
-          {STATUS_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setStatus(option.value)}
-              className={
-                status === option.value
-                  ? "px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium"
-                  : "px-4 py-2 rounded-lg border border-outline-variant text-on-surface text-sm font-medium hover:bg-surface-container transition-colors"
-              }
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+      <FormField label="サムネイルURL">
+        <input
+          value={thumbnail}
+          onChange={(e) => setThumbnail(e.target.value)}
+          placeholder="https://example.com/image.jpg"
+          type="url"
+          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-3 text-on-surface placeholder:text-outline"
+        />
+      </FormField>
+
+      <FormField label="公開状態">
+        <label className="inline-flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+            className="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary"
+          />
+          <span className="text-sm text-on-surface">
+            {published ? "公開" : "下書き"}
+          </span>
+        </label>
       </FormField>
 
       <div className="flex gap-3 justify-end">

@@ -6,21 +6,21 @@ import {
   updateArticle,
   deleteArticle,
 } from "./storage";
-import type { Article } from "./types";
+import type { Article } from "@/lib/content/types";
 
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
 function createMockArticle(overrides: Partial<Article> = {}): Article {
   return {
-    id: "test-id",
+    slug: "test-slug",
     title: "テスト記事",
+    description: "テストの説明",
     content: "本文",
-    keywords: [],
-    status: "draft",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-01T00:00:00.000Z",
-    publishedAt: null,
+    category: "tech",
+    tags: [],
+    published: false,
+    date: "2024-01-01T00:00:00.000Z",
     ...overrides,
   };
 }
@@ -54,38 +54,6 @@ describe("storage", () => {
       expect(articles[0].title).toBe("テスト記事");
     });
 
-    it("ステータスでフィルタリングできる", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([createMockArticle({ status: "draft" })]),
-      });
-
-      await getArticles({ status: "draft" });
-      expect(mockFetch).toHaveBeenCalledWith("/api/articles?status=draft");
-    });
-
-    it("検索クエリを送信できる", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([]),
-      });
-
-      await getArticles({ searchQuery: "test" });
-      expect(mockFetch).toHaveBeenCalledWith("/api/articles?searchQuery=test");
-    });
-
-    it("ソート順を指定できる", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([]),
-      });
-
-      await getArticles({ sortBy: "title", sortOrder: "asc" });
-      expect(mockFetch).toHaveBeenCalledWith(
-        "/api/articles?sortBy=title&sortOrder=asc"
-      );
-    });
-
     it("エラー時に例外を投げる", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 500 });
 
@@ -94,20 +62,20 @@ describe("storage", () => {
   });
 
   describe("getArticle", () => {
-    it("IDで記事を取得できる", async () => {
+    it("slugで記事を取得できる", async () => {
       const mockArticle = createMockArticle();
       mockFetch.mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockArticle),
       });
 
-      const article = await getArticle("test-id");
+      const article = await getArticle("test-slug");
       expect(article).not.toBeNull();
       expect(article?.title).toBe("テスト記事");
-      expect(mockFetch).toHaveBeenCalledWith("/api/articles/test-id");
+      expect(mockFetch).toHaveBeenCalledWith("/api/articles/test-slug");
     });
 
-    it("存在しないIDの場合はnullを返す", async () => {
+    it("存在しないslugの場合はnullを返す", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 404 });
 
       const article = await getArticle("non-existent");
@@ -117,7 +85,7 @@ describe("storage", () => {
     it("エラー時に例外を投げる", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 500 });
 
-      await expect(getArticle("test-id")).rejects.toThrow(
+      await expect(getArticle("test-slug")).rejects.toThrow(
         "Failed to fetch article"
       );
     });
@@ -126,8 +94,9 @@ describe("storage", () => {
   describe("createArticle", () => {
     it("新しい記事を作成できる", async () => {
       const mockArticle = createMockArticle({
-        id: "new-uuid",
+        slug: "new-uuid",
         title: "新規記事",
+        description: "新規説明",
         content: "本文内容",
       });
       mockFetch.mockResolvedValue({
@@ -137,7 +106,9 @@ describe("storage", () => {
 
       const article = await createArticle({
         title: "新規記事",
+        description: "新規説明",
         content: "本文内容",
+        category: "tech",
       });
 
       expect(article.title).toBe("新規記事");
@@ -145,13 +116,18 @@ describe("storage", () => {
       expect(mockFetch).toHaveBeenCalledWith("/api/articles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "新規記事", content: "本文内容" }),
+        body: JSON.stringify({
+          title: "新規記事",
+          description: "新規説明",
+          content: "本文内容",
+          category: "tech",
+        }),
       });
     });
 
-    it("キーワードを指定して作成できる", async () => {
+    it("タグを指定して作成できる", async () => {
       const mockArticle = createMockArticle({
-        keywords: ["keyword1", "keyword2"],
+        tags: ["tag1", "tag2"],
       });
       mockFetch.mockResolvedValue({
         ok: true,
@@ -160,18 +136,23 @@ describe("storage", () => {
 
       const article = await createArticle({
         title: "記事",
-        content: "本文",
-        keywords: ["keyword1", "keyword2"],
+        description: "説明",
+        category: "tech",
+        tags: ["tag1", "tag2"],
       });
 
-      expect(article.keywords).toEqual(["keyword1", "keyword2"]);
+      expect(article.tags).toEqual(["tag1", "tag2"]);
     });
 
     it("エラー時に例外を投げる", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 400 });
 
       await expect(
-        createArticle({ title: "記事", content: "本文" })
+        createArticle({
+          title: "記事",
+          description: "説明",
+          category: "tech",
+        })
       ).rejects.toThrow("Failed to create article");
     });
   });
@@ -184,11 +165,13 @@ describe("storage", () => {
         json: () => Promise.resolve(mockArticle),
       });
 
-      const updated = await updateArticle("test-id", { title: "新しいタイトル" });
+      const updated = await updateArticle("test-slug", {
+        title: "新しいタイトル",
+      });
 
       expect(updated).not.toBeNull();
       expect(updated?.title).toBe("新しいタイトル");
-      expect(mockFetch).toHaveBeenCalledWith("/api/articles/test-id", {
+      expect(mockFetch).toHaveBeenCalledWith("/api/articles/test-slug", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: "新しいタイトル" }),
@@ -209,7 +192,7 @@ describe("storage", () => {
       mockFetch.mockResolvedValue({ ok: false, status: 500 });
 
       await expect(
-        updateArticle("test-id", { title: "新タイトル" })
+        updateArticle("test-slug", { title: "新タイトル" })
       ).rejects.toThrow("Failed to update article");
     });
   });
@@ -240,7 +223,7 @@ describe("storage", () => {
     it("エラー時に例外を投げる", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 500 });
 
-      await expect(deleteArticle("test-id")).rejects.toThrow(
+      await expect(deleteArticle("test-slug")).rejects.toThrow(
         "Failed to delete article"
       );
     });

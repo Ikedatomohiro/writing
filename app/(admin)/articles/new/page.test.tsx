@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import NewArticlePage from "./page";
 import { createArticle } from "@/lib/articles/storage";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
 vi.mock("@/lib/articles/storage", () => ({
   createArticle: vi.fn(),
@@ -19,14 +19,14 @@ vi.mock("next/navigation", () => ({
 const mockCreateArticle = vi.mocked(createArticle);
 
 const mockCreatedArticle: Article = {
-  id: "new-1",
+  slug: "new-slug",
   title: "新しい記事",
+  description: "新しい説明",
   content: "新しい本文",
-  keywords: [],
-  status: "draft",
-  createdAt: "2024-01-01T00:00:00.000Z",
-  updatedAt: "2024-01-01T00:00:00.000Z",
-  publishedAt: null,
+  category: "tech",
+  tags: [],
+  published: false,
+  date: "2024-01-01T00:00:00.000Z",
 };
 
 describe("NewArticlePage", () => {
@@ -42,8 +42,8 @@ describe("NewArticlePage", () => {
     render(<NewArticlePage />);
 
     expect(screen.getByPlaceholderText("記事のタイトルを入力")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("記事の本文を入力")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("キーワードを入力してEnter")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("記事の本文を入力（MDX形式）")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("タグを入力してEnter")).toBeInTheDocument();
   });
 
   it("作成ボタンを表示する", () => {
@@ -74,19 +74,17 @@ describe("NewArticlePage", () => {
 
     render(<NewArticlePage />);
 
-    // タイトルを入力
     await user.type(screen.getByPlaceholderText("記事のタイトルを入力"), "新しい記事");
+    await user.type(screen.getByPlaceholderText("記事の概要を入力"), "新しい説明");
+    await user.type(screen.getByPlaceholderText("記事の本文を入力（MDX形式）"), "新しい本文");
 
-    // 本文を入力
-    await user.type(screen.getByPlaceholderText("記事の本文を入力"), "新しい本文");
-
-    // 作成ボタンをクリック
     await user.click(screen.getByRole("button", { name: "作成" }));
 
     await waitFor(() => {
       expect(mockCreateArticle).toHaveBeenCalledWith(
         expect.objectContaining({
           title: "新しい記事",
+          description: "新しい説明",
           content: "新しい本文",
         })
       );
@@ -99,14 +97,13 @@ describe("NewArticlePage", () => {
 
     render(<NewArticlePage />);
 
-    // タイトルを入力
     await user.type(screen.getByPlaceholderText("記事のタイトルを入力"), "新しい記事");
+    await user.type(screen.getByPlaceholderText("記事の概要を入力"), "新しい説明");
 
-    // 作成ボタンをクリック
     await user.click(screen.getByRole("button", { name: "作成" }));
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/articles/new-1");
+      expect(mockPush).toHaveBeenCalledWith("/articles/new-slug");
     });
   });
 

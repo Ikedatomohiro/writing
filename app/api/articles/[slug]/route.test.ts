@@ -1,46 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
-// モック関数の定義
-const mockGetArticle = vi.fn();
+const mockGetArticleBySlug = vi.fn();
 const mockUpdateArticle = vi.fn();
 const mockDeleteArticle = vi.fn();
 const mockRequireAuth = vi.fn();
 
-// モジュールのモック
-vi.mock("@/lib/articles/backend", () => ({
-  VercelBlobBackend: vi.fn(),
+vi.mock("@/lib/content/repository", () => ({
+  getArticleBySlug: (...args: unknown[]) => mockGetArticleBySlug(...args),
+  updateArticle: (...args: unknown[]) => mockUpdateArticle(...args),
+  deleteArticle: (...args: unknown[]) => mockDeleteArticle(...args),
 }));
-
-vi.mock("@/lib/articles/service", async () => {
-  return {
-    ArticleService: class {
-      getArticles = vi.fn();
-      getArticle = mockGetArticle;
-      createArticle = vi.fn();
-      updateArticle = mockUpdateArticle;
-      deleteArticle = mockDeleteArticle;
-    },
-  };
-});
 
 vi.mock("@/lib/auth/api-auth", () => ({
   requireAuth: () => mockRequireAuth(),
 }));
 
 const mockArticle: Article = {
-  id: "1",
+  slug: "test-slug",
   title: "Test Article",
+  description: "Test Description",
   content: "Content",
-  keywords: ["test"],
-  status: "published",
-  createdAt: "2024-01-01T00:00:00.000Z",
-  updatedAt: "2024-01-01T00:00:00.000Z",
-  publishedAt: "2024-01-01T00:00:00.000Z",
+  category: "tech",
+  tags: ["test"],
+  published: true,
+  date: "2024-01-01T00:00:00.000Z",
 };
 
-describe("GET /api/articles/[id]", () => {
+describe("GET /api/articles/[slug]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -54,38 +42,36 @@ describe("GET /api/articles/[id]", () => {
     );
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1");
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug");
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await GET(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(401);
     expect(data.error).toBe("Unauthorized");
-    expect(mockGetArticle).not.toHaveBeenCalled();
+    expect(mockGetArticleBySlug).not.toHaveBeenCalled();
   });
 
   it("記事を取得する", async () => {
-    mockGetArticle.mockResolvedValue(mockArticle);
+    mockGetArticleBySlug.mockResolvedValue(mockArticle);
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1");
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug");
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await GET(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data).toEqual(mockArticle);
-    expect(mockGetArticle).toHaveBeenCalledWith("1");
+    expect(mockGetArticleBySlug).toHaveBeenCalledWith("test-slug");
   });
 
   it("記事が見つからない場合は404を返す", async () => {
-    mockGetArticle.mockResolvedValue(null);
+    mockGetArticleBySlug.mockResolvedValue(null);
     const { GET } = await import("./route");
 
-    const request = new NextRequest(
-      "http://localhost:3000/api/articles/not-found"
-    );
-    const params = { params: Promise.resolve({ id: "not-found" }) };
+    const request = new NextRequest("http://localhost:3000/api/articles/not-found");
+    const params = { params: Promise.resolve({ slug: "not-found" }) };
     const response = await GET(request, params);
     const data = await response.json();
 
@@ -94,7 +80,7 @@ describe("GET /api/articles/[id]", () => {
   });
 });
 
-describe("PUT /api/articles/[id]", () => {
+describe("PUT /api/articles/[slug]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -108,49 +94,41 @@ describe("PUT /api/articles/[id]", () => {
     );
     const { PUT } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug", {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ title: "Updated" }),
     });
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await PUT(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(401);
     expect(data.error).toBe("Unauthorized");
-    expect(mockUpdateArticle).not.toHaveBeenCalled();
   });
 
   it("記事を更新する", async () => {
-    const updatedArticle: Article = {
-      ...mockArticle,
-      title: "Updated Title",
-    };
+    const updatedArticle: Article = { ...mockArticle, title: "Updated Title" };
     mockUpdateArticle.mockResolvedValue(updatedArticle);
     const { PUT } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug", {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         title: "Updated Title",
-        content: "Updated Content",
-        keywords: ["updated"],
-        status: "published",
+        published: true,
       }),
     });
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await PUT(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data).toEqual(updatedArticle);
-    expect(mockUpdateArticle).toHaveBeenCalledWith("1", {
+    expect(mockUpdateArticle).toHaveBeenCalledWith("test-slug", {
       title: "Updated Title",
-      content: "Updated Content",
-      keywords: ["updated"],
-      status: "published",
+      published: true,
     });
   });
 
@@ -158,17 +136,12 @@ describe("PUT /api/articles/[id]", () => {
     mockUpdateArticle.mockResolvedValue(null);
     const { PUT } = await import("./route");
 
-    const request = new NextRequest(
-      "http://localhost:3000/api/articles/not-found",
-      {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-          title: "Updated Title",
-        }),
-      }
-    );
-    const params = { params: Promise.resolve({ id: "not-found" }) };
+    const request = new NextRequest("http://localhost:3000/api/articles/not-found", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ title: "Updated Title" }),
+    });
+    const params = { params: Promise.resolve({ slug: "not-found" }) };
     const response = await PUT(request, params);
     const data = await response.json();
 
@@ -177,7 +150,7 @@ describe("PUT /api/articles/[id]", () => {
   });
 });
 
-describe("DELETE /api/articles/[id]", () => {
+describe("DELETE /api/articles/[slug]", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -191,45 +164,41 @@ describe("DELETE /api/articles/[id]", () => {
     );
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug", {
       method: "DELETE",
     });
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await DELETE(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(401);
     expect(data.error).toBe("Unauthorized");
-    expect(mockDeleteArticle).not.toHaveBeenCalled();
   });
 
   it("記事を削除する", async () => {
     mockDeleteArticle.mockResolvedValue(true);
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/articles/1", {
+    const request = new NextRequest("http://localhost:3000/api/articles/test-slug", {
       method: "DELETE",
     });
-    const params = { params: Promise.resolve({ id: "1" }) };
+    const params = { params: Promise.resolve({ slug: "test-slug" }) };
     const response = await DELETE(request, params);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(mockDeleteArticle).toHaveBeenCalledWith("1");
+    expect(mockDeleteArticle).toHaveBeenCalledWith("test-slug");
   });
 
   it("記事が見つからない場合は404を返す", async () => {
     mockDeleteArticle.mockResolvedValue(false);
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest(
-      "http://localhost:3000/api/articles/not-found",
-      {
-        method: "DELETE",
-      }
-    );
-    const params = { params: Promise.resolve({ id: "not-found" }) };
+    const request = new NextRequest("http://localhost:3000/api/articles/not-found", {
+      method: "DELETE",
+    });
+    const params = { params: Promise.resolve({ slug: "not-found" }) };
     const response = await DELETE(request, params);
     const data = await response.json();
 

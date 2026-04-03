@@ -2,18 +2,18 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { ArticleForm } from "./ArticleForm";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
 function createTestArticle(overrides: Partial<Article> = {}): Article {
   return {
-    id: "test-id",
+    slug: "test-slug",
     title: "テスト記事",
+    description: "テスト記事の説明です。",
     content: "これはテスト記事の本文です。",
-    keywords: ["React", "TypeScript"],
-    status: "draft",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-15T12:30:00.000Z",
-    publishedAt: null,
+    category: "tech",
+    tags: ["React", "TypeScript"],
+    published: false,
+    date: "2024-01-01T00:00:00.000Z",
     ...overrides,
   };
 }
@@ -40,9 +40,13 @@ describe("ArticleForm", () => {
       render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
       const titleInput = screen.getByPlaceholderText("記事のタイトルを入力");
-      const contentInput = screen.getByPlaceholderText("記事の本文を入力");
+      const descInput = screen.getByPlaceholderText("記事の概要を入力");
+      const contentInput = screen.getByPlaceholderText(
+        "記事の本文を入力（MDX形式）"
+      );
 
       expect(titleInput).toHaveValue("");
+      expect(descInput).toHaveValue("");
       expect(contentInput).toHaveValue("");
     });
   });
@@ -69,16 +73,18 @@ describe("ArticleForm", () => {
     it("既存の記事データをフォームに表示する", () => {
       const article = createTestArticle({
         title: "既存タイトル",
+        description: "既存の説明",
         content: "既存の本文",
-        keywords: ["キーワード1"],
+        tags: ["タグ1"],
       });
       render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
       expect(screen.getByDisplayValue("既存タイトル")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("既存の説明")).toBeInTheDocument();
       expect(screen.getByDisplayValue("既存の本文")).toBeInTheDocument();
-      expect(screen.getByText("キーワード1")).toBeInTheDocument();
+      expect(screen.getByText("タグ1")).toBeInTheDocument();
     });
   });
 
@@ -97,41 +103,39 @@ describe("ArticleForm", () => {
       const user = userEvent.setup();
       render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
-      const contentInput = screen.getByPlaceholderText("記事の本文を入力");
+      const contentInput = screen.getByPlaceholderText(
+        "記事の本文を入力（MDX形式）"
+      );
       await user.type(contentInput, "新しい本文");
 
       expect(contentInput).toHaveValue("新しい本文");
     });
 
-    it("キーワードを追加できる", async () => {
+    it("タグを追加できる", async () => {
       const user = userEvent.setup();
       render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
-      const keywordInput = screen.getByPlaceholderText(
-        "キーワードを入力してEnter"
-      );
-      await user.type(keywordInput, "新しいキーワード");
+      const tagInput = screen.getByPlaceholderText("タグを入力してEnter");
+      await user.type(tagInput, "新しいタグ");
       await user.click(screen.getByRole("button", { name: "追加" }));
 
-      expect(screen.getByText("新しいキーワード")).toBeInTheDocument();
-      expect(keywordInput).toHaveValue("");
+      expect(screen.getByText("新しいタグ")).toBeInTheDocument();
+      expect(tagInput).toHaveValue("");
     });
 
-    it("Enterキーでキーワードを追加できる", async () => {
+    it("Enterキーでタグを追加できる", async () => {
       const user = userEvent.setup();
       render(<ArticleForm onSubmit={vi.fn()} onCancel={vi.fn()} />);
 
-      const keywordInput = screen.getByPlaceholderText(
-        "キーワードを入力してEnter"
-      );
-      await user.type(keywordInput, "Enterキーワード{enter}");
+      const tagInput = screen.getByPlaceholderText("タグを入力してEnter");
+      await user.type(tagInput, "Enterタグ{enter}");
 
-      expect(screen.getByText("Enterキーワード")).toBeInTheDocument();
+      expect(screen.getByText("Enterタグ")).toBeInTheDocument();
     });
 
-    it("キーワードを削除できる", async () => {
+    it("タグを削除できる", async () => {
       const user = userEvent.setup();
-      const article = createTestArticle({ keywords: ["削除対象"] });
+      const article = createTestArticle({ tags: ["削除対象"] });
       render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
@@ -144,35 +148,30 @@ describe("ArticleForm", () => {
       expect(screen.queryByText("削除対象")).not.toBeInTheDocument();
     });
 
-    it("重複したキーワードは追加されない", async () => {
+    it("重複したタグは追加されない", async () => {
       const user = userEvent.setup();
-      const article = createTestArticle({ keywords: ["重複"] });
+      const article = createTestArticle({ tags: ["重複"] });
       render(
         <ArticleForm article={article} onSubmit={vi.fn()} onCancel={vi.fn()} />
       );
 
-      const keywordInput = screen.getByPlaceholderText(
-        "キーワードを入力してEnter"
-      );
-      await user.type(keywordInput, "重複");
+      const tagInput = screen.getByPlaceholderText("タグを入力してEnter");
+      await user.type(tagInput, "重複");
       await user.click(screen.getByRole("button", { name: "追加" }));
 
-      const keywords = screen.getAllByText("重複");
-      expect(keywords).toHaveLength(1);
+      const tags = screen.getAllByText("重複");
+      expect(tags).toHaveLength(1);
     });
 
-    it("ステータスを変更できる", async () => {
+    it("公開状態を変更できる", async () => {
       const user = userEvent.setup();
       const onSubmit = vi.fn();
       render(<ArticleForm onSubmit={onSubmit} onCancel={vi.fn()} />);
 
-      const publishButton = screen.getByRole("button", { name: "公開" });
-      await user.click(publishButton);
-      await user.click(screen.getByRole("button", { name: "作成" }));
+      const checkbox = screen.getByRole("checkbox");
+      await user.click(checkbox);
 
-      expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ status: "published" })
-      );
+      expect(checkbox).toBeChecked();
     });
   });
 
@@ -187,21 +186,28 @@ describe("ArticleForm", () => {
         "テストタイトル"
       );
       await user.type(
-        screen.getByPlaceholderText("記事の本文を入力"),
+        screen.getByPlaceholderText("記事の概要を入力"),
+        "テスト説明"
+      );
+      await user.type(
+        screen.getByPlaceholderText("記事の本文を入力（MDX形式）"),
         "テスト本文"
       );
       await user.type(
-        screen.getByPlaceholderText("キーワードを入力してEnter"),
-        "テストキーワード{enter}"
+        screen.getByPlaceholderText("タグを入力してEnter"),
+        "テストタグ{enter}"
       );
 
       await user.click(screen.getByRole("button", { name: "作成" }));
 
       expect(onSubmit).toHaveBeenCalledWith({
         title: "テストタイトル",
+        description: "テスト説明",
         content: "テスト本文",
-        keywords: ["テストキーワード"],
-        status: "draft",
+        category: "tech",
+        tags: ["テストタグ"],
+        thumbnail: undefined,
+        published: false,
       });
     });
 

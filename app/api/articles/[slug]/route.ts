@@ -1,23 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { VercelBlobBackend } from "@/lib/articles/backend";
-import { ArticleService } from "@/lib/articles/service";
 import { requireAuth } from "@/lib/auth/api-auth";
 import { validateRequest, parseJsonBody } from "@/lib/api/request-guard";
 import { UpdateArticleSchema } from "@/lib/api/schemas";
+import {
+  getArticleBySlug,
+  updateArticle,
+  deleteArticle,
+} from "@/lib/content/repository";
 
-function getService() {
-  return new ArticleService(new VercelBlobBackend());
-}
-
-type RouteParams = { params: Promise<{ id: string }> };
+type RouteParams = { params: Promise<{ slug: string }> };
 
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   const authError = await requireAuth();
   if (authError) return authError;
 
-  const { id } = await params;
-  const service = getService();
-  const article = await service.getArticle(id);
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     return NextResponse.json({ error: "Article not found" }, { status: 404 });
@@ -33,7 +31,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   const guardError = validateRequest(request);
   if (guardError) return guardError;
 
-  const { id } = await params;
+  const { slug } = await params;
   const { data: body, error: parseError } = await parseJsonBody(request);
   if (parseError) return parseError;
 
@@ -46,8 +44,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const service = getService();
-  const article = await service.updateArticle(id, parsed.data);
+  const article = await updateArticle(slug, parsed.data);
 
   if (!article) {
     return NextResponse.json({ error: "Article not found" }, { status: 404 });
@@ -60,9 +57,8 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   const authError = await requireAuth();
   if (authError) return authError;
 
-  const { id } = await params;
-  const service = getService();
-  const deleted = await service.deleteArticle(id);
+  const { slug } = await params;
+  const deleted = await deleteArticle(slug);
 
   if (!deleted) {
     return NextResponse.json({ error: "Article not found" }, { status: 404 });
