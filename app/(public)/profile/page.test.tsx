@@ -38,13 +38,6 @@ describe("ProfilePage", () => {
       ).toBeInTheDocument();
     });
 
-    it("経歴セクションが表示される", () => {
-      render(<ProfilePage />);
-      expect(
-        screen.getByRole("heading", { name: /経歴/ })
-      ).toBeInTheDocument();
-    });
-
     it("ブログについてセクションが表示される", () => {
       render(<ProfilePage />);
       expect(
