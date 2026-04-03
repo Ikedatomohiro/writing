@@ -4,22 +4,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getArticle, deleteArticle } from "@/lib/articles/storage";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
-const STATUS_STYLES = {
-  draft:
-    "px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold uppercase",
-  published:
-    "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase",
-  archived:
-    "px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase",
-} as const;
-
-const STATUS_LABELS = {
-  draft: "下書き",
-  published: "公開",
-  archived: "アーカイブ",
-} as const;
+const CATEGORY_LABELS: Record<string, string> = {
+  tech: "プログラミング",
+  asset: "資産形成",
+  health: "健康",
+};
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -28,18 +19,18 @@ export default function ArticleDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const id = params.id as string;
+  const slug = params.slug as string;
 
   const loadArticle = useCallback(async () => {
     try {
-      const data = await getArticle(id);
+      const data = await getArticle(slug);
       setArticle(data);
     } catch (error) {
       console.error("Failed to load article:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     loadArticle();
@@ -51,7 +42,7 @@ export default function ArticleDetailPage() {
     }
     setIsDeleting(true);
     try {
-      await deleteArticle(id);
+      await deleteArticle(slug);
       router.push("/articles");
     } catch (error) {
       console.error("Failed to delete article:", error);
@@ -103,17 +94,31 @@ export default function ArticleDetailPage() {
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex gap-2 mb-2">
-            <span className={STATUS_STYLES[article.status]}>
-              {STATUS_LABELS[article.status]}
+            <span className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-xs font-medium">
+              {CATEGORY_LABELS[article.category] ?? article.category}
+            </span>
+            <span
+              className={
+                article.published
+                  ? "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase"
+                  : "px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase"
+              }
+            >
+              {article.published ? "公開" : "下書き"}
             </span>
           </div>
-          <h1 className="text-3xl font-bold font-headline text-on-surface mb-4">
+          <h1 className="text-3xl font-bold font-headline text-on-surface mb-2">
             {article.title || "無題"}
           </h1>
+          {article.description && (
+            <p className="text-on-surface-variant text-sm mb-4">
+              {article.description}
+            </p>
+          )}
         </div>
         <div className="flex gap-2">
           <Link
-            href={`/articles/${article.id}/edit`}
+            href={`/articles/${article.slug}/edit`}
             className="inline-flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container transition-colors text-sm font-medium"
           >
             <span className="material-symbols-outlined text-lg">edit</span>
@@ -130,20 +135,20 @@ export default function ArticleDetailPage() {
         </div>
       </div>
 
-      {article.keywords.length > 0 && (
+      {article.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
-          {article.keywords.map((keyword) => (
+          {article.tags.map((tag) => (
             <span
-              key={keyword}
+              key={tag}
               className="px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant text-xs"
             >
-              {keyword}
+              {tag}
             </span>
           ))}
         </div>
       )}
 
-      <div className="border border-outline-variant/20 rounded-xl p-6 mb-6 min-h-[300px] whitespace-pre-wrap bg-surface-container-lowest text-on-surface">
+      <div className="border border-outline-variant/20 rounded-xl p-6 mb-6 min-h-[300px] whitespace-pre-wrap bg-surface-container-lowest text-on-surface font-mono text-sm">
         {article.content || (
           <span className="text-on-surface-variant italic">本文なし</span>
         )}
@@ -151,16 +156,8 @@ export default function ArticleDetailPage() {
 
       <div className="flex gap-4 text-on-surface-variant text-sm">
         <span>
-          作成: {new Date(article.createdAt).toLocaleString("ja-JP")}
+          日付: {new Date(article.date).toLocaleDateString("ja-JP")}
         </span>
-        <span>
-          更新: {new Date(article.updatedAt).toLocaleString("ja-JP")}
-        </span>
-        {article.publishedAt && (
-          <span>
-            公開: {new Date(article.publishedAt).toLocaleString("ja-JP")}
-          </span>
-        )}
       </div>
     </div>
   );

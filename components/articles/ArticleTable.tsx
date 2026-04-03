@@ -1,28 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
 interface ArticleTableProps {
   articles: Article[];
+  onDelete?: (slug: string) => void;
 }
 
-const STATUS_STYLES = {
-  published:
-    "px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-tight",
-  draft:
-    "px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-tight",
-  archived:
-    "px-2 py-1 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-tight",
-} as const;
+const CATEGORY_LABELS: Record<string, string> = {
+  tech: "プログラミング",
+  asset: "資産形成",
+  health: "健康",
+};
 
-const STATUS_LABELS = {
-  published: "Published",
-  draft: "Draft",
-  archived: "Archived",
-} as const;
-
-export function ArticleTable({ articles }: ArticleTableProps) {
+export function ArticleTable({ articles, onDelete }: ArticleTableProps) {
   if (articles.length === 0) {
     return (
       <div className="py-10 text-center text-on-surface-variant">
@@ -36,17 +28,20 @@ export function ArticleTable({ articles }: ArticleTableProps) {
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-slate-50/50 text-slate-500 font-label text-[11px] uppercase tracking-wider border-b border-outline-variant/10">
-            <th className="px-6 py-4 font-semibold">
-              Post Title &amp; Category
-            </th>
-            <th className="px-6 py-4 font-semibold">Status</th>
-            <th className="px-6 py-4 font-semibold">Updated</th>
-            <th className="px-6 py-4 font-semibold text-right">Actions</th>
+            <th className="px-6 py-4 font-semibold">タイトル</th>
+            <th className="px-6 py-4 font-semibold">カテゴリ</th>
+            <th className="px-6 py-4 font-semibold">状態</th>
+            <th className="px-6 py-4 font-semibold">日付</th>
+            <th className="px-6 py-4 font-semibold text-right">操作</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-outline-variant/10 text-sm">
           {articles.map((article) => (
-            <ArticleRow key={article.id} article={article} />
+            <ArticleRow
+              key={article.slug}
+              article={article}
+              onDelete={onDelete}
+            />
           ))}
         </tbody>
       </table>
@@ -54,55 +49,65 @@ export function ArticleTable({ articles }: ArticleTableProps) {
   );
 }
 
-function ArticleRow({ article }: { article: Article }) {
-  const timeAgo = formatTimeAgo(article.updatedAt);
-  const keywords = article.keywords.slice(0, 2).join(" / ");
+function ArticleRow({
+  article,
+  onDelete,
+}: {
+  article: Article;
+  onDelete?: (slug: string) => void;
+}) {
+  const tagsPreview = article.tags.slice(0, 2).join(", ");
 
   return (
     <tr className="hover:bg-slate-50/50 transition-colors group">
       <td className="px-6 py-5">
-        <div className="font-bold text-on-surface mb-0.5">
+        <Link
+          href={`/articles/${article.slug}`}
+          className="font-bold text-on-surface hover:text-primary transition-colors"
+        >
           {article.title || "無題"}
-        </div>
-        <div className="text-xs text-slate-400">
-          {keywords && `${keywords} \u2022 `}
-          {timeAgo}
-        </div>
+        </Link>
+        {tagsPreview && (
+          <div className="text-xs text-slate-400 mt-0.5">{tagsPreview}</div>
+        )}
       </td>
       <td className="px-6 py-5">
-        <span className={STATUS_STYLES[article.status]}>
-          {STATUS_LABELS[article.status]}
+        <span className="px-2 py-1 rounded-md bg-surface-container text-on-surface-variant text-xs font-medium">
+          {CATEGORY_LABELS[article.category] ?? article.category}
+        </span>
+      </td>
+      <td className="px-6 py-5">
+        <span
+          className={
+            article.published
+              ? "px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-tight"
+              : "px-2 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-tight"
+          }
+        >
+          {article.published ? "公開" : "下書き"}
         </span>
       </td>
       <td className="px-6 py-5 text-slate-500">
-        {new Date(article.updatedAt).toLocaleDateString("ja-JP")}
+        {new Date(article.date).toLocaleDateString("ja-JP")}
       </td>
       <td className="px-6 py-5 text-right">
         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Link
-            href={`/articles/${article.id}`}
+            href={`/articles/${article.slug}/edit`}
             className="p-1.5 hover:bg-surface-container rounded-lg text-slate-600"
           >
             <span className="material-symbols-outlined text-lg">edit</span>
           </Link>
-          <button className="p-1.5 hover:bg-error-container hover:text-error rounded-lg text-slate-600">
-            <span className="material-symbols-outlined text-lg">delete</span>
-          </button>
+          {onDelete && (
+            <button
+              onClick={() => onDelete(article.slug)}
+              className="p-1.5 hover:bg-error-container hover:text-error rounded-lg text-slate-600"
+            >
+              <span className="material-symbols-outlined text-lg">delete</span>
+            </button>
+          )}
         </div>
       </td>
     </tr>
   );
-}
-
-function formatTimeAgo(dateString: string): string {
-  const now = new Date();
-  const date = new Date(dateString);
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffHours < 1) return "just now";
-  if (diffHours < 24) return `${diffHours} hours ago`;
-  if (diffDays === 1) return "1 day ago";
-  return `${diffDays} days ago`;
 }

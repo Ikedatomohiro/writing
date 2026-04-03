@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArticleForm } from "@/components/articles";
 import { getArticle, updateArticle } from "@/lib/articles/storage";
-import type { Article, ArticleStatus } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
+import type { ArticleCreateInput } from "@/lib/content/repository";
 
 export default function EditArticlePage() {
   const params = useParams();
@@ -14,33 +15,28 @@ export default function EditArticlePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const id = params.id as string;
+  const slug = params.slug as string;
 
   const loadArticle = useCallback(async () => {
     try {
-      const data = await getArticle(id);
+      const data = await getArticle(slug);
       setArticle(data);
     } catch (error) {
       console.error("Failed to load article:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     loadArticle();
   }, [loadArticle]);
 
-  const handleSubmit = async (data: {
-    title: string;
-    content: string;
-    keywords: string[];
-    status: ArticleStatus;
-  }) => {
+  const handleSubmit = async (data: ArticleCreateInput) => {
     setIsSubmitting(true);
     try {
-      await updateArticle(id, data);
-      router.push(`/articles/${id}`);
+      await updateArticle(slug, data);
+      router.push(`/articles/${slug}`);
     } catch (error) {
       console.error("Failed to update article:", error);
       setIsSubmitting(false);
@@ -48,7 +44,7 @@ export default function EditArticlePage() {
   };
 
   const handleCancel = () => {
-    router.push(`/articles/${id}`);
+    router.push(`/articles/${slug}`);
   };
 
   if (isLoading) {

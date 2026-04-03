@@ -4,9 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { ArticleTable } from "@/components/articles/ArticleTable";
 import { SearchInput } from "@/components/articles";
-import { AccessRanking } from "./AccessRanking";
-import { getArticles } from "@/lib/articles/storage";
-import type { Article } from "@/lib/articles/types";
+import { getArticles, deleteArticle } from "@/lib/articles/storage";
+import type { Article } from "@/lib/content/types";
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -18,7 +17,7 @@ export default function ArticlesPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getArticles({ searchQuery: searchQuery || undefined });
+      const data = await getArticles();
       setArticles(data);
     } catch (err) {
       setError("記事の読み込みに失敗しました");
@@ -26,11 +25,32 @@ export default function ArticlesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery]);
+  }, []);
 
   useEffect(() => {
     loadArticles();
   }, [loadArticles]);
+
+  const handleDelete = async (slug: string) => {
+    if (!confirm("この記事を削除しますか？")) return;
+    try {
+      await deleteArticle(slug);
+      setArticles((prev) => prev.filter((a) => a.slug !== slug));
+    } catch (err) {
+      console.error("Failed to delete article:", err);
+    }
+  };
+
+  const filteredArticles = searchQuery
+    ? articles.filter(
+        (a) =>
+          a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.tags.some((t) =>
+            t.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      )
+    : articles;
 
   if (error) {
     return (
@@ -50,118 +70,53 @@ export default function ArticlesPage() {
 
   return (
     <>
-      <StatsGrid articleCount={articles.length} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="space-y-4 lg:col-span-2">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold font-headline">Recent Posts</h3>
-            <Link
-              href="/articles"
-              className="text-sm font-semibold text-primary hover:underline"
-            >
-              View all posts
-            </Link>
-          </div>
-
-          <div className="mb-4">
-            <SearchInput
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="タイトル、本文、キーワードで検索..."
-            />
-          </div>
-
-          {articles.length === 0 && searchQuery ? (
-            <p className="text-on-surface-variant">
-              検索結果が見つかりませんでした
-            </p>
-          ) : (
-            <ArticleTable articles={articles} />
-          )}
-        </section>
-
-        <div className="lg:col-span-1">
-          <AccessRanking />
-
-          <div className="bg-inverse-surface text-inverse-on-surface rounded-xl p-5 mt-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-headline font-bold text-sm">System Health</h3>
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-inverse-on-surface/70">Server Load</span>
-                  <span>23%</span>
-                </div>
-                <div className="w-full bg-inverse-on-surface/10 rounded-full h-1.5">
-                  <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: "23%" }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-inverse-on-surface/70">Storage Used</span>
-                  <span>67%</span>
-                </div>
-                <div className="w-full bg-inverse-on-surface/10 rounded-full h-1.5">
-                  <div className="bg-amber-400 h-1.5 rounded-full" style={{ width: "67%" }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold font-headline text-on-surface">
+          記事管理
+        </h2>
+        <Link
+          href="/articles/new"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+        >
+          <span className="material-symbols-outlined text-lg">add</span>
+          新規作成
+        </Link>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <StatCard label="全記事" value={articles.length} />
+        <StatCard
+          label="公開中"
+          value={articles.filter((a) => a.published).length}
+        />
+        <StatCard
+          label="下書き"
+          value={articles.filter((a) => !a.published).length}
+        />
+      </div>
+
+      <div className="mb-4">
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="タイトル、説明、タグで検索..."
+        />
+      </div>
+
+      {filteredArticles.length === 0 && searchQuery ? (
+        <p className="text-on-surface-variant">
+          検索結果が見つかりませんでした
+        </p>
+      ) : (
+        <ArticleTable articles={filteredArticles} onDelete={handleDelete} />
+      )}
     </>
   );
 }
 
-function StatsGrid({ articleCount }: { articleCount: number }) {
+function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div className="md:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm flex flex-col justify-between">
-        <div>
-          <p className="text-xs font-label uppercase tracking-widest text-slate-500 mb-1">
-            Total Audience Reach
-          </p>
-          <h3 className="text-4xl font-black font-headline text-primary tracking-tighter">
-            142.8k
-          </h3>
-        </div>
-        <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-md">
-          <span className="material-symbols-outlined text-sm">
-            trending_up
-          </span>
-          +12.5% vs last month
-        </div>
-      </div>
-
-      <StatCard icon="article" iconBg="bg-blue-50" iconColor="text-blue-600" label="Total Posts" value={articleCount.toLocaleString()} />
-      <StatCard icon="group" iconBg="bg-orange-50" iconColor="text-orange-600" label="Active Users" value="856" />
-    </section>
-  );
-}
-
-function StatCard({
-  icon,
-  iconBg,
-  iconColor,
-  label,
-  value,
-}: {
-  icon: string;
-  iconBg: string;
-  iconColor: string;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm">
-      <div
-        className={`w-10 h-10 rounded-lg ${iconBg} flex items-center justify-center ${iconColor} mb-4`}
-      >
-        <span className="material-symbols-outlined">{icon}</span>
-      </div>
+    <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 shadow-sm">
       <p className="text-sm text-slate-500 font-medium">{label}</p>
       <h3 className="text-2xl font-bold font-headline">{value}</h3>
     </div>

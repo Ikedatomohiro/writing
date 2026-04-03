@@ -1,34 +1,21 @@
+import type { Article } from "@/lib/content/types";
 import type {
-  Article,
   ArticleCreateInput,
   ArticleUpdateInput,
-  ArticleListOptions,
-} from "./types";
+} from "@/lib/content/repository";
 
 const API_BASE = "/api/articles";
 
-function buildQueryString(options: ArticleListOptions): string {
-  const params = new URLSearchParams();
-  if (options.status) params.set("status", options.status);
-  if (options.sortBy) params.set("sortBy", options.sortBy);
-  if (options.sortOrder) params.set("sortOrder", options.sortOrder);
-  if (options.searchQuery) params.set("searchQuery", options.searchQuery);
-  const queryString = params.toString();
-  return queryString ? `?${queryString}` : "";
-}
-
-export async function getArticles(
-  options: ArticleListOptions = {}
-): Promise<Article[]> {
-  const response = await fetch(`${API_BASE}${buildQueryString(options)}`);
+export async function getArticles(): Promise<Article[]> {
+  const response = await fetch(API_BASE);
   if (!response.ok) {
     throw new Error("Failed to fetch articles");
   }
   return response.json();
 }
 
-export async function getArticle(id: string): Promise<Article | null> {
-  const response = await fetch(`${API_BASE}/${id}`);
+export async function getArticle(slug: string): Promise<Article | null> {
+  const response = await fetch(`${API_BASE}/${slug}`);
   if (response.status === 404) {
     return null;
   }
@@ -53,10 +40,10 @@ export async function createArticle(
 }
 
 export async function updateArticle(
-  id: string,
+  slug: string,
   input: ArticleUpdateInput
 ): Promise<Article | null> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+  const response = await fetch(`${API_BASE}/${slug}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -70,8 +57,8 @@ export async function updateArticle(
   return response.json();
 }
 
-export async function deleteArticle(id: string): Promise<boolean> {
-  const response = await fetch(`${API_BASE}/${id}`, {
+export async function deleteArticle(slug: string): Promise<boolean> {
+  const response = await fetch(`${API_BASE}/${slug}`, {
     method: "DELETE",
   });
   if (response.status === 404) {

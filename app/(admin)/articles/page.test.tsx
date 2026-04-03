@@ -1,36 +1,37 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ArticlesPage from "./page";
-import { getArticles } from "@/lib/articles/storage";
-import type { Article } from "@/lib/articles/types";
+import { getArticles, deleteArticle } from "@/lib/articles/storage";
+import type { Article } from "@/lib/content/types";
 
 vi.mock("@/lib/articles/storage", () => ({
   getArticles: vi.fn(),
+  deleteArticle: vi.fn(),
 }));
 
 const mockGetArticles = vi.mocked(getArticles);
 
 const mockArticles: Article[] = [
   {
-    id: "1",
+    slug: "typescript-intro",
     title: "TypeScript入門",
-    content: "TypeScriptの基礎を学ぶ",
-    keywords: ["typescript", "programming"],
-    status: "published",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-01T00:00:00.000Z",
-    publishedAt: "2024-01-01T00:00:00.000Z",
+    description: "TypeScriptの基礎を学ぶ",
+    content: "TypeScriptの基礎を学ぶ本文",
+    category: "tech",
+    tags: ["typescript", "programming"],
+    published: true,
+    date: "2024-01-01T00:00:00.000Z",
   },
   {
-    id: "2",
+    slug: "react-guide",
     title: "React実践ガイド",
-    content: "Reactでアプリを作る",
-    keywords: ["react", "frontend"],
-    status: "draft",
-    createdAt: "2024-01-02T00:00:00.000Z",
-    updatedAt: "2024-01-02T00:00:00.000Z",
-    publishedAt: null,
+    description: "Reactでアプリを作る",
+    content: "Reactでアプリを作る本文",
+    category: "tech",
+    tags: ["react", "frontend"],
+    published: false,
+    date: "2024-01-02T00:00:00.000Z",
   },
 ];
 
@@ -49,7 +50,7 @@ describe("ArticlesPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: "Recent Posts" })
+        screen.getByRole("heading", { name: "記事管理" })
       ).toBeInTheDocument();
     });
   });
@@ -71,7 +72,8 @@ describe("ArticlesPage", () => {
     });
   });
 
-  it("検索クエリを入力するとgetArticlesが呼ばれる", async () => {
+  it("クライアント側で検索フィルタリングする", async () => {
+    const user = userEvent.setup();
     render(<ArticlesPage />);
 
     await waitFor(() => {
@@ -79,21 +81,16 @@ describe("ArticlesPage", () => {
     });
 
     const searchInput = screen.getByLabelText("検索");
-    fireEvent.change(searchInput, { target: { value: "TypeScript" } });
+    await user.type(searchInput, "TypeScript");
 
     await waitFor(() => {
-      expect(mockGetArticles).toHaveBeenCalledWith({
-        searchQuery: "TypeScript",
-      });
+      expect(screen.getByText("TypeScript入門")).toBeInTheDocument();
+      expect(screen.queryByText("React実践ガイド")).not.toBeInTheDocument();
     });
   });
 
   it("検索結果が0件の場合メッセージを表示する", async () => {
     const user = userEvent.setup();
-    mockGetArticles
-      .mockResolvedValueOnce(mockArticles)
-      .mockResolvedValue([]);
-
     render(<ArticlesPage />);
 
     await waitFor(() => {
@@ -101,7 +98,7 @@ describe("ArticlesPage", () => {
     });
 
     const searchInput = screen.getByLabelText("検索");
-    await user.type(searchInput, "存在しない");
+    await user.type(searchInput, "存在しない記事");
 
     await waitFor(() => {
       expect(

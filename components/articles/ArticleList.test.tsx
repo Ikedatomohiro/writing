@@ -1,18 +1,18 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { describe, expect, it, afterEach } from "vitest";
 import { ArticleList } from "./ArticleList";
-import type { Article } from "@/lib/articles/types";
+import type { Article } from "@/lib/content/types";
 
 function createTestArticle(overrides: Partial<Article> = {}): Article {
   return {
-    id: "test-id",
+    slug: "test-slug",
     title: "テスト記事",
+    description: "テスト記事の説明です。",
     content: "これはテスト記事の本文です。",
-    keywords: ["React", "TypeScript"],
-    status: "draft",
-    createdAt: "2024-01-01T00:00:00.000Z",
-    updatedAt: "2024-01-15T12:30:00.000Z",
-    publishedAt: null,
+    category: "tech",
+    tags: ["React", "TypeScript"],
+    published: false,
+    date: "2024-01-01T00:00:00.000Z",
     ...overrides,
   };
 }
@@ -30,9 +30,9 @@ describe("ArticleList", () => {
 
   it("記事のリストを表示する", () => {
     const articles = [
-      createTestArticle({ id: "1", title: "記事1" }),
-      createTestArticle({ id: "2", title: "記事2" }),
-      createTestArticle({ id: "3", title: "記事3" }),
+      createTestArticle({ slug: "1", title: "記事1" }),
+      createTestArticle({ slug: "2", title: "記事2" }),
+      createTestArticle({ slug: "3", title: "記事3" }),
     ];
     render(<ArticleList articles={articles} />);
 
@@ -43,8 +43,8 @@ describe("ArticleList", () => {
 
   it("各記事がリンクとして表示される", () => {
     const articles = [
-      createTestArticle({ id: "article-1", title: "記事1" }),
-      createTestArticle({ id: "article-2", title: "記事2" }),
+      createTestArticle({ slug: "article-1", title: "記事1" }),
+      createTestArticle({ slug: "article-2", title: "記事2" }),
     ];
     render(<ArticleList articles={articles} />);
 
@@ -56,8 +56,8 @@ describe("ArticleList", () => {
 
   it("記事のステータスバッジを表示する", () => {
     const articles = [
-      createTestArticle({ id: "1", status: "draft" }),
-      createTestArticle({ id: "2", status: "published" }),
+      createTestArticle({ slug: "1", published: false }),
+      createTestArticle({ slug: "2", published: true }),
     ];
     render(<ArticleList articles={articles} />);
 
