@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { z } from "zod";
 
-interface ContactBody {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
+const ContactSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email().max(254),
+  subject: z.string().min(1).max(200),
+  message: z.string().min(1).max(5000),
+});
 
-function isValidBody(body: unknown): body is ContactBody {
-  const b = body as ContactBody;
-  return !!(b?.name && b?.email && b?.subject && b?.message);
+function sanitizeHeaderValue(value: string): string {
+  return value.replace(/[\r\n]/g, "").trim().slice(0, 200);
 }
 
 export async function POST(request: Request) {
@@ -35,12 +35,17 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isValidBody(body)) {
+  const parsed = ContactSchema.safeParse(body);
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "必須項目を入力してください" },
+      { error: "入力内容が不正です", details: parsed.error.issues },
       { status: 400 }
     );
   }
+
+  const { name, email, subject, message } = parsed.data;
+  const safeName = sanitizeHeaderValue(name);
+  const safeSubject = sanitizeHeaderValue(subject);
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -49,17 +54,17 @@ export async function POST(request: Request) {
 
   try {
     await transporter.sendMail({
-      from: `"${body.name}" <${gmailUser}>`,
+      from: `"${safeName}" <${gmailUser}>`,
       to: contactTo,
-      replyTo: body.email,
-      subject: `[お問い合わせ] ${body.subject} - ${body.name}`,
+      replyTo: email,
+      subject: `[お問い合わせ] ${safeSubject} - ${safeName}`,
       text: [
-        `お名前: ${body.name}`,
-        `メールアドレス: ${body.email}`,
-        `お問い合わせ項目: ${body.subject}`,
+        `お名前: ${name}`,
+        `メールアドレス: ${email}`,
+        `お問い合わせ項目: ${subject}`,
         ``,
         `メッセージ:`,
-        body.message,
+        message,
       ].join("\n"),
     });
 

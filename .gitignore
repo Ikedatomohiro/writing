@@ -1,5 +1,6 @@
 # Environment
 .env
+tools/.env
 
 # Node.js
 node_modules/

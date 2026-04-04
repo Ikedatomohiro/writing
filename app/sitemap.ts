@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/content/api";
 import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_CONFIG.url;
 
@@ -22,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  const articles = await getAllArticles();
+  const articles = await getAllArticles().catch(() => []);
   const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
     url: `${baseUrl}/${article.category}/${article.slug}`,
     lastModified: article.updatedAt ? new Date(article.updatedAt) : new Date(article.date),

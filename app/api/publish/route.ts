@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { put, head } from "@vercel/blob";
 import { validateRequest, parseJsonBody } from "@/lib/api/request-guard";
@@ -10,7 +11,9 @@ function validateApiKey(request: NextRequest): boolean {
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return false;
   const key = authHeader.slice(7);
-  return key === process.env.PUBLISH_API_KEY;
+  const expected = process.env.PUBLISH_API_KEY;
+  if (!expected || key.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(key), Buffer.from(expected));
 }
 
 function buildFrontmatter(body: PublishRequestBody): string {
@@ -146,10 +149,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       addRandomSuffix: false,
     });
   } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    console.error("[publish] Blob put failed:", message);
+    console.error("[publish] Blob put failed:", e);
     return NextResponse.json(
-      { error: "Failed to save article to storage", detail: message },
+      { error: "Failed to save article to storage" },
       { status: 500 }
     );
   }

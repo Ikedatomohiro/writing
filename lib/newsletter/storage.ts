@@ -24,6 +24,8 @@ export async function loadSubscribers(): Promise<SubscribersData> {
 export async function saveSubscribers(data: SubscribersData): Promise<void> {
   await put(BLOB_PATH, JSON.stringify(data, null, 2), {
     access: "public",
+    // TODO: Migrate to Supabase for proper private storage of PII
+    // @vercel/blob v2.0.0 only supports public access
     addRandomSuffix: false,
     contentType: "application/json",
   });
