@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { addSubscriber } from "@/lib/newsletter/storage";
 import { z } from "zod";
+import { rateLimit } from "@/lib/api/rate-limit";
 
 const SubscribeSchema = z.object({
   email: z.string().email("有効なメールアドレスを入力してください"),
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (!rateLimit(ip)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const gmailUser = process.env.GMAIL_USER;
   const gmailPassword = process.env.GMAIL_APP_PASSWORD;
   const adminEmail = process.env.NEWSLETTER_ADMIN_EMAIL;

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { z } from "zod";
+import { rateLimit } from "@/lib/api/rate-limit";
 
 const ContactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -14,6 +15,11 @@ function sanitizeHeaderValue(value: string): string {
 }
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (!rateLimit(ip)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const gmailUser = process.env.GMAIL_USER;
   const gmailPassword = process.env.GMAIL_APP_PASSWORD;
   const contactTo = process.env.CONTACT_EMAIL_TO;
