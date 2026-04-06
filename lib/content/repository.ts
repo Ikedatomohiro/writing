@@ -14,6 +14,7 @@ interface ArticleRow {
   tags: string[];
   thumbnail: string | null;
   published: boolean;
+  created_at: string;
 }
 
 /**
@@ -56,6 +57,7 @@ function toArticle(row: ArticleRow): Article {
     thumbnail: row.thumbnail ?? undefined,
     published: row.published,
     content: row.content,
+    registeredAt: row.created_at,
   };
 }
 
@@ -66,7 +68,7 @@ export async function getAllArticlesForAdmin(): Promise<Article[]> {
   const { data, error } = await supabase
     .from("articles")
     .select("*")
-    .order("date", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error || !data) {
     return [];

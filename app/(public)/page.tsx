@@ -170,7 +170,11 @@ export default async function Home() {
 
   // Combine all articles and sort by date for the bento grid
   const allArticles = [...assetArticles, ...techArticles, ...healthArticles]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const aTime = new Date(a.registeredAt ?? a.date).getTime();
+      const bTime = new Date(b.registeredAt ?? b.date).getTime();
+      return bTime - aTime;
+    });
 
   // First article is the hero, rest go in the bento grid (max 9 total: 1 hero + 8 grid)
   const MAX_DISPLAY = 9;

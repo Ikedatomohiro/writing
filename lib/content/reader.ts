@@ -14,6 +14,7 @@ interface ArticleRow {
   tags: string[];
   thumbnail: string | null;
   published: boolean;
+  created_at: string;
 }
 
 /**
@@ -30,6 +31,7 @@ function toArticle(row: ArticleRow): Article {
     thumbnail: row.thumbnail ?? undefined,
     published: row.published,
     content: row.content,
+    registeredAt: row.created_at,
   };
 }
 

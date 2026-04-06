@@ -26,6 +26,7 @@ export interface ArticleMeta {
   description: string;
   date: string;
   updatedAt?: string;
+  registeredAt?: string;
   category: Category;
   tags: string[];
   thumbnail?: string;
