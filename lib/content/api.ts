@@ -12,8 +12,12 @@ export interface GetArticlesOptions {
 /**
  * 記事を日付の降順でソートする
  */
-function sortByDateDesc<T extends { date: string }>(articles: T[]): T[] {
-  return [...articles].sort((a, b) => b.date.localeCompare(a.date));
+function sortByDateDesc<T extends { date: string; registeredAt?: string }>(articles: T[]): T[] {
+  return [...articles].sort((a, b) => {
+    const aTime = a.registeredAt ?? a.date;
+    const bTime = b.registeredAt ?? b.date;
+    return bTime.localeCompare(aTime);
+  });
 }
 
 /**
