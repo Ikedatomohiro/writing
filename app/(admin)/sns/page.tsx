@@ -9,12 +9,11 @@ export default function SnsPage() {
   const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
-
-  useEffect(() => {
+  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">(() => {
+    if (typeof window === "undefined") return "draft";
     const stored = sessionStorage.getItem("sns_active_tab");
-    if (stored) setActiveTab(stored as SnsSeriesStatus | "all" | "posted");
-  }, []);
+    return (stored as SnsSeriesStatus | "all" | "posted") || "draft";
+  });
 
   const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
     setActiveTab(tab);

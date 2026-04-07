@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
@@ -10,12 +10,11 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  useEffect(() => {
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
     const stored = localStorage.getItem("sidebar_open");
-    if (stored !== null) setSidebarOpen(stored === "true");
-  }, []);
+    return stored !== null ? stored === "true" : true;
+  });
 
   const handleToggleSidebar = () => {
     setSidebarOpen((prev) => {
