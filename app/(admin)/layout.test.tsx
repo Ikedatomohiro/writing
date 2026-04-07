@@ -12,6 +12,7 @@ vi.mock("next-auth/react", () => ({
 describe("AdminLayout", () => {
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
 
   it("renders children within SessionProvider", () => {

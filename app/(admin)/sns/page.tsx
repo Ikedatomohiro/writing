@@ -11,6 +11,16 @@ export default function SnsPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
 
+  useEffect(() => {
+    const stored = sessionStorage.getItem("sns_active_tab");
+    if (stored) setActiveTab(stored as SnsSeriesStatus | "all" | "posted");
+  }, []);
+
+  const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
+    setActiveTab(tab);
+    sessionStorage.setItem("sns_active_tab", tab);
+  };
+
   const loadSeries = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -104,7 +114,7 @@ export default function SnsPage() {
         {uniqueTabs.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
+            onClick={() => handleTabChange(tab.value)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
               activeTab === tab.value
                 ? "bg-blue-600 text-white"
