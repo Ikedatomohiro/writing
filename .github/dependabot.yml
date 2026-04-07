@@ -8,6 +8,12 @@ updates:
       time: "09:00"
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 5
+    ignore:
+      # next-auth@5.0.0-beta.30 requires nodemailer@^7, v8は非互換
+      - dependency-name: "nodemailer"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/nodemailer"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-dependencies:
         dependency-type: "development"
