@@ -1,18 +1,29 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { PostEditor } from "@/components/sns/PostEditor";
-import type { SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
+import type { SnsSeries, SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
 
 export default function SnsDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [series, setSeries] = useState<SnsSeriesWithPosts | null>(null);
+  const [allSeries, setAllSeries] = useState<SnsSeries[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posts, setPosts] = useState<SnsPost[]>([]);
+
+  const loadAllSeries = useCallback(async () => {
+    const res = await fetch("/api/sns/series");
+    if (res.ok) {
+      const json = await res.json();
+      setAllSeries(json.data ?? []);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -34,7 +45,17 @@ export default function SnsDetailPage() {
 
   useEffect(() => {
     load();
-  }, [load]);
+    loadAllSeries();
+  }, [load, loadAllSeries]);
+
+  const currentIndex = allSeries.findIndex((s) => s.id === id);
+  const prevId = currentIndex > 0 ? allSeries[currentIndex - 1].id : null;
+  const nextId = currentIndex >= 0 && currentIndex < allSeries.length - 1
+    ? allSeries[currentIndex + 1].id
+    : null;
+  const nextDraftId = allSeries
+    .slice(currentIndex + 1)
+    .find((s) => s.status === "draft")?.id ?? null;
 
   const isDisabled = series?.is_posted ?? false;
 
@@ -115,7 +136,13 @@ export default function SnsDetailPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ series_id: id }),
     });
-    if (res.ok) load();
+    if (res.ok) {
+      if (nextDraftId) {
+        router.push(`/sns/${nextDraftId}`);
+      } else {
+        load();
+      }
+    }
   };
 
   if (isLoading) return <p className="text-slate-500">読み込み中...</p>;
@@ -126,6 +153,32 @@ export default function SnsDetailPage() {
 
   return (
     <div className="max-w-3xl space-y-6">
+      {/* ナビゲーションバー */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => prevId && router.push(`/sns/${prevId}`)}
+          disabled={!prevId}
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <span className="material-symbols-outlined text-sm">chevron_left</span>
+          前へ
+        </button>
+        <Link
+          href="/sns"
+          className="px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100"
+        >
+          一覧に戻る
+        </Link>
+        <button
+          onClick={() => nextId && router.push(`/sns/${nextId}`)}
+          disabled={!nextId}
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          次へ
+          <span className="material-symbols-outlined text-sm">chevron_right</span>
+        </button>
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold font-headline text-on-surface">
