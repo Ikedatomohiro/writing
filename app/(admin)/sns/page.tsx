@@ -116,21 +116,24 @@ function SeriesCard({
   const parentPost: SnsPost | undefined = series.posts?.find((p) => p.position === 0);
 
   return (
-    <div className="relative group">
+    <div className="relative">
       <Link
         href={`/sns/${series.id}`}
-        className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex items-start gap-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
+        className="bg-white border border-slate-200 rounded-xl px-4 py-4 pr-12 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4 sm:px-5 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
       >
-        {/* 左: メタ情報 */}
-        <div className="w-44 shrink-0">
-          <div className="mb-1.5">
+        {/* メタ情報 */}
+        <div className="sm:w-44 sm:shrink-0">
+          <div className="flex items-center gap-2 mb-1">
             <StatusBadge status={series.status} isPosted={series.is_posted} />
+            {series.pattern && (
+              <p className="text-xs text-slate-400 truncate sm:hidden">{series.pattern}</p>
+            )}
           </div>
           <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 leading-snug">
             {series.theme ?? "（テーマなし）"}
           </h3>
           {series.pattern && (
-            <p className="text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
+            <p className="hidden sm:block text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
           )}
           {series.quality_score != null && (
             <p className="text-xs text-slate-400 mt-0.5">
@@ -139,7 +142,7 @@ function SeriesCard({
           )}
         </div>
 
-        {/* 中央: 投稿テキストプレビュー */}
+        {/* 投稿テキストプレビュー */}
         <div className="flex-1 min-w-0">
           {parentPost?.text ? (
             <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
@@ -149,16 +152,13 @@ function SeriesCard({
             <p className="text-xs text-slate-400 italic">投稿なし</p>
           )}
         </div>
-
-        {/* 右: 削除ボタン用スペース確保 */}
-        {!series.is_posted && <div className="w-8 shrink-0" />}
       </Link>
 
-      {/* 削除ボタン: カードのクリックから独立 */}
+      {/* 削除ボタン */}
       {!series.is_posted && (
         <button
           onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
+          className="absolute right-3 top-3 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
           aria-label="削除"
         >
           <span className="material-symbols-outlined text-base">delete</span>
