@@ -158,7 +158,7 @@ function SeriesCard({
       {!series.is_posted && (
         <button
           onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
           aria-label="削除"
         >
           <span className="material-symbols-outlined text-base">delete</span>
