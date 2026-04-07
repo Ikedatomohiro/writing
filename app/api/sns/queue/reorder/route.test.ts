@@ -78,6 +78,9 @@ describe("POST /api/sns/queue/reorder", () => {
     const fetchInMock = vi.fn().mockResolvedValue({ data: mockQueuedSeries, error: null });
     const fetchSelectMock = vi.fn().mockReturnValue({ in: fetchInMock });
 
+    const nullifyInMock = vi.fn().mockResolvedValue({ error: null });
+    const nullifyUpdateMock = vi.fn().mockReturnValue({ in: nullifyInMock });
+
     const updateEqMock = vi.fn().mockResolvedValue({ error: null });
     const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
 
@@ -85,6 +88,7 @@ describe("POST /api/sns/queue/reorder", () => {
     mockSupabase.from.mockImplementation(() => {
       callCount++;
       if (callCount === 1) return { select: fetchSelectMock };
+      if (callCount === 2) return { update: nullifyUpdateMock };
       return { update: updateMock };
     });
     const { POST } = await import("./route");

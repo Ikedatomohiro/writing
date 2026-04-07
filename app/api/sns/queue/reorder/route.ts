@@ -34,6 +34,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // unique制約の衝突を避けるため、一旦全てNULLにしてから新しい順番を割り当てる
+  const { error: nullifyError } = await supabase
+    .from("sns_series")
+    .update({ queue_order: null })
+    .in("id", series_ids);
+
+  if (nullifyError) {
+    return NextResponse.json({ error: nullifyError.message }, { status: 500 });
+  }
+
   for (let i = 0; i < series_ids.length; i++) {
     const { error: updateError } = await supabase
       .from("sns_series")
