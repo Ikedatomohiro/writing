@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { icon: "article", label: "All Posts", href: "/articles" },
   { icon: "monitoring", label: "Analytics", href: "/articles" },
   { icon: "category", label: "Categories", href: "/articles" },
+  { icon: "forum", label: "SNS", href: "/sns" },
   { icon: "settings", label: "Settings", href: "/articles" },
 ] as const;
 

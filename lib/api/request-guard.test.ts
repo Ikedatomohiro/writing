@@ -18,10 +18,7 @@ function createRequest(
     headers.set("content-length", options.contentLength);
   }
 
-  const init: RequestInit = { method, headers };
-  if (options.body) {
-    init.body = options.body;
-  }
+  const init = { method, headers, ...(options.body ? { body: options.body } : {}) };
 
   return new NextRequest("http://localhost/api/test", init);
 }
