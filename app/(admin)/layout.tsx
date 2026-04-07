@@ -11,9 +11,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
+    if (typeof window === "undefined") return false;
     const stored = localStorage.getItem("sidebar_open");
-    return stored !== null ? stored === "true" : true;
+    return stored !== null ? stored === "true" : false;
   });
 
   const handleToggleSidebar = () => {

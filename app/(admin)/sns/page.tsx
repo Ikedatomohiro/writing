@@ -105,10 +105,12 @@ export default function SnsPage() {
         <h2 className="text-2xl font-bold font-headline text-on-surface">SNS管理</h2>
         <Link
           href="/sns/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shrink-0"
         >
-          <span className="material-symbols-outlined text-lg">add</span>
-          新規作成
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+          <span className="hidden sm:inline">新規作成</span>
         </Link>
       </div>
 
@@ -167,6 +169,7 @@ function SeriesCard({
   onMove?: (index: number, direction: "up" | "down") => void;
 }) {
   const parentPost: SnsPost | undefined = series.posts?.find((p) => p.position === 0);
+  const childCount = series.posts?.filter((p) => p.position > 0).length ?? 0;
   const isQueued = onMove !== undefined && index !== undefined;
 
   return (
@@ -200,30 +203,24 @@ function SeriesCard({
       <div className="relative flex-1">
         <Link
           href={`/sns/${series.id}`}
-          className="bg-white border border-slate-200 rounded-xl px-4 py-4 pr-12 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4 sm:px-5 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
+          className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
         >
           {/* メタ情報 */}
-          <div className="sm:w-44 sm:shrink-0">
-            <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
+            <div className="flex items-center gap-2 sm:mb-1">
               <StatusBadge status={series.status} isPosted={series.is_posted} />
-              {series.pattern && (
-                <p className="text-xs text-slate-400 truncate sm:hidden">{series.pattern}</p>
-              )}
             </div>
-            <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 leading-snug">
+            <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal">
               {series.theme ?? "（テーマなし）"}
             </h3>
-            {series.pattern && (
-              <p className="hidden sm:block text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
-            )}
             {series.quality_score != null && (
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
                 スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
               </p>
             )}
           </div>
 
-          {/* 投稿テキストプレビュー */}
+          {/* 投稿テキストプレビュー＋子投稿数 */}
           <div className="flex-1 min-w-0">
             {parentPost?.text ? (
               <p className="text-sm text-slate-600 truncate leading-relaxed">
@@ -232,6 +229,9 @@ function SeriesCard({
             ) : (
               <p className="text-xs text-slate-400 italic">投稿なし</p>
             )}
+            {childCount > 0 && (
+              <p className="text-xs text-slate-400 mt-0.5">子投稿 {childCount}件</p>
+            )}
           </div>
         </Link>
 
@@ -239,10 +239,12 @@ function SeriesCard({
         {!series.is_posted && (
           <button
             onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-            className="absolute right-3 top-3 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
+            className="absolute right-2 top-2 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
             aria-label="削除"
           >
-            <span className="material-symbols-outlined text-base">delete</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
           </button>
         )}
       </div>
