@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("sns_series")
-    .select("*, sns_posts(*)")
+    .select("*, posts:sns_posts(*)")
     .order("created_at", { ascending: false });
 
   if (status) {
