@@ -130,6 +130,14 @@ export default function SnsDetailPage() {
     });
   };
 
+  const handleDeleteSeries = async () => {
+    if (!confirm("このシリーズを削除しますか？")) return;
+    const res = await fetch(`/api/sns/series/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/sns");
+    }
+  };
+
   const handleEnqueue = async () => {
     const res = await fetch("/api/sns/queue/enqueue", {
       method: "POST",
@@ -292,15 +300,23 @@ export default function SnsDetailPage() {
       </section>
 
       {!isDisabled && (
-        <div className="flex gap-3 pt-4 border-t border-slate-200">
-          {series.status === "draft" && (
-            <button
-              onClick={handleEnqueue}
-              className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"
-            >
-              キューに追加
-            </button>
-          )}
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+          <div className="flex gap-3">
+            {series.status === "draft" && (
+              <button
+                onClick={handleEnqueue}
+                className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"
+              >
+                キューに追加
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleDeleteSeries}
+            className="px-4 py-2 rounded-lg text-red-500 text-sm font-medium hover:bg-red-50 active:bg-red-100 transition-colors"
+          >
+            削除
+          </button>
         </div>
       )}
     </div>
