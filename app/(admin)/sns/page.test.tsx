@@ -21,6 +21,7 @@ const mockSeries = [
     source_draft_id: null,
     created_at: "2024-01-01T00:00:00.000Z",
     updated_at: "2024-01-01T00:00:00.000Z",
+    posts: [{ id: "p1", series_id: "1", position: 0, text: "テスト投稿テキスト", type: "normal", threads_post_id: null, created_at: "2024-01-01T00:00:00.000Z", updated_at: "2024-01-01T00:00:00.000Z" }],
   },
   {
     id: "2",
@@ -36,6 +37,7 @@ const mockSeries = [
     source_draft_id: null,
     created_at: "2024-01-02T00:00:00.000Z",
     updated_at: "2024-01-02T00:00:00.000Z",
+    posts: [],
   },
 ];
 
@@ -66,11 +68,29 @@ describe("SnsPage", () => {
     });
   });
 
-  it("シリーズ一覧を表示する", async () => {
+  it("デフォルトでdraftタブが選択されてdraftシリーズを表示する", async () => {
     render(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
+      expect(screen.queryByText("テストテーマ2")).not.toBeInTheDocument();
+    });
+  });
+
+  it("allタブでシリーズ全件を表示する", async () => {
+    const user = userEvent.setup();
+    render(<SnsPage />);
+    await waitFor(() => screen.getByRole("button", { name: "all" }));
+    await user.click(screen.getByRole("button", { name: "all" }));
+    await waitFor(() => {
+      expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
       expect(screen.getByText("テストテーマ2")).toBeInTheDocument();
+    });
+  });
+
+  it("投稿テキストのプレビューを表示する", async () => {
+    render(<SnsPage />);
+    await waitFor(() => {
+      expect(screen.getByText("テスト投稿テキスト")).toBeInTheDocument();
     });
   });
 
@@ -80,6 +100,7 @@ describe("SnsPage", () => {
       expect(screen.getByRole("button", { name: "all" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "draft" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "posted" })).toBeInTheDocument();
     });
   });
 
@@ -88,14 +109,14 @@ describe("SnsPage", () => {
     render(<SnsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "draft" }));
+    await user.click(screen.getByRole("button", { name: "queued" }));
 
     await waitFor(() => {
-      expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
-      expect(screen.queryByText("テストテーマ2")).not.toBeInTheDocument();
+      expect(screen.getByText("テストテーマ2")).toBeInTheDocument();
+      expect(screen.queryByText("テストテーマ1")).not.toBeInTheDocument();
     });
   });
 });

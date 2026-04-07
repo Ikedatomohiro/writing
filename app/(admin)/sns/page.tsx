@@ -3,14 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
-import type { SnsSeries, SnsSeriesStatus } from "@/lib/types/sns";
-
+import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
 
 export default function SnsPage() {
-  const [series, setSeries] = useState<SnsSeries[]>([]);
+  const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("all");
+  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
 
   const loadSeries = useCallback(async () => {
     try {
@@ -52,6 +51,7 @@ export default function SnsPage() {
     { label: "all", value: "all" },
     { label: "draft", value: "draft" },
     { label: "queued", value: "queued" },
+    { label: "posted", value: "posted" },
   ];
 
   if (error) {
@@ -96,7 +96,7 @@ export default function SnsPage() {
       ) : filteredSeries.length === 0 ? (
         <p className="text-slate-500">シリーズがありません</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="flex flex-col gap-3">
           {filteredSeries.map((s) => (
             <SeriesCard key={s.id} series={s} onDelete={handleDelete} />
           ))}
@@ -110,32 +110,47 @@ function SeriesCard({
   series,
   onDelete,
 }: {
-  series: SnsSeries;
+  series: SnsSeriesWithPosts;
   onDelete: (id: string) => void;
 }) {
+  const parentPost: SnsPost | undefined = series.posts?.find((p) => p.position === 0);
+
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="font-semibold text-slate-900 text-sm line-clamp-2">
+    <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex items-start gap-4 hover:shadow-sm transition-shadow">
+      {/* 左: メタ情報 */}
+      <div className="w-44 shrink-0">
+        <div className="mb-1.5">
+          <StatusBadge status={series.status} isPosted={series.is_posted} />
+        </div>
+        <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 leading-snug">
           {series.theme ?? "（テーマなし）"}
         </h3>
-        <StatusBadge status={series.status} isPosted={series.is_posted} />
+        {series.pattern && (
+          <p className="text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
+        )}
+        {series.quality_score != null && (
+          <p className="text-xs text-slate-400 mt-0.5">
+            スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
+          </p>
+        )}
       </div>
 
-      {series.pattern && (
-        <p className="text-xs text-slate-500 mb-2">パターン: {series.pattern}</p>
-      )}
+      {/* 中央: 投稿テキストプレビュー */}
+      <div className="flex-1 min-w-0">
+        {parentPost?.text ? (
+          <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
+            {parentPost.text}
+          </p>
+        ) : (
+          <p className="text-xs text-slate-400 italic">投稿なし</p>
+        )}
+      </div>
 
-      {series.quality_score != null && (
-        <p className="text-xs text-slate-500 mb-3">
-          スコア: <span className="font-semibold text-slate-700">{series.quality_score}</span>
-        </p>
-      )}
-
-      <div className="flex gap-2 mt-4">
+      {/* 右: アクション */}
+      <div className="shrink-0 flex flex-col gap-1.5 items-end">
         <Link
           href={`/sns/${series.id}`}
-          className="flex-1 text-center px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
+          className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
         >
           詳細・編集
         </Link>
