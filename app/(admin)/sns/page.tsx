@@ -145,8 +145,8 @@ function SeriesCard({
         {/* 投稿テキストプレビュー */}
         <div className="flex-1 min-w-0">
           {parentPost?.text ? (
-            <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
-              {parentPost.text}
+            <p className="text-sm text-slate-600 truncate leading-relaxed">
+              {parentPost.text.split('\n').find(l => l.trim()) ?? ''}
             </p>
           ) : (
             <p className="text-xs text-slate-400 italic">投稿なし</p>
