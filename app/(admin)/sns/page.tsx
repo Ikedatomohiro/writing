@@ -9,11 +9,14 @@ export default function SnsPage() {
   const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">(() => {
-    if (typeof window === "undefined") return "draft";
+  const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
+
+  useEffect(() => {
     const stored = sessionStorage.getItem("sns_active_tab");
-    return (stored as SnsSeriesStatus | "all" | "posted") || "draft";
-  });
+    if (stored) {
+      setActiveTab(stored as SnsSeriesStatus | "all" | "posted");
+    }
+  }, []);
 
   const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
     setActiveTab(tab);
@@ -77,11 +80,16 @@ export default function SnsPage() {
       return [...nonQueued, ...reordered];
     });
 
-    await fetch("/api/sns/queue/reorder", {
+    const res = await fetch("/api/sns/queue/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
     });
+
+    if (!res.ok) {
+      // API失敗時はDBの実際の状態に戻す
+      loadSeries();
+    }
   };
 
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [
