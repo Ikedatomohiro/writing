@@ -70,15 +70,18 @@ export default function SnsPage() {
     const swapIndex = direction === "up" ? index - 1 : index + 1;
     [newQueued[index], newQueued[swapIndex]] = [newQueued[swapIndex], newQueued[index]];
 
+    // queue_orderを位置に合わせて更新（ソート時に正しい順序を保つ）
+    const reordered = newQueued.map((s, i) => ({ ...s, queue_order: i + 1 }));
+
     setSeries((prev) => {
       const nonQueued = prev.filter((s) => s.status !== "queued" || s.is_posted);
-      return [...nonQueued, ...newQueued];
+      return [...nonQueued, ...reordered];
     });
 
     await fetch("/api/sns/queue/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_ids: newQueued.map((s) => s.id) }),
+      body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
     });
   };
 
@@ -178,7 +181,9 @@ function SeriesCard({
             className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-20"
             aria-label="上に移動"
           >
-            <span className="material-symbols-outlined text-base">arrow_upward</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 17a1 1 0 01-1-1V6.414L5.707 9.707a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0l5 5a1 1 0 01-1.414 1.414L11 6.414V16a1 1 0 01-1 1z" clipRule="evenodd" />
+            </svg>
           </button>
           <button
             onClick={() => onMove(index, "down")}
@@ -186,7 +191,9 @@ function SeriesCard({
             className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-20"
             aria-label="下に移動"
           >
-            <span className="material-symbols-outlined text-base">arrow_downward</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v9.586l3.293-3.293a1 1 0 011.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L9 13.586V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
           </button>
         </div>
       )}
