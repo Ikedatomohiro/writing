@@ -15,20 +15,6 @@ describe("StatusBadge", () => {
     expect(badge.className).toMatch(/slate|gray/);
   });
 
-  it("pending_approval ステータスを黄色で表示する", () => {
-    render(<StatusBadge status="pending_approval" />);
-    const badge = screen.getByTestId("status-badge");
-    expect(badge).toHaveTextContent("pending_approval");
-    expect(badge.className).toMatch(/yellow|amber/);
-  });
-
-  it("approved ステータスを青で表示する", () => {
-    render(<StatusBadge status="approved" />);
-    const badge = screen.getByTestId("status-badge");
-    expect(badge).toHaveTextContent("approved");
-    expect(badge.className).toMatch(/blue/);
-  });
-
   it("queued ステータスをオレンジで表示する", () => {
     render(<StatusBadge status="queued" />);
     const badge = screen.getByTestId("status-badge");

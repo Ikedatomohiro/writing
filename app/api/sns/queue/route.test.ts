@@ -25,7 +25,6 @@ const mockQueuedSeries: SnsSeriesWithPosts = {
   queue_order: 1,
   is_posted: false,
   posted_at: null,
-  approved_at: "2024-01-01T00:00:00.000Z",
   source: null,
   source_draft_id: null,
   created_at: "2024-01-01T00:00:00.000Z",

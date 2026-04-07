@@ -15,17 +15,16 @@ vi.mock("@/lib/auth/api-auth", () => ({
   requireAuth: () => mockRequireAuth(),
 }));
 
-const mockApprovedSeries: SnsSeries = {
+const mockDraftSeries: SnsSeries = {
   id: "series-1",
   theme: "テストテーマ",
   pattern: null,
   quality_score: null,
   score_breakdown: null,
-  status: "approved",
+  status: "draft",
   queue_order: null,
   is_posted: false,
   posted_at: null,
-  approved_at: "2024-01-01T00:00:00.000Z",
   source: null,
   source_draft_id: null,
   created_at: "2024-01-01T00:00:00.000Z",
@@ -58,10 +57,10 @@ describe("POST /api/sns/queue/enqueue", () => {
     expect(data.error).toBe("Unauthorized");
   });
 
-  it("承認済みシリーズをキューに追加する", async () => {
-    const queuedSeries: SnsSeries = { ...mockApprovedSeries, status: "queued", queue_order: 1 };
+  it("draftシリーズをキューに追加する", async () => {
+    const queuedSeries: SnsSeries = { ...mockDraftSeries, status: "queued", queue_order: 1 };
 
-    const fetchSingleMock = vi.fn().mockResolvedValue({ data: mockApprovedSeries, error: null });
+    const fetchSingleMock = vi.fn().mockResolvedValue({ data: mockDraftSeries, error: null });
     const fetchEqMock = vi.fn().mockReturnValue({ single: fetchSingleMock });
     const fetchSelectMock = vi.fn().mockReturnValue({ eq: fetchEqMock });
 
@@ -97,8 +96,8 @@ describe("POST /api/sns/queue/enqueue", () => {
     expect(data).toHaveProperty("data");
   });
 
-  it("status=approvedでないシリーズは400を返す", async () => {
-    const draftSeries: SnsSeries = { ...mockApprovedSeries, status: "draft" };
+  it("status=draftでないシリーズは400を返す", async () => {
+    const draftSeries: SnsSeries = { ...mockDraftSeries, status: "queued" };
     const singleMock = vi.fn().mockResolvedValue({ data: draftSeries, error: null });
     const eqMock = vi.fn().mockReturnValue({ single: singleMock });
     const selectMock = vi.fn().mockReturnValue({ eq: eqMock });

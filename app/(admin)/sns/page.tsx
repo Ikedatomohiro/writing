@@ -51,8 +51,6 @@ export default function SnsPage() {
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [
     { label: "all", value: "all" },
     { label: "draft", value: "draft" },
-    { label: "pending_approval", value: "pending_approval" },
-    { label: "approved", value: "approved" },
     { label: "queued", value: "queued" },
   ];
 

@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
 
   const series = existing as SnsSeries;
 
-  if (series.status !== "approved") {
+  if (series.status !== "draft") {
     return NextResponse.json(
-      { error: "Only approved series can be enqueued" },
+      { error: "Only draft series can be enqueued" },
       { status: 400 }
     );
   }

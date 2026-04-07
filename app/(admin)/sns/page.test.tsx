@@ -17,7 +17,6 @@ const mockSeries = [
     queue_order: null,
     is_posted: false,
     posted_at: null,
-    approved_at: null,
     source: null,
     source_draft_id: null,
     created_at: "2024-01-01T00:00:00.000Z",
@@ -29,11 +28,10 @@ const mockSeries = [
     pattern: "pattern-b",
     quality_score: 90,
     score_breakdown: null,
-    status: "approved",
-    queue_order: null,
+    status: "queued",
+    queue_order: 1,
     is_posted: false,
     posted_at: null,
-    approved_at: "2024-01-02T00:00:00.000Z",
     source: null,
     source_draft_id: null,
     created_at: "2024-01-02T00:00:00.000Z",
@@ -81,7 +79,7 @@ describe("SnsPage", () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "all" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "draft" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "approved" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
     });
   });
 

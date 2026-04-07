@@ -3,8 +3,8 @@ import type { SnsSeries, SnsPost, SnsSeriesStatus, SnsPostType } from './sns'
 
 describe('sns types', () => {
   it('SnsSeriesStatus includes all valid values', () => {
-    const statuses: SnsSeriesStatus[] = ['draft', 'pending_approval', 'approved', 'queued']
-    expect(statuses).toHaveLength(4)
+    const statuses: SnsSeriesStatus[] = ['draft', 'queued']
+    expect(statuses).toHaveLength(2)
   })
 
   it('SnsPostType includes all valid values', () => {
@@ -23,7 +23,6 @@ describe('sns types', () => {
       queue_order: null,
       is_posted: false,
       posted_at: null,
-      approved_at: null,
       source: 'content-pipeline',
       source_draft_id: 'draft_001',
       created_at: '2026-04-07T00:00:00Z',

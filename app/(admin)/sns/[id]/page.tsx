@@ -109,20 +109,6 @@ export default function SnsDetailPage() {
     });
   };
 
-  const handleSetPending = async () => {
-    const res = await fetch(`/api/sns/series/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "pending_approval" }),
-    });
-    if (res.ok) load();
-  };
-
-  const handleApprove = async () => {
-    const res = await fetch(`/api/sns/series/${id}/approve`, { method: "POST" });
-    if (res.ok) load();
-  };
-
   const handleEnqueue = async () => {
     const res = await fetch("/api/sns/queue/enqueue", {
       method: "POST",
@@ -255,22 +241,6 @@ export default function SnsDetailPage() {
       {!isDisabled && (
         <div className="flex gap-3 pt-4 border-t border-slate-200">
           {series.status === "draft" && (
-            <button
-              onClick={handleSetPending}
-              className="px-4 py-2 rounded-lg bg-yellow-500 text-white text-sm font-medium hover:bg-yellow-600"
-            >
-              投稿待ちにする
-            </button>
-          )}
-          {series.status === "pending_approval" && (
-            <button
-              onClick={handleApprove}
-              className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-            >
-              承認する
-            </button>
-          )}
-          {series.status === "approved" && (
             <button
               onClick={handleEnqueue}
               className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"

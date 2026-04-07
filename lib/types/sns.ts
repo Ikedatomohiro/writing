@@ -1,4 +1,4 @@
-export type SnsSeriesStatus = 'draft' | 'pending_approval' | 'approved' | 'queued'
+export type SnsSeriesStatus = 'draft' | 'queued'
 export type SnsPostType = 'normal' | 'comment_hook' | 'thread' | 'affiliate'
 
 export interface SnsSeries {
@@ -11,7 +11,6 @@ export interface SnsSeries {
   queue_order: number | null
   is_posted: boolean
   posted_at: string | null
-  approved_at: string | null
   source: string | null
   source_draft_id: string | null
   created_at: string

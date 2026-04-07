@@ -7,8 +7,6 @@ interface StatusBadgeProps {
 
 const STATUS_STYLES: Record<SnsSeriesStatus | "posted", string> = {
   draft: "bg-slate-100 text-slate-700",
-  pending_approval: "bg-yellow-100 text-yellow-700",
-  approved: "bg-blue-100 text-blue-700",
   queued: "bg-orange-100 text-orange-700",
   posted: "bg-green-100 text-green-700",
 };
