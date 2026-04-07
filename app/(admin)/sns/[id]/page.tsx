@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
 
 export default function SnsDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [series, setSeries] = useState<SnsSeriesWithPosts | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

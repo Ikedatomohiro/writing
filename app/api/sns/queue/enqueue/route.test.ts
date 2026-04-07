@@ -65,7 +65,6 @@ describe("POST /api/sns/queue/enqueue", () => {
     const fetchEqMock = vi.fn().mockReturnValue({ single: fetchSingleMock });
     const fetchSelectMock = vi.fn().mockReturnValue({ eq: fetchEqMock });
 
-    const maxOrderMock = vi.fn().mockResolvedValue({ data: [], error: null });
     const maxOrderEqMock = vi.fn().mockReturnValue({ order: vi.fn().mockReturnValue({ limit: vi.fn().mockResolvedValue({ data: [], error: null }) }) });
     const maxOrderSelectMock = vi.fn().mockReturnValue({ eq: maxOrderEqMock });
 

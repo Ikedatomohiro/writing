@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth/api-auth";
 import { createServerClient } from "@/lib/supabase/server";
 import type { SnsSeriesWithPosts } from "@/lib/types/sns";
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const authError = await requireAuth();
   if (authError) return authError;
 

@@ -77,7 +77,6 @@ describe("POST /api/sns/series/[id]/posts", () => {
     const fetchSeriesEqMock = vi.fn().mockReturnValue({ single: fetchSeriesSingleMock });
     const fetchSeriesSelectMock = vi.fn().mockReturnValue({ eq: fetchSeriesEqMock });
 
-    const maxPosMock = vi.fn().mockResolvedValue({ data: [{ position: 0 }], error: null });
     const maxPosEqMock = vi.fn().mockReturnValue({ order: vi.fn().mockReturnValue({ limit: vi.fn().mockResolvedValue({ data: [{ position: 0 }], error: null }) }) });
     const maxPosSelectMock = vi.fn().mockReturnValue({ eq: maxPosEqMock });
 

@@ -20,7 +20,7 @@ export default function SnsPage() {
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setSeries(json.data ?? []);
-    } catch (err) {
+    } catch {
       setError("シリーズの読み込みに失敗しました");
     } finally {
       setIsLoading(false);
