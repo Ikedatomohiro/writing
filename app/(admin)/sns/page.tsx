@@ -116,53 +116,54 @@ function SeriesCard({
   const parentPost: SnsPost | undefined = series.posts?.find((p) => p.position === 0);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex items-start gap-4 hover:shadow-sm transition-shadow">
-      {/* 左: メタ情報 */}
-      <div className="w-44 shrink-0">
-        <div className="mb-1.5">
-          <StatusBadge status={series.status} isPosted={series.is_posted} />
+    <div className="relative group">
+      <Link
+        href={`/sns/${series.id}`}
+        className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex items-start gap-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
+      >
+        {/* 左: メタ情報 */}
+        <div className="w-44 shrink-0">
+          <div className="mb-1.5">
+            <StatusBadge status={series.status} isPosted={series.is_posted} />
+          </div>
+          <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 leading-snug">
+            {series.theme ?? "（テーマなし）"}
+          </h3>
+          {series.pattern && (
+            <p className="text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
+          )}
+          {series.quality_score != null && (
+            <p className="text-xs text-slate-400 mt-0.5">
+              スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
+            </p>
+          )}
         </div>
-        <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 leading-snug">
-          {series.theme ?? "（テーマなし）"}
-        </h3>
-        {series.pattern && (
-          <p className="text-xs text-slate-400 mt-0.5 truncate">{series.pattern}</p>
-        )}
-        {series.quality_score != null && (
-          <p className="text-xs text-slate-400 mt-0.5">
-            スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
-          </p>
-        )}
-      </div>
 
-      {/* 中央: 投稿テキストプレビュー */}
-      <div className="flex-1 min-w-0">
-        {parentPost?.text ? (
-          <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
-            {parentPost.text}
-          </p>
-        ) : (
-          <p className="text-xs text-slate-400 italic">投稿なし</p>
-        )}
-      </div>
+        {/* 中央: 投稿テキストプレビュー */}
+        <div className="flex-1 min-w-0">
+          {parentPost?.text ? (
+            <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
+              {parentPost.text}
+            </p>
+          ) : (
+            <p className="text-xs text-slate-400 italic">投稿なし</p>
+          )}
+        </div>
 
-      {/* 右: アクション */}
-      <div className="shrink-0 flex flex-col gap-1.5 items-end">
-        <Link
-          href={`/sns/${series.id}`}
-          className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors"
+        {/* 右: 削除ボタン用スペース確保 */}
+        {!series.is_posted && <div className="w-8 shrink-0" />}
+      </Link>
+
+      {/* 削除ボタン: カードのクリックから独立 */}
+      {!series.is_posted && (
+        <button
+          onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+          aria-label="削除"
         >
-          詳細・編集
-        </Link>
-        {!series.is_posted && (
-          <button
-            onClick={() => onDelete(series.id)}
-            className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
-          >
-            削除
-          </button>
-        )}
-      </div>
+          <span className="material-symbols-outlined text-base">delete</span>
+        </button>
+      )}
     </div>
   );
 }
