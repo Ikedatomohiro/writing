@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { SnsPostType } from "@/lib/types/sns";
 
 const POST_TYPES: SnsPostType[] = ["normal", "comment_hook", "thread", "affiliate"];
@@ -19,15 +20,25 @@ export function PostEditor({
   disabled = false,
 }: PostEditorProps) {
   const isOverLimit = value.length > MAX_CHARS;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // テキスト量に合わせて高さを自動調整
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
 
   return (
     <div className="space-y-2">
       <textarea
+        ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        rows={4}
-        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+        rows={3}
+        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400 overflow-hidden min-h-[72px]"
       />
       <div className="flex items-center justify-between">
         <select
