@@ -75,19 +75,10 @@ describe("POST /api/sns/queue/reorder", () => {
   });
 
   it("キューを並び替える", async () => {
-    const reorderedSeries = [
-      { ...mockQueuedSeries[1], queue_order: 1 },
-      { ...mockQueuedSeries[0], queue_order: 2 },
-    ];
-
     const fetchInMock = vi.fn().mockResolvedValue({ data: mockQueuedSeries, error: null });
     const fetchSelectMock = vi.fn().mockReturnValue({ in: fetchInMock });
 
-    const updateSingleMock = vi.fn()
-      .mockResolvedValueOnce({ data: reorderedSeries[0], error: null })
-      .mockResolvedValueOnce({ data: reorderedSeries[1], error: null });
-    const updateSelectMock = vi.fn().mockReturnValue({ single: updateSingleMock });
-    const updateEqMock = vi.fn().mockReturnValue({ select: updateSelectMock });
+    const updateEqMock = vi.fn().mockResolvedValue({ error: null });
     const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
 
     let callCount = 0;
@@ -108,7 +99,7 @@ describe("POST /api/sns/queue/reorder", () => {
 
     expect(response.status).toBe(200);
     expect(data).toHaveProperty("data");
-    expect(Array.isArray(data.data)).toBe(true);
+    expect(data.data).toHaveProperty("updated", 2);
   });
 
   it("is_posted=trueのシリーズが含まれている場合は400を返す", async () => {

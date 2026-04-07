@@ -34,26 +34,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const updatedSeries: SnsSeries[] = [];
-
   for (let i = 0; i < series_ids.length; i++) {
-    const seriesId = series_ids[i];
-    const { data: updated, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("sns_series")
       .update({ queue_order: i + 1 })
-      .eq("id", seriesId)
-      .select()
-      .single();
+      .eq("id", series_ids[i]);
 
-    if (updateError || !updated) {
-      return NextResponse.json(
-        { error: updateError?.message ?? `Failed to update series ${seriesId}` },
-        { status: 500 }
-      );
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
-
-    updatedSeries.push(updated as SnsSeries);
   }
 
-  return NextResponse.json({ data: updatedSeries });
+  return NextResponse.json({ data: { updated: series_ids.length } });
 }
