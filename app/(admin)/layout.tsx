@@ -30,7 +30,7 @@ export default function AdminLayout({
         <AdminSidebar open={sidebarOpen} />
         <main className="flex-1 bg-surface-container-low min-w-0 overflow-y-auto flex flex-col">
           <AdminHeader onToggleSidebar={handleToggleSidebar} />
-          <div className="p-8 max-w-7xl mx-auto space-y-8">{children}</div>
+          <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">{children}</div>
           <footer className="mt-auto py-6 px-8 text-center">
             <p className="font-label text-xs tracking-wider text-on-surface-variant/50">
               &copy; {new Date().getFullYear()} The Editorial. All rights reserved.
