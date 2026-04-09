@@ -211,7 +211,7 @@ function SeriesCard({
       <div className="relative flex-1">
         <Link
           href={`/sns/${series.id}`}
-          className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
+          className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer overflow-hidden"
         >
           {/* メタ情報 */}
           <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
