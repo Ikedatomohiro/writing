@@ -14,12 +14,12 @@
 - ドキュメント修正
 - 設定ファイルの変更
 
-### 禁止事項
+### ブランチ運用方針
 
-以下の操作は禁止:
-- `gh pr checkout <PR番号>` でブランチに直接チェックアウト
-- `git checkout <ブランチ名>` で作業ブランチに直接チェックアウト
-- mainブランチで直接ファイルを編集
+- 通常は main ブランチで直接作業してよい
+- **複数ブランチを並行で扱う必要があるときのみ** worktree を使用する
+  - 例: 別PRのレビュー対応中に緊急修正が入った / 複数の独立した機能を同時進行する
+- 単一ブランチ作業なら `git checkout -b` で普通にブランチを切って構わない
 
 ### 0. GitHub Issueの確認
 
@@ -114,22 +114,15 @@ git checkout main
 git pull origin main
 ```
 
-### 2. worktreeを作成
+### 2. 作業ブランチを用意
 
-#### 新規タスクの場合
+#### 通常（単一ブランチ作業）
 
-`/using-git-worktrees` スキルを使用してworktreeを作成する。
+main を最新にした上で、普通にブランチを切って作業する。
 
+```bash
+git checkout -b feature/機能名
 ```
-/using-git-worktrees
-```
-
-これにより以下が自動化される:
-- mainブランチを起点とした新しいブランチの作成
-- `.worktrees/` ディレクトリへのworktree配置
-- 環境変数ファイルのコピー
-- 依存関係のインストール
-- ベースラインテストの実行
 
 **ブランチ命名規則**:
 - `feature/機能名` - 新機能
@@ -137,34 +130,20 @@ git pull origin main
 - `refactor/対象` - リファクタリング
 - `docs/対象` - ドキュメント
 
-#### 既存PRへの対応の場合
+#### 複数ブランチを並行で扱う場合のみ worktree を使う
 
-既存のブランチを使用してworktreeを作成する。
-
-**注意**: worktreeディレクトリ名には`/`を使用できないため、ブランチ名の`/`を`-`に置換する。
+別PRのレビュー対応中に別タスクを走らせる、独立した機能を並行で進める等、**同時に複数のブランチで作業する必要があるとき**だけ worktree を使用する。
 
 ```bash
-# リモートブランチを取得
+# 新規タスク用 worktree
+git worktree add .worktrees/<dir名> -b feature/機能名
+
+# 既存ブランチ用 worktree（ディレクトリ名は / を - に置換）
 git fetch origin
-
-# 既存ブランチでworktreeを作成
-# ディレクトリ名: ブランチ名の `/` を `-` に置換
-git worktree add .worktrees/<ディレクトリ名> <ブランチ名>
-
-# 例: PR #18のfeature/evaluator-agentブランチに対応する場合
-# feature/evaluator-agent → feature-evaluator-agent
 git worktree add .worktrees/feature-evaluator-agent feature/evaluator-agent
-```
 
-作成後、環境変数のコピーと依存関係のインストールを手動で実行:
-
-```bash
-cd .worktrees/<ディレクトリ名>
-
-# 環境変数のコピー（メインリポジトリから）
+cd .worktrees/<dir名>
 cp ../../.env .env 2>/dev/null || true
-
-# 依存関係のインストール
 npm install
 ```
 
@@ -400,8 +379,7 @@ Closes #17, Closes #18
 - [ ] 既存のworktree・PR・ブランチの状態を確認したか（未完了の作業がないか）
 - [ ] GitHub Issueを確認したか（指定された場合は該当Issue、未指定の場合はロードマップ#33/#45）
 - [ ] mainブランチを最新にしたか
-- [ ] worktreeを作成したか（`/using-git-worktrees`または手動）
-- [ ] `gh pr checkout`や`git checkout <branch>`を使っていないか
+- [ ] 作業ブランチを用意したか（通常: `git checkout -b`、並行作業時のみ worktree）
 - [ ] 必要な環境変数を確認したか
 - [ ] 依存プログラムがmainに存在するか
 - [ ] 不足があればPRを確認したか

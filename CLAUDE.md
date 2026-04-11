@@ -12,7 +12,7 @@ npx vitest run       # テスト
 
 ## 重要ルール
 
-- **worktree必須**: ファイル変更は必ず `.worktrees/` 内で作業。mainブランチ直接編集禁止
+- **worktreeは任意**: 通常は main で直接作業してよい。**複数ブランチを並行で扱う場合のみ** `.worktrees/` 配下で作業する
 - **TDD**: テストを先に書く。失敗確認 → 最小実装 → リファクタ
 - **スタイリング**: Tailwind CSS v4（`@theme inline` で設定）。Chakra UI は使わない
 
