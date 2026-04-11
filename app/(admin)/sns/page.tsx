@@ -5,6 +5,15 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
 
+function formatCreatedAt(iso: string): string {
+  return new Date(iso).toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Tokyo",
+  });
+}
+
 export default function SnsPage() {
   const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -221,6 +230,9 @@ function SeriesCard({
             <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal">
               {series.theme ?? "（テーマなし）"}
             </h3>
+            <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
+              {formatCreatedAt(series.created_at)}
+            </p>
             {series.quality_score != null && (
               <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
                 スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>

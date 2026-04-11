@@ -94,6 +94,13 @@ describe("SnsPage", () => {
     });
   });
 
+  it("作成日 (created_at) を年月日で表示する", async () => {
+    render(<SnsPage />);
+    await waitFor(() => {
+      expect(screen.getByText("2024/01/01")).toBeInTheDocument();
+    });
+  });
+
   it("ステータスタブが表示される", async () => {
     render(<SnsPage />);
     await waitFor(() => {
