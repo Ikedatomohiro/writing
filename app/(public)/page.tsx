@@ -5,6 +5,8 @@ import { getArticlesByCategory } from "@/lib/content/api";
 import type { Category, ArticleMeta } from "@/lib/content/types";
 import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: SITE_CONFIG.name,
   description: SITE_CONFIG.description,
