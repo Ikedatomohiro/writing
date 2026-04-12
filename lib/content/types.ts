@@ -1,3 +1,5 @@
+import { HIDDEN_CATEGORIES } from "@/lib/constants/site";
+
 /**
  * 記事カテゴリ
  */
@@ -52,6 +54,5 @@ export function isValidCategory(value: string): value is Category {
  * HIDDEN_CATEGORIESに含まれるカテゴリはfalseを返す
  */
 export function isPublicCategory(value: string): value is Category {
-  const HIDDEN = new Set(["asset", "health"]);
-  return isValidCategory(value) && !HIDDEN.has(value);
+  return isValidCategory(value) && !HIDDEN_CATEGORIES.has(value);
 }
