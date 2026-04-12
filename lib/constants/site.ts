@@ -10,12 +10,16 @@ export const SITE_CONFIG = {
 } as const;
 
 /**
+ * AdSense対策で非表示にするカテゴリ（YMYL: Your Money Your Life）
+ * 再表示する場合はここから除外し、CATEGORIESに戻す
+ */
+export const HIDDEN_CATEGORIES = new Set(["asset", "health"]);
+
+/**
  * カテゴリの表示順（ここだけ変えれば全体に反映される）
  */
 export const CATEGORIES = [
   { slug: "tech", label: "プログラミング", href: "/tech" },
-  { slug: "asset", label: "資産形成", href: "/asset" },
-  { slug: "health", label: "健康", href: "/health" },
 ] as const;
 
 /**

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getArticlesByCategory, getLatestArticles } from "@/lib/content/api";
-import { isValidCategory, type Category } from "@/lib/content/types";
+import { isPublicCategory, type Category } from "@/lib/content/types";
 import type { ArticleMeta } from "@/lib/content/types";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
 import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
@@ -54,7 +54,7 @@ export async function generateMetadata({
 }: CategoryPageProps): Promise<Metadata> {
   const { category } = await params;
 
-  if (!isValidCategory(category)) {
+  if (!isPublicCategory(category)) {
     return {};
   }
 
@@ -259,7 +259,7 @@ function ArticleContent({
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
 
-  if (!isValidCategory(category)) {
+  if (!isPublicCategory(category)) {
     notFound();
     return null;
   }

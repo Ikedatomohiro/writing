@@ -120,7 +120,7 @@ function BentoGrid({ articles, hasMore }: { articles: ArticleMeta[]; hasMore: bo
       {hasMore && (
         <div className="mt-12 text-center">
           <Link
-            href="/asset"
+            href="/tech"
             className="inline-flex px-8 py-3 border border-outline-variant text-on-surface-variant rounded-full font-headline font-bold hover:bg-surface-container transition-colors"
           >
             すべての記事を見る
@@ -163,15 +163,11 @@ function NewsletterSection() {
 }
 
 export default async function Home() {
-  // Fetch articles for each category
-  const [assetArticles, techArticles, healthArticles] = await Promise.all([
-    getArticlesByCategory("asset"),
-    getArticlesByCategory("tech"),
-    getArticlesByCategory("health"),
-  ]);
+  // Fetch articles for public categories only
+  const techArticles = await getArticlesByCategory("tech");
 
-  // Combine all articles and sort by date for the bento grid
-  const allArticles = [...assetArticles, ...techArticles, ...healthArticles]
+  // Sort by date for the bento grid
+  const allArticles = [...techArticles]
     .sort((a, b) => {
       const aTime = new Date(a.registeredAt ?? a.date).getTime();
       const bTime = new Date(b.registeredAt ?? b.date).getTime();

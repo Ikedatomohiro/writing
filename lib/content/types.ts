@@ -41,8 +41,17 @@ export interface Article extends ArticleMeta {
 }
 
 /**
- * 有効なカテゴリかどうかを判定
+ * 有効なカテゴリかどうかを判定（管理画面・内部用）
  */
 export function isValidCategory(value: string): value is Category {
   return ["asset", "tech", "health"].includes(value);
+}
+
+/**
+ * 公開中のカテゴリかどうかを判定（公開サイト用）
+ * HIDDEN_CATEGORIESに含まれるカテゴリはfalseを返す
+ */
+export function isPublicCategory(value: string): value is Category {
+  const HIDDEN = new Set(["asset", "health"]);
+  return isValidCategory(value) && !HIDDEN.has(value);
 }

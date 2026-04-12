@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Category } from "@/lib/content/types";
-import { isValidCategory } from "@/lib/content/types";
+import { isPublicCategory } from "@/lib/content/types";
 import { getArticleBySlug } from "@/lib/content/api";
 import { compileMDXContent } from "@/lib/content/mdx";
 import { ArticleBody } from "@/components/blog/ArticleBody";
@@ -51,7 +51,7 @@ function getCategoryLabel(category: Category): string {
 export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const { category, slug } = await params;
 
-  if (!isValidCategory(category)) {
+  if (!isPublicCategory(category)) {
     notFound();
   }
 
@@ -229,7 +229,7 @@ export async function generateMetadata({
 }: ArticleDetailPageProps): Promise<Metadata> {
   const { category, slug } = await params;
 
-  if (!isValidCategory(category)) {
+  if (!isPublicCategory(category)) {
     return {
       title: "記事が見つかりません",
     };
