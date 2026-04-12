@@ -46,7 +46,8 @@
       "Bash(for branch in docs/testing-env-mock feature/22-pagination improve/app-test-coverage test-coverage-improvement)",
       "Bash(do echo \"=== $branch ===\")",
       "Bash(for i in 15 16 17 36)",
-      "Bash(for i in 24 25 26 27 28 29 30 31 32 34 35 36)"
+      "Bash(for i in 24 25 26 27 28 29 30 31 32 34 35 36)",
+      "Read(//Users/tomo/Desktop/workspace/content-management/**)"
     ],
     "deny": [
       "Bash(sudo:*)",
