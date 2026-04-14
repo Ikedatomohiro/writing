@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/articles": "Articles",
-  "/articles/new": "New Post",
+  "/dashboard": "ダッシュボード",
+  "/articles": "記事一覧",
+  "/articles/new": "新規記事",
   "/threads": "Threads",
   "/threads/new": "新規Threads投稿",
   "/x": "X",
@@ -30,7 +30,7 @@ export function AdminHeader({
   const title = getPageTitle(pathname);
 
   return (
-    <header className="h-16 flex items-center justify-between px-8 bg-surface-container-lowest border-b border-outline-variant/15">
+    <header className="h-16 flex items-center px-8 bg-surface-container-lowest border-b border-outline-variant/15">
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
@@ -44,21 +44,6 @@ export function AdminHeader({
         <h2 className="text-xl font-extrabold tracking-tight font-headline">
           {title}
         </h2>
-      </div>
-      <div className="relative">
-        <label className="sr-only" htmlFor="admin-search">リソースを検索</label>
-        <span
-          aria-hidden="true"
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-outline material-symbols-outlined text-lg"
-        >
-          search
-        </span>
-        <input
-          id="admin-search"
-          type="text"
-          placeholder="Search resources..."
-          className="pl-10 pr-4 py-2 bg-surface-container border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/20"
-        />
       </div>
     </header>
   );

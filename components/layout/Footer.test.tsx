@@ -22,18 +22,20 @@ describe("Footer", () => {
     render(<Footer />);
     expect(screen.getByText("プライバシーポリシー")).toBeInTheDocument();
     expect(screen.getByText("利用規約")).toBeInTheDocument();
-    expect(screen.getByText("採用情報")).toBeInTheDocument();
     expect(screen.getByText("お問い合わせ")).toBeInTheDocument();
-    expect(screen.getByText("ニュースレター")).toBeInTheDocument();
+  });
+
+  it("採用情報・ニュースレターリンクが削除されている", () => {
+    render(<Footer />);
+    expect(screen.queryByText("採用情報")).toBeNull();
+    expect(screen.queryByText("ニュースレター")).toBeNull();
   });
 
   it("フッターリンクが正しいhrefを持つ", () => {
     render(<Footer />);
     expect(screen.getByRole("link", { name: "プライバシーポリシー" })).toHaveAttribute("href", "/privacy");
     expect(screen.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", "/terms");
-    expect(screen.getByRole("link", { name: "採用情報" })).toHaveAttribute("href", "/careers");
     expect(screen.getByRole("link", { name: "お問い合わせ" })).toHaveAttribute("href", "/contact");
-    expect(screen.getByRole("link", { name: "ニュースレター" })).toHaveAttribute("href", "/newsletter");
   });
 
   it("コピーライトが表示される", () => {
@@ -44,9 +46,8 @@ describe("Footer", () => {
     ).toBeInTheDocument();
   });
 
-  it("ソーシャルアイコンが表示される", () => {
+  it("Emailソーシャルアイコンが表示される", () => {
     render(<Footer />);
-    expect(screen.getByLabelText("RSS Feed")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
   });
 

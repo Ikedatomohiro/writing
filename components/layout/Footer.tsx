@@ -4,13 +4,10 @@ import { SITE_CONFIG } from "@/lib/constants/site";
 const FOOTER_LINKS = [
   { label: "プライバシーポリシー", href: "/privacy" },
   { label: "利用規約", href: "/terms" },
-  { label: "採用情報", href: "/careers" },
   { label: "お問い合わせ", href: "/contact" },
-  { label: "ニュースレター", href: "/newsletter" },
 ] as const;
 
 const SOCIAL_ICONS = [
-  { icon: "rss_feed", href: "/feed", label: "RSS Feed" },
   { icon: "mail", href: "/contact", label: "Email" },
 ] as const;
 
