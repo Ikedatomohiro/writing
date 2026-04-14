@@ -124,10 +124,12 @@ export default function XPage() {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 className="text-2xl font-bold font-headline text-on-surface">X管理</h2>
         <div className="flex items-center gap-3">
+          <label htmlFor="x-account-select" className="sr-only">アカウント</label>
           <select
+            id="x-account-select"
             value={account}
             onChange={(e) => handleAccountChange(e.target.value as Account)}
-            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {ACCOUNTS.map((a) => (
               <option key={a} value={a}>
@@ -204,14 +206,14 @@ function XSeriesCard({
           <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal sm:mt-1">
             {series.theme?.startsWith("[テストデータ]") ? (
               <>
-                <span className="mr-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-medium tracking-tight">テスト</span>
+                <span className="mr-1 px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 text-[10px] font-medium tracking-tight">テスト</span>
                 {series.theme.replace("[テストデータ]", "").trim() || "（テーマなし）"}
               </>
             ) : (
               series.theme ?? "（テーマなし）"
             )}
           </h3>
-          <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
+          <p className="hidden sm:block text-xs text-slate-500 mt-0.5">
             {formatCreatedAt(series.created_at)}
           </p>
         </div>
@@ -221,10 +223,10 @@ function XSeriesCard({
               {firstPost.text.split("\n").find((l) => l.trim()) ?? ""}
             </p>
           ) : (
-            <p className="text-xs text-slate-400 italic">投稿なし</p>
+            <p className="text-xs text-slate-500 italic">投稿なし</p>
           )}
           {postCount > 1 && (
-            <p className="text-xs text-slate-400 mt-0.5">ツイート {postCount}件</p>
+            <p className="text-xs text-slate-500 mt-0.5">ツイート {postCount}件</p>
           )}
         </div>
       </Link>

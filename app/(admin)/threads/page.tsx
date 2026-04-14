@@ -279,18 +279,18 @@ function SeriesCard({
             <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal">
               {series.theme ?? "（テーマなし）"}
             </h3>
-            <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               {formatCreatedAt(series.created_at)}
             </p>
             {series.quality_score != null && (
-              <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
+              <p className="hidden sm:block text-xs text-slate-500 mt-0.5">
                 スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
               </p>
             )}
             {isQueued && index !== undefined && (
               <p
                 data-testid="scheduled-time"
-                className="hidden sm:block text-xs text-slate-400 mt-0.5"
+                className="hidden sm:block text-xs text-slate-500 mt-0.5"
               >
                 予定: {new Date(Date.now() + (index + 1) * 2 * 3600 * 1000).toLocaleString("ja-JP", { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })}頃
               </p>
@@ -304,10 +304,10 @@ function SeriesCard({
                 {parentPost.text.split('\n').find(l => l.trim()) ?? ''}
               </p>
             ) : (
-              <p className="text-xs text-slate-400 italic">投稿なし</p>
+              <p className="text-xs text-slate-500 italic">投稿なし</p>
             )}
             {childCount > 0 && (
-              <p className="text-xs text-slate-400 mt-0.5">子投稿 {childCount}件</p>
+              <p className="text-xs text-slate-500 mt-0.5">子投稿 {childCount}件</p>
             )}
           </div>
         </Link>

@@ -93,7 +93,7 @@ function ArticleMobileCard({
             >
               {article.published ? "公開" : "下書き"}
             </span>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-slate-500">
               {new Date(article.date).toLocaleDateString("ja-JP")}
             </span>
           </div>
@@ -138,7 +138,7 @@ function ArticleRow({
           {article.title || "無題"}
         </Link>
         {tagsPreview && (
-          <div className="text-xs text-slate-400 mt-0.5">{tagsPreview}</div>
+          <div className="text-xs text-slate-500 mt-0.5">{tagsPreview}</div>
         )}
       </td>
       <td className="px-6 py-5">

@@ -76,7 +76,7 @@ export default async function AdminHomePage() {
       <h2 className="text-2xl font-bold font-headline text-on-surface mb-2">
         ダッシュボード
       </h2>
-      <p className="text-slate-500 text-sm mb-8">
+      <p className="text-slate-600 text-sm mb-8">
         管理するプラットフォームを選択してください。
       </p>
 

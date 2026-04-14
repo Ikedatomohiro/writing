@@ -43,7 +43,7 @@ export default function AdminLayout({
           <AdminHeader onToggleSidebar={handleToggleSidebar} sidebarOpen={sidebarOpen} />
           <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">{children}</div>
           <footer className="mt-auto py-6 px-8 text-center">
-            <p className="font-label text-xs tracking-wider text-on-surface-variant/50">
+            <p className="font-label text-xs tracking-wider text-slate-600">
               &copy; {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
             </p>
           </footer>
