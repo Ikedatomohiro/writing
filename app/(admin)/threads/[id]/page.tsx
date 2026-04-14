@@ -134,7 +134,7 @@ export default function SnsDetailPage() {
     if (!confirm("このシリーズを削除しますか？")) return;
     const res = await fetch(`/api/sns/series/${id}`, { method: "DELETE" });
     if (res.ok) {
-      router.push("/sns");
+      router.push("/threads");
     }
   };
 
@@ -146,7 +146,7 @@ export default function SnsDetailPage() {
     });
     if (res.ok) {
       if (nextDraftId) {
-        router.push(`/sns/${nextDraftId}`);
+        router.push(`/threads/${nextDraftId}`);
       } else {
         load();
       }
@@ -164,7 +164,7 @@ export default function SnsDetailPage() {
       {/* ナビゲーションバー */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => prevId && router.push(`/sns/${prevId}`)}
+          onClick={() => prevId && router.push(`/threads/${prevId}`)}
           disabled={!prevId}
           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
         >
@@ -174,13 +174,13 @@ export default function SnsDetailPage() {
           前へ
         </button>
         <Link
-          href="/sns"
+          href="/threads"
           className="px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100"
         >
           一覧に戻る
         </Link>
         <button
-          onClick={() => nextId && router.push(`/sns/${nextId}`)}
+          onClick={() => nextId && router.push(`/threads/${nextId}`)}
           disabled={!nextId}
           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
         >

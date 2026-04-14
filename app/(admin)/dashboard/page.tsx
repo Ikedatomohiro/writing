@@ -19,7 +19,7 @@ const PLATFORM_CARDS: PlatformCard[] = [
   {
     label: "Threads",
     description: "Threads投稿の管理・キュー",
-    href: "/sns",
+    href: "/threads",
     icon: "forum",
     color: "from-purple-500 to-purple-600",
   },

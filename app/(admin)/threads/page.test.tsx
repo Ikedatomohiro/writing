@@ -57,7 +57,7 @@ describe("SnsPage", () => {
   it("ページタイトルを表示する", async () => {
     render(<SnsPage />);
     await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "SNS管理" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Threads管理" })).toBeInTheDocument();
     });
   });
 

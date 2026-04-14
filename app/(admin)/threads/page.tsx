@@ -21,7 +21,7 @@ export default function SnsPage() {
   const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("sns_active_tab");
+    const stored = sessionStorage.getItem("threads_active_tab");
     if (stored) {
       setActiveTab(stored as SnsSeriesStatus | "all" | "posted");
     }
@@ -29,7 +29,7 @@ export default function SnsPage() {
 
   const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
     setActiveTab(tab);
-    sessionStorage.setItem("sns_active_tab", tab);
+    sessionStorage.setItem("threads_active_tab", tab);
   };
 
   const loadSeries = useCallback(async () => {
@@ -119,9 +119,9 @@ export default function SnsPage() {
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold font-headline text-on-surface">SNS管理</h2>
+        <h2 className="text-2xl font-bold font-headline text-on-surface">Threads管理</h2>
         <Link
-          href="/sns/new"
+          href="/threads/new"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shrink-0"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -219,7 +219,7 @@ function SeriesCard({
 
       <div className="relative flex-1 min-w-0">
         <Link
-          href={`/sns/${series.id}`}
+          href={`/threads/${series.id}`}
           className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer overflow-hidden"
         >
           {/* メタ情報 */}
