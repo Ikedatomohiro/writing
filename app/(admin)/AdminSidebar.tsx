@@ -2,16 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 const NAV_ITEMS = [
-  { icon: "dashboard", label: "Dashboard", href: "/dashboard" },
-  { icon: "article", label: "Articles", href: "/articles" },
+  { icon: "dashboard", label: "ダッシュボード", href: "/dashboard" },
+  { icon: "article", label: "記事一覧", href: "/articles" },
   { icon: "forum", label: "Threads", href: "/threads" },
   { icon: "alternate_email", label: "X", href: "/x" },
 ] as const;
 
-export function AdminSidebar({ open }: { open: boolean }) {
+export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
 
   return (
     <>
@@ -20,6 +31,7 @@ export function AdminSidebar({ open }: { open: boolean }) {
         <div
           className="fixed inset-0 z-40 bg-black/30 sm:hidden"
           aria-hidden="true"
+          onClick={onClose}
         />
       )}
       <aside
@@ -28,10 +40,10 @@ export function AdminSidebar({ open }: { open: boolean }) {
       >
       <div className="mb-10 px-3">
         <h1 className="text-lg font-bold text-slate-900 font-headline">
-          Editorial Admin
+          {SITE_CONFIG.name} Admin
         </h1>
         <p className="text-xs text-slate-500 font-label uppercase tracking-widest mt-1">
-          System Manager
+          管理ダッシュボード
         </p>
       </div>
 
@@ -61,10 +73,8 @@ export function AdminSidebar({ open }: { open: boolean }) {
           className="w-full mb-4 bg-gradient-to-br from-primary to-primary-container text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
         >
           <span className="material-symbols-outlined text-sm">add</span>
-          New Post
+          新規記事
         </Link>
-        <SidebarLink icon="account_circle" label="Account" disabled />
-        <SidebarLink icon="help" label="Help" disabled />
         <Link
           href="/login"
           className="w-full flex items-center gap-3 text-slate-500 p-3 hover:text-slate-900 transition-all font-medium text-sm"
@@ -75,18 +85,5 @@ export function AdminSidebar({ open }: { open: boolean }) {
       </div>
     </aside>
     </>
-  );
-}
-
-function SidebarLink({ icon, label, disabled = false }: { icon: string; label: string; disabled?: boolean }) {
-  return (
-    <button
-      disabled={disabled}
-      aria-disabled={disabled ? "true" : undefined}
-      className={`w-full flex items-center gap-3 p-3 transition-all font-medium text-sm${disabled ? " text-slate-300 opacity-40 cursor-not-allowed" : " text-slate-500 hover:text-slate-900"}`}
-    >
-      <span className="material-symbols-outlined">{icon}</span>
-      <span>{label}</span>
-    </button>
   );
 }

@@ -24,63 +24,44 @@ describe("AboutPage", () => {
     cleanup();
   });
 
-  it("renders the hero section with title", () => {
+  it("renders the hero section with h1", () => {
     render(<AboutPage />);
-    expect(
-      screen.getByRole("heading", { level: 1 })
-    ).toHaveTextContent(/The Editorial/);
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
   });
 
-  it("renders 'Our Origin Story' label", () => {
+  it("renders 'このブログについて' label", () => {
     render(<AboutPage />);
-    const elements = screen.getAllByText("Our Origin Story");
+    const elements = screen.getAllByText("このブログについて");
     expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders the mission section heading", () => {
+  it("renders the profile section heading", () => {
     render(<AboutPage />);
     const headings = screen.getAllByRole("heading", { level: 2 });
-    const missionHeading = headings.find(
-      (h) => h.textContent === "Our Mission"
+    const profileHeading = headings.find(
+      (h) => h.textContent === "書き手について"
     );
-    expect(missionHeading).toBeDefined();
+    expect(profileHeading).toBeDefined();
   });
 
-  it("renders all team member names", () => {
+  it("renders the author name", () => {
     render(<AboutPage />);
-    expect(screen.getAllByText("Sarah Jenkins").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Marcus Chen").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Elena Rodriguez").length).toBeGreaterThanOrEqual(1);
-  });
-
-  it("renders team member roles", () => {
-    render(<AboutPage />);
-    expect(screen.getAllByText("Editor-in-Chief").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Principal Architect").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Lead Analyst").length).toBeGreaterThanOrEqual(1);
-  });
-
-  it("renders the editorial board section heading", () => {
-    render(<AboutPage />);
-    const headings = screen.getAllByRole("heading", { level: 2 });
-    const boardHeading = headings.find(
-      (h) => h.textContent === "Meet the Editorial Board"
-    );
-    expect(boardHeading).toBeDefined();
+    const elements = screen.getAllByText(/松本翔/);
+    expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders the CTA section with contact link", () => {
     render(<AboutPage />);
-    const contactLinks = screen.getAllByText("Contact for Collaborations");
+    const contactLinks = screen.getAllByText("お問い合わせ");
     expect(contactLinks.length).toBeGreaterThanOrEqual(1);
     const link = contactLinks[0].closest("a");
     expect(link).toHaveAttribute("href", "/contact");
   });
 
-  it("renders team member initials as image placeholders", () => {
+  it("does not render fictional team members", () => {
     render(<AboutPage />);
-    expect(screen.getAllByText("SJ").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("MC").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("ER").length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText("Sarah Jenkins")).toBeNull();
+    expect(screen.queryByText("Marcus Chen")).toBeNull();
+    expect(screen.queryByText("Elena Rodriguez")).toBeNull();
   });
 });

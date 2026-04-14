@@ -2,9 +2,9 @@
  * サイト情報の定数
  */
 export const SITE_CONFIG = {
-  name: "ライフハック・ラボ — 生活改善の実験室",
-  description: "日常をもっと快適にするライフハック実験ブログ",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://ohitorisama-life.com",
+  name: "Pogo Notes",
+  description: "日々の気づきをまとめるノート",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pogo-notes.com",
   locale: "ja_JP",
   defaultOgImage: "/images/solo-life-hero.png",
 } as const;
