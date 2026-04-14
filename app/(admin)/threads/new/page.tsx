@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsPostType } from "@/lib/types/sns";
 import { getAccountLabel } from "@/lib/constants/labels";
+import { useToastContext } from "@/components/common/ToastProvider";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
 type Account = typeof ACCOUNTS[number];
@@ -16,6 +17,7 @@ interface PostDraft {
 
 export default function SnsNewPage() {
   const router = useRouter();
+  const { toast } = useToastContext();
   const uid = useId();
   const ids = {
     account: `${uid}-account`,
@@ -63,6 +65,7 @@ export default function SnsNewPage() {
 
       if (!res.ok) throw new Error("Failed to create");
       const json = await res.json();
+      toast.success("下書きを保存しました");
       router.push(`/threads/${json.data.id}`);
     } catch {
       setError("シリーズの作成に失敗しました");

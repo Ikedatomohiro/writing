@@ -6,6 +6,7 @@ import { XPostEditor } from "@/components/x/XPostEditor";
 import { X_CATEGORIES, X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 import type { XCategory } from "@/lib/types/x";
 import { getAccountLabel, getXCategoryLabel } from "@/lib/constants/labels";
+import { useToastContext } from "@/components/common/ToastProvider";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
 type Account = typeof ACCOUNTS[number];
@@ -20,6 +21,7 @@ function isOverLimit(text: string): boolean {
 
 export default function XNewPage() {
   const router = useRouter();
+  const { toast } = useToastContext();
   const uid = useId();
   const ids = {
     account: `${uid}-account`,
@@ -74,6 +76,7 @@ export default function XNewPage() {
       });
       if (!res.ok) throw new Error("Failed to create");
       const json = await res.json();
+      toast.success("下書きを保存しました");
       router.push(`/x/${json.data.id}`);
     } catch {
       setError("シリーズの作成に失敗しました");

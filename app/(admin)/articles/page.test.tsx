@@ -4,6 +4,11 @@ import userEvent from "@testing-library/user-event";
 import ArticlesPage from "./page";
 import { getArticles } from "@/lib/articles/storage";
 import type { Article } from "@/lib/content/types";
+import { ToastProvider } from "@/components/common/ToastProvider";
+
+function renderWithToast(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
 
 vi.mock("@/lib/articles/storage", () => ({
   getArticles: vi.fn(),
@@ -46,7 +51,7 @@ describe("ArticlesPage", () => {
   });
 
   it("ページタイトルを表示する", async () => {
-    render(<ArticlesPage />);
+    renderWithToast(<ArticlesPage />);
 
     await waitFor(() => {
       expect(
@@ -56,7 +61,7 @@ describe("ArticlesPage", () => {
   });
 
   it("検索入力フィールドを表示する", async () => {
-    render(<ArticlesPage />);
+    renderWithToast(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();
@@ -64,7 +69,7 @@ describe("ArticlesPage", () => {
   });
 
   it("記事一覧を表示する", async () => {
-    render(<ArticlesPage />);
+    renderWithToast(<ArticlesPage />);
 
     await waitFor(() => {
       // デスクトップ (table) + モバイル (cards) の両方に表示されるため getAllByText を使用
@@ -75,7 +80,7 @@ describe("ArticlesPage", () => {
 
   it("クライアント側で検索フィルタリングする", async () => {
     const user = userEvent.setup();
-    render(<ArticlesPage />);
+    renderWithToast(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();
@@ -92,7 +97,7 @@ describe("ArticlesPage", () => {
 
   it("検索結果が0件の場合メッセージを表示する", async () => {
     const user = userEvent.setup();
-    render(<ArticlesPage />);
+    renderWithToast(<ArticlesPage />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("検索")).toBeInTheDocument();

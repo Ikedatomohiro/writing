@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { SessionProvider } from "next-auth/react";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
+import { ToastProvider } from "@/components/common/ToastProvider";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 export default function AdminLayout({
@@ -37,6 +38,7 @@ export default function AdminLayout({
 
   return (
     <SessionProvider>
+      <ToastProvider>
       <div className="flex min-h-screen bg-surface text-on-surface">
         <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="flex-1 bg-surface-container-low min-w-0 overflow-y-auto flex flex-col">
@@ -49,6 +51,7 @@ export default function AdminLayout({
           </footer>
         </main>
       </div>
+      </ToastProvider>
     </SessionProvider>
   );
 }

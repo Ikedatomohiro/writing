@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SnsPage from "./page";
+import { ToastProvider } from "@/components/common/ToastProvider";
+
+function renderWithToast(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -55,21 +60,21 @@ describe("SnsPage", () => {
   });
 
   it("ページタイトルを表示する", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Threads管理" })).toBeInTheDocument();
     });
   });
 
   it("新規作成ボタンを表示する", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByRole("link", { name: /新規作成/ })).toBeInTheDocument();
     });
   });
 
   it("デフォルトでdraftタブが選択されてdraftシリーズを表示する", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
       expect(screen.queryByText("テストテーマ2")).not.toBeInTheDocument();
@@ -78,7 +83,7 @@ describe("SnsPage", () => {
 
   it("allタブでシリーズ全件を表示する", async () => {
     const user = userEvent.setup();
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => screen.getByRole("button", { name: "すべて" }));
     await user.click(screen.getByRole("button", { name: "すべて" }));
     await waitFor(() => {
@@ -88,21 +93,21 @@ describe("SnsPage", () => {
   });
 
   it("投稿テキストのプレビューを表示する", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByText("テスト投稿テキスト")).toBeInTheDocument();
     });
   });
 
   it("作成日 (created_at) を年月日で表示する", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByText("2024/01/01")).toBeInTheDocument();
     });
   });
 
   it("ステータスタブが表示される", async () => {
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "すべて" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "下書き" })).toBeInTheDocument();
@@ -113,7 +118,7 @@ describe("SnsPage", () => {
 
   it("ステータスタブでフィルタリングできる", async () => {
     const user = userEvent.setup();
-    render(<SnsPage />);
+    renderWithToast(<SnsPage />);
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "予約中" })).toBeInTheDocument();

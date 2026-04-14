@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useToastContext } from "@/components/common/ToastProvider";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
@@ -22,6 +23,7 @@ function formatCreatedAt(iso: string): string {
 }
 
 export default function SnsPage() {
+  const { toast } = useToastContext();
   const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +74,9 @@ export default function SnsPage() {
     try {
       await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
       setSeries((prev) => prev.filter((s) => s.id !== id));
+      toast.success("シリーズを削除しました");
     } catch {
-      // ignore
+      toast.error("削除に失敗しました");
     }
   };
 

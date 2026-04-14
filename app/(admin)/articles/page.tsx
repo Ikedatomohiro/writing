@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useToastContext } from "@/components/common/ToastProvider";
 import { ArticleTable } from "@/components/articles/ArticleTable";
 import { SearchInput } from "@/components/articles";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
@@ -14,6 +15,7 @@ import type { Article } from "@/lib/content/types";
 const PAGE_SIZE = 20;
 
 export default function ArticlesPage() {
+  const { toast } = useToastContext();
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,8 +52,10 @@ export default function ArticlesPage() {
     try {
       await deleteArticle(slug);
       setArticles((prev) => prev.filter((a) => a.slug !== slug));
+      toast.success("記事を削除しました");
     } catch (err) {
       console.error("Failed to delete article:", err);
+      toast.error("削除に失敗しました");
     }
   };
 
