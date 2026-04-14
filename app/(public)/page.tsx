@@ -144,7 +144,7 @@ function NewsletterSection() {
       </p>
       <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
         <input
-          className="flex-1 bg-surface-container border-none rounded-full px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface"
+          className="flex-1 bg-surface-container border border-slate-300 rounded-full px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-slate-500"
           placeholder="メールアドレス"
           type="email"
         />

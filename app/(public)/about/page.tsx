@@ -32,7 +32,7 @@ function HeroSection() {
 function ProfileSection() {
   return (
     <section className="bg-surface-container-low py-24 mb-24">
-      <div className="ml-[8%] mr-[12%] grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div className="ml-[8%] mr-[12%] grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
         <div className="relative">
           <div className="aspect-square bg-surface-container-highest rounded-xl overflow-hidden shadow-2xl">
             <div className="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-highest flex items-center justify-center">

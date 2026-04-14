@@ -184,7 +184,14 @@ function XSeriesCard({
         <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
           <StatusBadge status={series.status} isPosted={series.is_posted} />
           <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal sm:mt-1">
-            {series.theme ?? "（テーマなし）"}
+            {series.theme?.startsWith("[テストデータ]") ? (
+              <>
+                <span className="mr-1 px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-medium tracking-tight">テスト</span>
+                {series.theme.replace("[テストデータ]", "").trim() || "（テーマなし）"}
+              </>
+            ) : (
+              series.theme ?? "（テーマなし）"
+            )}
           </h3>
           <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
             {formatCreatedAt(series.created_at)}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Article, Category } from "@/lib/content/types";
 import type { ArticleCreateInput } from "@/lib/content/repository";
+import { HIDDEN_CATEGORIES } from "@/lib/constants/site";
 
 interface ArticleFormProps {
   article?: Article;
@@ -11,11 +12,19 @@ interface ArticleFormProps {
   isSubmitting?: boolean;
 }
 
-const CATEGORY_OPTIONS: { value: Category; label: string }[] = [
+const BASE_CATEGORY_OPTIONS: { value: Category; label: string }[] = [
   { value: "tech", label: "プログラミング" },
   { value: "asset", label: "資産形成" },
   { value: "health", label: "健康" },
 ];
+
+// 非公開カテゴリは「（非公開）」ラベルを付けて選択可能にする
+const CATEGORY_OPTIONS = BASE_CATEGORY_OPTIONS.map((opt) => ({
+  ...opt,
+  label: HIDDEN_CATEGORIES.has(opt.value)
+    ? `${opt.label}（非公開）`
+    : opt.label,
+}));
 
 export function ArticleForm({
   article,
