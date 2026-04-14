@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { PostEditor } from "@/components/sns/PostEditor";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type { SnsSeries, SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
 import { useToastContext } from "@/components/common/ToastProvider";
 
@@ -18,6 +19,8 @@ export default function SnsDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posts, setPosts] = useState<SnsPost[]>([]);
+  const [confirmDeletePostId, setConfirmDeletePostId] = useState<string | null>(null);
+  const [confirmDeleteSeries, setConfirmDeleteSeries] = useState(false);
 
   const loadAllSeries = useCallback(async () => {
     const res = await fetch("/api/threads/series");
@@ -94,11 +97,22 @@ export default function SnsDetailPage() {
     }
   };
 
-  const handleDeletePost = async (postId: string) => {
+  const handleDeletePost = (postId: string) => {
     if (isDisabled) return;
-    if (!confirm("この投稿を削除しますか？")) return;
-    await fetch(`/api/threads/series/${id}/posts/${postId}`, { method: "DELETE" });
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
+    setConfirmDeletePostId(postId);
+  };
+
+  const confirmDeletePost = async () => {
+    const postId = confirmDeletePostId;
+    setConfirmDeletePostId(null);
+    if (!postId) return;
+    const res = await fetch(`/api/threads/series/${id}/posts/${postId}`, { method: "DELETE" });
+    if (res.ok) {
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+      toast.success("投稿を削除しました");
+    } else {
+      toast.error("削除に失敗しました");
+    }
   };
 
   const handleMovePost = async (index: number, direction: "up" | "down") => {
@@ -129,11 +143,18 @@ export default function SnsDetailPage() {
     });
   };
 
-  const handleDeleteSeries = async () => {
-    if (!confirm("このシリーズを削除しますか？")) return;
+  const handleDeleteSeries = () => {
+    setConfirmDeleteSeries(true);
+  };
+
+  const confirmDeleteSeriesAction = async () => {
+    setConfirmDeleteSeries(false);
     const res = await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
     if (res.ok) {
+      toast.success("シリーズを削除しました");
       router.push("/threads");
+    } else {
+      toast.error("削除に失敗しました");
     }
   };
 
@@ -352,6 +373,20 @@ export default function SnsDetailPage() {
           </button>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmDeletePostId !== null}
+        title="この投稿を削除しますか？"
+        description="削除すると元に戻せません。"
+        onConfirm={confirmDeletePost}
+        onCancel={() => setConfirmDeletePostId(null)}
+      />
+      <ConfirmDialog
+        open={confirmDeleteSeries}
+        title="このシリーズを削除しますか？"
+        description="関連する投稿もすべて削除されます。元に戻せません。"
+        onConfirm={confirmDeleteSeriesAction}
+        onCancel={() => setConfirmDeleteSeries(false)}
+      />
     </div>
   );
 }
