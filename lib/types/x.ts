@@ -1,4 +1,12 @@
 export type XSeriesStatus = 'draft' | 'queued' | 'posting' | 'posted' | 'rejected'
+
+/**
+ * X投稿の文字数をUnicodeコードポイント単位でカウントする。
+ * サロゲートペア（絵文字等）を1文字として扱う。
+ */
+export function countXChars(text: string): number {
+  return [...text].length;
+}
 export type XCategory = 'note_article' | 'tech_tips' | 'career' | 'opinion'
 
 export const X_CHAR_LIMIT = 280

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { XPostEditor } from "@/components/x/XPostEditor";
-import { X_CATEGORIES, X_CHAR_LIMIT } from "@/lib/types/x";
+import { X_CATEGORIES, X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 import type { XCategory } from "@/lib/types/x";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
@@ -14,7 +14,7 @@ interface PostDraft {
 }
 
 function isOverLimit(text: string): boolean {
-  return text.length > X_CHAR_LIMIT;
+  return countXChars(text) > X_CHAR_LIMIT;
 }
 
 export default function XNewPage() {
@@ -40,6 +40,7 @@ export default function XNewPage() {
   };
 
   const hasOverLimit = posts.some((p) => isOverLimit(p.text));
+  const hasEmptyPost = posts.some((p) => p.text.trim() === "");
 
   const handleSave = async () => {
     if (!account) {
@@ -158,7 +159,7 @@ export default function XNewPage() {
       <div className="flex gap-3 pt-4 border-t border-slate-200">
         <button
           onClick={handleSave}
-          disabled={isSaving || hasOverLimit}
+          disabled={isSaving || hasOverLimit || hasEmptyPost}
           className="px-6 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
         >
           {isSaving ? "保存中..." : "保存"}

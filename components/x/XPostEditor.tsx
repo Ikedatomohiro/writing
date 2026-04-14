@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { X_CHAR_LIMIT } from "@/lib/types/x";
+import { X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 
 interface XPostEditorProps {
   value: string;
@@ -10,7 +10,7 @@ interface XPostEditorProps {
 }
 
 export function XPostEditor({ value, onChange, disabled = false }: XPostEditorProps) {
-  const isOverLimit = [...value].length > X_CHAR_LIMIT;
+  const isOverLimit = countXChars(value) > X_CHAR_LIMIT;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function XPostEditor({ value, onChange, disabled = false }: XPostEditorPr
           id={isOverLimit ? "x-char-count-error" : undefined}
           className={`text-xs font-mono ${isOverLimit ? "text-red-600 font-bold" : "text-slate-500"}`}
         >
-          {[...value].length}/{X_CHAR_LIMIT}
+          {countXChars(value)}/{X_CHAR_LIMIT}
         </span>
       </div>
     </div>
