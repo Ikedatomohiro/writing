@@ -87,7 +87,7 @@ export default function XPage() {
       await fetch(`/api/x/series/${id}`, { method: "DELETE" });
       setSeries((prev) => prev.filter((s) => s.id !== id));
     } catch {
-      // ignore
+      loadSeries();
     }
   };
 
