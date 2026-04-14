@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useRouter } from "next/navigation";
 import { XPostEditor } from "@/components/x/XPostEditor";
 import { X_CATEGORIES, X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
@@ -19,6 +19,12 @@ function isOverLimit(text: string): boolean {
 
 export default function XNewPage() {
   const router = useRouter();
+  const uid = useId();
+  const ids = {
+    account: `${uid}-account`,
+    theme: `${uid}-theme`,
+    category: `${uid}-category`,
+  };
   const [account, setAccount] = useState<Account>("pao-pao-cho");
   const [theme, setTheme] = useState("");
   const [category, setCategory] = useState<XCategory | "">("");
@@ -79,17 +85,18 @@ export default function XNewPage() {
     <div className="max-w-3xl space-y-6">
       <h2 className="text-2xl font-bold font-headline text-on-surface">新規X投稿作成</h2>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
 
       <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label htmlFor={ids.account} className="block text-sm font-medium text-slate-700 mb-1">
             アカウント <span className="text-red-500">*</span>
           </label>
           <select
+            id={ids.account}
             value={account}
             onChange={(e) => setAccount(e.target.value as Account)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {ACCOUNTS.map((a) => (
               <option key={a} value={a}>{a}</option>
@@ -97,21 +104,23 @@ export default function XNewPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">テーマ</label>
+          <label htmlFor={ids.theme} className="block text-sm font-medium text-slate-700 mb-1">テーマ</label>
           <input
+            id={ids.theme}
             type="text"
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
             placeholder="テーマを入力..."
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">カテゴリ</label>
+          <label htmlFor={ids.category} className="block text-sm font-medium text-slate-700 mb-1">カテゴリ</label>
           <select
+            id={ids.category}
             value={category}
             onChange={(e) => setCategory(e.target.value as XCategory | "")}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <option value="">選択なし</option>
             {X_CATEGORIES.map((c) => (

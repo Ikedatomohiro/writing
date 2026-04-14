@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 
 interface XPostEditorProps {
@@ -12,6 +12,8 @@ interface XPostEditorProps {
 export function XPostEditor({ value, onChange, disabled = false }: XPostEditorProps) {
   const isOverLimit = countXChars(value) > X_CHAR_LIMIT;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const uid = useId();
+  const charCountId = `${uid}-x-char-count`;
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -30,15 +32,18 @@ export function XPostEditor({ value, onChange, disabled = false }: XPostEditorPr
         rows={3}
         aria-label="投稿本文"
         aria-invalid={isOverLimit ? "true" : undefined}
-        aria-describedby={isOverLimit ? "x-char-count-error" : undefined}
-        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400 overflow-hidden min-h-[72px]"
+        aria-describedby={isOverLimit ? charCountId : undefined}
+        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400 overflow-hidden min-h-[72px]"
       />
       <div className="flex justify-end">
         <span
           data-testid="x-char-count"
-          id={isOverLimit ? "x-char-count-error" : undefined}
-          className={`text-xs font-mono ${isOverLimit ? "text-red-600 font-bold" : "text-slate-500"}`}
+          id={isOverLimit ? charCountId : undefined}
+          role={isOverLimit ? "alert" : undefined}
+          aria-live={isOverLimit ? undefined : "polite"}
+          className={`text-xs font-mono ${isOverLimit ? "text-red-600 font-bold" : "text-slate-600"}`}
         >
+          {isOverLimit && <span className="mr-1">⚠</span>}
           {countXChars(value)}/{X_CHAR_LIMIT}
         </span>
       </div>

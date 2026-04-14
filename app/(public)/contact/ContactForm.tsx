@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 
 type Status = "idle" | "sending" | "success" | "error";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const uid = useId();
+  const ids = {
+    name: `${uid}-name`,
+    email: `${uid}-email`,
+    subject: `${uid}-subject`,
+    message: `${uid}-message`,
+  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,7 +53,7 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="text-center py-12" data-testid="success-message">
+      <div role="status" className="text-center py-12" data-testid="success-message">
         <span className="material-symbols-outlined text-5xl text-primary mb-4 block">
           check_circle
         </span>
@@ -64,39 +71,45 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-2">
-          <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
+          <label htmlFor={ids.name} className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
             お名前 (Name)
           </label>
           <input
+            id={ids.name}
             type="text"
             name="name"
             required
+            aria-required="true"
             placeholder="山田 太郎"
-            className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
+            className="w-full bg-surface-container border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
           />
         </div>
         <div className="space-y-2">
-          <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
+          <label htmlFor={ids.email} className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
             メールアドレス (Email Address)
           </label>
           <input
+            id={ids.email}
             type="email"
             name="email"
             required
+            aria-required="true"
             placeholder="taro@example.com"
-            className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
+            className="w-full bg-surface-container border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
+        <label htmlFor={ids.subject} className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
           お問い合わせ項目 (Subject)
         </label>
         <select
+          id={ids.subject}
           name="subject"
           required
-          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface appearance-none"
+          aria-required="true"
+          className="w-full bg-surface-container border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-4 text-on-surface appearance-none"
         >
           <option value="一般">一般</option>
           <option value="記事について">記事について</option>
@@ -106,20 +119,22 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
+        <label htmlFor={ids.message} className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-semibold">
           メッセージ (Message)
         </label>
         <textarea
+          id={ids.message}
           name="message"
           required
+          aria-required="true"
           placeholder="どのようなご用件でしょうか？"
           rows={6}
-          className="w-full bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline resize-none"
+          className="w-full bg-surface-container border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-4 text-on-surface placeholder:text-outline resize-none"
         />
       </div>
 
       {status === "error" && (
-        <p className="text-error text-sm" data-testid="error-message">
+        <p role="alert" className="text-error text-sm" data-testid="error-message">
           {errorMessage}
         </p>
       )}

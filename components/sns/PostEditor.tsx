@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { SnsPostType } from "@/lib/types/sns";
 
 const POST_TYPES: SnsPostType[] = ["normal", "comment_hook", "thread", "affiliate"];
@@ -10,6 +10,7 @@ interface PostEditorProps {
   type: SnsPostType;
   onTypeChange: (type: SnsPostType) => void;
   disabled?: boolean;
+  label?: string;
 }
 
 export function PostEditor({
@@ -18,9 +19,13 @@ export function PostEditor({
   type,
   onTypeChange,
   disabled = false,
+  label,
 }: PostEditorProps) {
   const isOverLimit = value.length > MAX_CHARS;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const uid = useId();
+  const typeSelectId = `${uid}-type`;
+  const charCountId = `${uid}-char-count`;
 
   // テキスト量に合わせて高さを自動調整
   useEffect(() => {
@@ -38,26 +43,37 @@ export function PostEditor({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         rows={3}
-        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400 overflow-hidden min-h-[72px]"
+        aria-label={label ?? "投稿本文"}
+        aria-invalid={isOverLimit ? "true" : undefined}
+        aria-describedby={isOverLimit ? charCountId : undefined}
+        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400 overflow-hidden min-h-[72px]"
       />
       <div className="flex items-center justify-between">
-        <select
-          data-testid="type-select"
-          value={type}
-          onChange={(e) => onTypeChange(e.target.value as SnsPostType)}
-          disabled={disabled}
-          className="text-sm border border-slate-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
-        >
-          {POST_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-2">
+          <label htmlFor={typeSelectId} className="sr-only">投稿タイプ</label>
+          <select
+            id={typeSelectId}
+            data-testid="type-select"
+            value={type}
+            onChange={(e) => onTypeChange(e.target.value as SnsPostType)}
+            disabled={disabled}
+            className="text-sm border border-slate-300 rounded px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+          >
+            {POST_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
         <span
+          id={isOverLimit ? charCountId : undefined}
           data-testid="char-count"
-          className={`text-xs font-mono ${isOverLimit ? "text-red-600 font-bold" : "text-slate-500"}`}
+          role={isOverLimit ? "alert" : undefined}
+          aria-live={isOverLimit ? undefined : "polite"}
+          className={`text-xs font-mono ${isOverLimit ? "text-red-600 font-bold" : "text-slate-600"}`}
         >
+          {isOverLimit && <span className="mr-1">⚠</span>}
           {value.length}/{MAX_CHARS}
         </span>
       </div>
