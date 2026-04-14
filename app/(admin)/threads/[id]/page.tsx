@@ -6,10 +6,12 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsSeries, SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
+import { useToastContext } from "@/components/common/ToastProvider";
 
 export default function SnsDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { toast } = useToastContext();
   const [series, setSeries] = useState<SnsSeriesWithPosts | null>(null);
   const [allSeries, setAllSeries] = useState<SnsSeries[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,11 +147,24 @@ export default function SnsDetailPage() {
       body: JSON.stringify({ series_id: id }),
     });
     if (res.ok) {
-      if (nextDraftId) {
-        router.push(`/threads/${nextDraftId}`);
-      } else {
-        load();
-      }
+      toast.success("キューに追加しました");
+      router.push("/threads?tab=queued");
+    } else {
+      toast.error("キューへの追加に失敗しました");
+    }
+  };
+
+  const handleDequeue = async () => {
+    const res = await fetch(`/api/threads/series/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "draft" }),
+    });
+    if (res.ok) {
+      toast.success("下書きに戻しました");
+      router.push("/threads?tab=draft");
+    } else {
+      toast.error("ステータスの変更に失敗しました");
     }
   };
 
@@ -318,9 +333,17 @@ export default function SnsDetailPage() {
             {series.status === "draft" && (
               <button
                 onClick={handleEnqueue}
-                className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"
+                className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-medium hover:bg-orange-600 active:bg-orange-700"
               >
                 キューに追加
+              </button>
+            )}
+            {series.status === "queued" && (
+              <button
+                onClick={handleDequeue}
+                className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-300 active:bg-slate-400"
+              >
+                下書きに戻す
               </button>
             )}
           </div>
