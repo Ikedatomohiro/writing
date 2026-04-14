@@ -45,7 +45,7 @@ describe("AdminLayout", () => {
       </AdminLayout>
     );
 
-    expect(screen.getByLabelText("サイドバーを開閉")).toBeInTheDocument();
+    expect(screen.getByLabelText("メニュー")).toBeInTheDocument();
   });
 
   it("ハンバーガーボタンをクリックするとモバイルオーバーレイとしてサイドバーが開く", async () => {
@@ -60,7 +60,7 @@ describe("AdminLayout", () => {
     // 初期状態: hidden クラスを持つ（モバイルでは閉じている）
     expect(sidebar).toHaveClass("hidden");
 
-    await user.click(screen.getByLabelText("サイドバーを開閉"));
+    await user.click(screen.getByLabelText("メニュー"));
 
     // open=true: flex と translate-x-0 が付きモバイルでも表示
     expect(sidebar).toHaveClass("flex");
@@ -75,7 +75,7 @@ describe("AdminLayout", () => {
       </AdminLayout>
     );
 
-    const toggleBtn = screen.getByLabelText("サイドバーを開閉");
+    const toggleBtn = screen.getByLabelText("メニュー");
     const sidebar = screen.getByTestId("admin-sidebar");
 
     // 開く

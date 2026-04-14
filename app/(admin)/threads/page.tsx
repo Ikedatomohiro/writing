@@ -333,7 +333,7 @@ function SeriesCard({
         {!series.is_posted && (
           <button
             onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-            className="absolute right-2 top-2 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors"
+            className="absolute right-2 top-2 p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
             aria-label="削除"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">

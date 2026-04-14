@@ -23,8 +23,10 @@ function getPageTitle(pathname: string | null): string {
 
 export function AdminHeader({
   onToggleSidebar,
+  sidebarOpen = false,
 }: {
   onToggleSidebar: () => void;
+  sidebarOpen?: boolean;
 }) {
   const pathname = usePathname();
   const title = getPageTitle(pathname);
@@ -34,8 +36,10 @@ export function AdminHeader({
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
-          aria-label="サイドバーを開閉"
-          className="p-2 rounded-lg hover:bg-surface-container transition-colors"
+          aria-label="メニュー"
+          aria-expanded={sidebarOpen}
+          aria-controls="admin-sidebar"
+          className="p-2 rounded-lg hover:bg-surface-container transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <span className="material-symbols-outlined text-on-surface-variant">
             menu

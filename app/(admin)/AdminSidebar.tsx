@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 const NAV_ITEMS = [
@@ -14,7 +14,9 @@ const NAV_ITEMS = [
 
 export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
+  const firstNavRef = useRef<HTMLAnchorElement>(null);
 
+  // Esc to close
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,6 +25,53 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
+
+  // Focus first nav item on open (mobile only)
+  useEffect(() => {
+    if (open && window.matchMedia("(max-width: 639px)").matches) {
+      // Small timeout to let the element become visible first
+      const timer = setTimeout(() => firstNavRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
+  // Focus trap inside sidebar on mobile open
+  useEffect(() => {
+    if (!open) return;
+    const isMobile = window.matchMedia("(max-width: 639px)").matches;
+    if (!isMobile) return;
+
+    const sidebar = document.getElementById("admin-sidebar");
+    if (!sidebar) return;
+
+    const handleTabTrap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const tabbable = Array.from(
+        sidebar.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])"
+        )
+      ).filter((el) => el.offsetParent !== null);
+      if (tabbable.length === 0) return;
+
+      const first = tabbable[0];
+      const last = tabbable[tabbable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleTabTrap);
+    return () => document.removeEventListener("keydown", handleTabTrap);
+  }, [open]);
 
   return (
     <>
@@ -35,7 +84,11 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
         />
       )}
       <aside
+        id="admin-sidebar"
         data-testid="admin-sidebar"
+        role={open ? "dialog" : undefined}
+        aria-modal={open ? "true" : undefined}
+        aria-label="メインナビゲーション"
         className={[
           "h-screen w-64 border-r border-slate-200 bg-slate-50 flex-col py-6 px-4 shrink-0 transition-transform duration-200",
           // デスクトップ: sticky push レイアウト（常に表示）
@@ -54,17 +107,19 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
         </p>
       </div>
 
-      <nav className="flex-1 space-y-1">
-        {NAV_ITEMS.map((item) => {
+      <nav className="flex-1 space-y-1" aria-label="メインメニュー">
+        {NAV_ITEMS.map((item, i) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.label}
               href={item.href}
+              ref={i === 0 ? firstNavRef : undefined}
+              aria-current={isActive ? "page" : undefined}
               className={
                 isActive
-                  ? "flex items-center gap-3 bg-white text-blue-600 shadow-sm rounded-xl p-3 translate-x-1 transition-transform font-medium text-sm"
-                  : "flex items-center gap-3 text-slate-500 p-3 hover:text-slate-900 hover:bg-slate-200/50 transition-all font-medium text-sm"
+                  ? "flex items-center gap-3 bg-white text-blue-600 shadow-sm rounded-xl p-3 min-h-[44px] translate-x-1 transition-transform font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  : "flex items-center gap-3 text-slate-500 p-3 min-h-[44px] hover:text-slate-900 hover:bg-slate-200/50 transition-all font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               }
             >
               <span className="material-symbols-outlined">{item.icon}</span>
@@ -77,14 +132,14 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
       <div className="mt-auto space-y-1 pt-6 border-t border-slate-200">
         <Link
           href="/articles/new"
-          className="w-full mb-4 bg-gradient-to-br from-primary to-primary-container text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+          className="w-full mb-4 bg-gradient-to-br from-primary to-primary-container text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <span className="material-symbols-outlined text-sm">add</span>
           新規記事
         </Link>
         <Link
           href="/login"
-          className="w-full flex items-center gap-3 text-slate-500 p-3 hover:text-slate-900 transition-all font-medium text-sm"
+          className="w-full flex items-center gap-3 text-slate-500 p-3 min-h-[44px] hover:text-slate-900 transition-all font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           <span className="material-symbols-outlined">logout</span>
           <span>Logout</span>
