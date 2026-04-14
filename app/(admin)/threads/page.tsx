@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
+import { EmptyState } from "@/components/common/EmptyState";
 import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
 
 function formatCreatedAt(iso: string): string {
@@ -150,7 +151,12 @@ export default function SnsPage() {
       {isLoading ? (
         <p className="text-slate-500">読み込み中...</p>
       ) : filteredSeries.length === 0 ? (
-        <p className="text-slate-500">シリーズがありません</p>
+        <EmptyState
+          title="まだ投稿はありません"
+          description="新しいシリーズを作成してThreadsに投稿しましょう"
+          ctaHref="/threads/new"
+          ctaLabel="最初の投稿を作成"
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {filteredSeries.map((s, index) => (

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { EmptyState } from "@/components/common/EmptyState";
 import type { XSeriesWithPosts, XSeriesStatus } from "@/lib/types/x";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
@@ -146,7 +148,12 @@ export default function XPage() {
       {isLoading ? (
         <p className="text-slate-500">読み込み中...</p>
       ) : series.length === 0 ? (
-        <p className="text-slate-500">シリーズがありません</p>
+        <EmptyState
+          title="まだ投稿はありません"
+          description="新しいシリーズを作成してXに投稿しましょう"
+          ctaHref="/x/new"
+          ctaLabel="最初の投稿を作成"
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {series.map((s) => (
@@ -175,15 +182,7 @@ function XSeriesCard({
         className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer overflow-hidden"
       >
         <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
-          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-            series.is_posted
-              ? "bg-green-100 text-green-700"
-              : series.status === "queued"
-              ? "bg-orange-100 text-orange-700"
-              : "bg-slate-100 text-slate-600"
-          }`}>
-            {series.is_posted ? "posted" : series.status}
-          </span>
+          <StatusBadge status={series.status} isPosted={series.is_posted} />
           <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal sm:mt-1">
             {series.theme ?? "（テーマなし）"}
           </h3>
