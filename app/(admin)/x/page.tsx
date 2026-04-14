@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LoadingIndicator } from "@/components/common/LoadingIndicator";
+import { ErrorState } from "@/components/common/ErrorState";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type { XSeriesWithPosts, XSeriesStatus } from "@/lib/types/x";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
@@ -31,6 +34,7 @@ export default function XPage() {
   const [error, setError] = useState<string | null>(null);
   const [account, setAccount] = useState<Account>("pao-pao-cho");
   const [activeTab, setActiveTab] = useState<XSeriesStatus | "all" | "posted">("draft");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     const storedAccount = sessionStorage.getItem("x_active_account");
@@ -83,8 +87,14 @@ export default function XPage() {
     loadSeries();
   }, [loadSeries]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("このシリーズを削除しますか？")) return;
+  const handleDelete = (id: string) => {
+    setDeleteTarget(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    const id = deleteTarget;
+    setDeleteTarget(null);
     try {
       await fetch(`/api/x/series/${id}`, { method: "DELETE" });
       setSeries((prev) => prev.filter((s) => s.id !== id));
@@ -96,13 +106,21 @@ export default function XPage() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto py-8">
-        <p className="text-red-600">{error}</p>
+        <ErrorState message={error} onRetry={loadSeries} />
       </div>
     );
   }
 
   return (
     <>
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="シリーズを削除しますか？"
+        description="この操作は取り消せません。"
+        confirmLabel="削除"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 className="text-2xl font-bold font-headline text-on-surface">X管理</h2>
         <div className="flex items-center gap-3">
@@ -146,7 +164,7 @@ export default function XPage() {
       </div>
 
       {isLoading ? (
-        <p className="text-slate-500">読み込み中...</p>
+        <LoadingIndicator />
       ) : series.length === 0 ? (
         <EmptyState
           title="まだ投稿はありません"

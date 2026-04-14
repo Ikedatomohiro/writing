@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArticleTable } from "@/components/articles/ArticleTable";
 import { SearchInput } from "@/components/articles";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
+import { LoadingIndicator } from "@/components/common/LoadingIndicator";
+import { ErrorState } from "@/components/common/ErrorState";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { getArticles, deleteArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/content/types";
 
@@ -16,6 +19,7 @@ export default function ArticlesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const loadArticles = useCallback(async () => {
     try {
@@ -35,8 +39,14 @@ export default function ArticlesPage() {
     loadArticles();
   }, [loadArticles]);
 
-  const handleDelete = async (slug: string) => {
-    if (!confirm("この記事を削除しますか？")) return;
+  const handleDelete = (slug: string) => {
+    setDeleteTarget(slug);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    const slug = deleteTarget;
+    setDeleteTarget(null);
     try {
       await deleteArticle(slug);
       setArticles((prev) => prev.filter((a) => a.slug !== slug));
@@ -65,7 +75,7 @@ export default function ArticlesPage() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto py-8">
-        <div className="text-error">{error}</div>
+        <ErrorState message={error} onRetry={loadArticles} />
       </div>
     );
   }
@@ -73,13 +83,21 @@ export default function ArticlesPage() {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto py-8">
-        <div className="text-on-surface-variant">読み込み中...</div>
+        <LoadingIndicator />
       </div>
     );
   }
 
   return (
     <>
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="記事を削除しますか？"
+        description="この操作は取り消せません。"
+        confirmLabel="削除"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold font-headline text-on-surface">
           記事管理
