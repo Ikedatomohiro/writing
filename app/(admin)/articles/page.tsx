@@ -4,14 +4,18 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { ArticleTable } from "@/components/articles/ArticleTable";
 import { SearchInput } from "@/components/articles";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { getArticles, deleteArticle } from "@/lib/articles/storage";
 import type { Article } from "@/lib/content/types";
+
+const PAGE_SIZE = 20;
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const loadArticles = useCallback(async () => {
     try {
@@ -51,6 +55,12 @@ export default function ArticlesPage() {
           )
       )
     : articles;
+
+  const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
+  const pagedArticles = filteredArticles.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   if (error) {
     return (
@@ -98,7 +108,7 @@ export default function ArticlesPage() {
       <div className="mb-4">
         <SearchInput
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(q) => { setSearchQuery(q); setCurrentPage(1); }}
           placeholder="タイトル、説明、タグで検索..."
         />
       </div>
@@ -108,7 +118,21 @@ export default function ArticlesPage() {
           検索結果が見つかりませんでした
         </p>
       ) : (
-        <ArticleTable articles={filteredArticles} onDelete={handleDelete} />
+        <>
+          <ArticleTable articles={pagedArticles} onDelete={handleDelete} />
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            </div>
+          )}
+        </>
       )}
     </>
   );

@@ -67,8 +67,9 @@ describe("ArticlesPage", () => {
     render(<ArticlesPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("TypeScript入門")).toBeInTheDocument();
-      expect(screen.getByText("React実践ガイド")).toBeInTheDocument();
+      // デスクトップ (table) + モバイル (cards) の両方に表示されるため getAllByText を使用
+      expect(screen.getAllByText("TypeScript入門").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("React実践ガイド").length).toBeGreaterThan(0);
     });
   });
 
@@ -84,8 +85,8 @@ describe("ArticlesPage", () => {
     await user.type(searchInput, "TypeScript");
 
     await waitFor(() => {
-      expect(screen.getByText("TypeScript入門")).toBeInTheDocument();
-      expect(screen.queryByText("React実践ガイド")).not.toBeInTheDocument();
+      expect(screen.getAllByText("TypeScript入門").length).toBeGreaterThan(0);
+      expect(screen.queryAllByText("React実践ガイド")).toHaveLength(0);
     });
   });
 

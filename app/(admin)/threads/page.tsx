@@ -4,7 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
+import { Pagination } from "@/components/ui/Pagination/Pagination";
 import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
+
+const PAGE_SIZE = 20;
 
 function formatCreatedAt(iso: string): string {
   return new Date(iso).toLocaleDateString("ja-JP", {
@@ -20,6 +23,7 @@ export default function SnsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("threads_active_tab");
@@ -30,6 +34,7 @@ export default function SnsPage() {
 
   const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
     setActiveTab(tab);
+    setCurrentPage(1);
     sessionStorage.setItem("threads_active_tab", tab);
   };
 
@@ -73,6 +78,12 @@ export default function SnsPage() {
     activeTab === "queued"
       ? [...baseFiltered].sort((a, b) => (a.queue_order ?? 0) - (b.queue_order ?? 0))
       : baseFiltered;
+
+  const totalPages = Math.ceil(filteredSeries.length / PAGE_SIZE);
+  const pagedSeries = filteredSeries.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   const handleMove = async (index: number, direction: "up" | "down") => {
     if (direction === "up" && index === 0) return;
@@ -132,12 +143,12 @@ export default function SnsPage() {
         </Link>
       </div>
 
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
         {uniqueTabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => handleTabChange(tab.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors shrink-0 ${
               activeTab === tab.value
                 ? "bg-blue-600 text-white"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -158,19 +169,33 @@ export default function SnsPage() {
           ctaLabel="最初の投稿を作成"
         />
       ) : (
-        <div className="flex flex-col gap-3">
-          {filteredSeries.map((s, index) => (
-            <SeriesCard
-              key={s.id}
-              series={s}
-              onDelete={handleDelete}
-              index={activeTab === "queued" ? index : undefined}
-              isFirst={index === 0}
-              isLast={index === filteredSeries.length - 1}
-              onMove={activeTab === "queued" ? handleMove : undefined}
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex flex-col gap-3">
+            {pagedSeries.map((s, index) => {
+              const globalIndex = (currentPage - 1) * PAGE_SIZE + index;
+              return (
+                <SeriesCard
+                  key={s.id}
+                  series={s}
+                  onDelete={handleDelete}
+                  index={activeTab === "queued" ? globalIndex : undefined}
+                  isFirst={globalIndex === 0}
+                  isLast={globalIndex === filteredSeries.length - 1}
+                  onMove={activeTab === "queued" ? handleMove : undefined}
+                />
+              );
+            })}
+          </div>
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
+        </>
       )}
     </>
   );
@@ -268,6 +293,23 @@ function SeriesCard({
             )}
           </div>
         </Link>
+
+        {/* 投稿済みの外部リンク */}
+        {series.is_posted && (series as unknown as { posted_url?: string }).posted_url && (
+          <a
+            href={(series as unknown as { posted_url: string }).posted_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-2 top-2 p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+            aria-label="投稿を開く"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+              <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+            </svg>
+          </a>
+        )}
 
         {/* 削除ボタン */}
         {!series.is_posted && (
