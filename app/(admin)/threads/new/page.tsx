@@ -82,6 +82,7 @@ export default function SnsNewPage() {
         <p role="alert" className="text-red-600 text-sm">{error}</p>
       )}
 
+      <fieldset disabled={isSaving} aria-busy={isSaving} className="contents">
       <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-5">
         <div>
           <label htmlFor={ids.account} className="block text-sm font-medium text-slate-700 mb-1">
@@ -187,6 +188,7 @@ export default function SnsNewPage() {
           キャンセル
         </button>
       </div>
+      </fieldset>
     </div>
   );
 }
