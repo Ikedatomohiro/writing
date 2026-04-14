@@ -55,9 +55,6 @@ export default function SnsDetailPage() {
   const nextId = currentIndex >= 0 && currentIndex < allSeries.length - 1
     ? allSeries[currentIndex + 1].id
     : null;
-  const nextDraftId = allSeries
-    .slice(currentIndex + 1)
-    .find((s) => s.status === "draft")?.id ?? null;
 
   const isDisabled = series?.is_posted ?? false;
 
