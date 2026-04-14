@@ -11,7 +11,7 @@ export default function QueuePage() {
   const load = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/sns/queue");
+      const res = await fetch("/api/threads/queue");
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setSeries(json.data ?? []);
@@ -35,7 +35,7 @@ export default function QueuePage() {
     [newSeries[index], newSeries[swapIndex]] = [newSeries[swapIndex], newSeries[index]];
     setSeries(newSeries);
 
-    await fetch("/api/sns/queue/reorder", {
+    await fetch("/api/threads/queue/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ series_ids: newSeries.map((s) => s.id) }),

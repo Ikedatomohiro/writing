@@ -44,7 +44,7 @@ const mockPost: SnsPost = {
 
 type RouteParams = { params: Promise<{ id: string; postId: string }> };
 
-describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
+describe("PATCH /api/threads/series/[id]/posts/[postId]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -59,7 +59,7 @@ describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
     const { PATCH } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -95,7 +95,7 @@ describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
     const { PATCH } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -119,7 +119,7 @@ describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
     const { PATCH } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -142,7 +142,7 @@ describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
     const { PATCH } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -158,7 +158,7 @@ describe("PATCH /api/sns/series/[id]/posts/[postId]", () => {
   });
 });
 
-describe("DELETE /api/sns/series/[id]/posts/[postId]", () => {
+describe("DELETE /api/threads/series/[id]/posts/[postId]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -173,7 +173,7 @@ describe("DELETE /api/sns/series/[id]/posts/[postId]", () => {
     const { DELETE } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       { method: "DELETE" }
     );
     const params: RouteParams = { params: Promise.resolve({ id: "series-1", postId: "post-1" }) };
@@ -208,7 +208,7 @@ describe("DELETE /api/sns/series/[id]/posts/[postId]", () => {
     const { DELETE } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       { method: "DELETE" }
     );
     const params: RouteParams = { params: Promise.resolve({ id: "series-1", postId: "post-1" }) };
@@ -238,7 +238,7 @@ describe("DELETE /api/sns/series/[id]/posts/[postId]", () => {
     const { DELETE } = await import("./route");
 
     const request = new NextRequest(
-      "http://localhost:3000/api/sns/series/series-1/posts/post-1",
+      "http://localhost:3000/api/threads/series/series-1/posts/post-1",
       { method: "DELETE" }
     );
     const params: RouteParams = { params: Promise.resolve({ id: "series-1", postId: "post-1" }) };

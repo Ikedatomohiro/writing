@@ -32,7 +32,7 @@ const mockQueuedSeries: SnsSeriesWithPosts = {
   posts: [],
 };
 
-describe("GET /api/sns/queue", () => {
+describe("GET /api/threads/queue", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -46,7 +46,7 @@ describe("GET /api/sns/queue", () => {
     );
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue");
+    const request = new NextRequest("http://localhost:3000/api/threads/queue");
     const response = await GET(request);
     const data = await response.json();
 
@@ -61,7 +61,7 @@ describe("GET /api/sns/queue", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue");
+    const request = new NextRequest("http://localhost:3000/api/threads/queue");
     const response = await GET(request);
     const data = await response.json();
 

@@ -49,7 +49,7 @@ const mockSeriesWithPosts: SnsSeriesWithPosts = {
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-describe("GET /api/sns/series/[id]", () => {
+describe("GET /api/threads/series/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -63,7 +63,7 @@ describe("GET /api/sns/series/[id]", () => {
     );
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1");
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1");
     const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };
     const response = await GET(request, params);
     const data = await response.json();
@@ -79,7 +79,7 @@ describe("GET /api/sns/series/[id]", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1");
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1");
     const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };
     const response = await GET(request, params);
     const data = await response.json();
@@ -95,7 +95,7 @@ describe("GET /api/sns/series/[id]", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/not-found");
+    const request = new NextRequest("http://localhost:3000/api/threads/series/not-found");
     const params: RouteParams = { params: Promise.resolve({ id: "not-found" }) };
     const response = await GET(request, params);
     const data = await response.json();
@@ -105,7 +105,7 @@ describe("GET /api/sns/series/[id]", () => {
   });
 });
 
-describe("PATCH /api/sns/series/[id]", () => {
+describe("PATCH /api/threads/series/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -119,7 +119,7 @@ describe("PATCH /api/sns/series/[id]", () => {
     );
     const { PATCH } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ theme: "新テーマ" }),
@@ -149,7 +149,7 @@ describe("PATCH /api/sns/series/[id]", () => {
     });
     const { PATCH } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ theme: "新テーマ" }),
@@ -170,7 +170,7 @@ describe("PATCH /api/sns/series/[id]", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { PATCH } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ theme: "新テーマ" }),
@@ -184,7 +184,7 @@ describe("PATCH /api/sns/series/[id]", () => {
   });
 });
 
-describe("DELETE /api/sns/series/[id]", () => {
+describe("DELETE /api/threads/series/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -198,7 +198,7 @@ describe("DELETE /api/sns/series/[id]", () => {
     );
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "DELETE",
     });
     const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };
@@ -219,7 +219,7 @@ describe("DELETE /api/sns/series/[id]", () => {
     mockSupabase.from.mockReturnValue({ select: fetchSelectMock, delete: deleteMock });
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "DELETE",
     });
     const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };
@@ -238,7 +238,7 @@ describe("DELETE /api/sns/series/[id]", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { DELETE } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series/series-1", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
       method: "DELETE",
     });
     const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };

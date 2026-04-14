@@ -48,7 +48,7 @@ const mockQueuedSeries: SnsSeries[] = [
   },
 ];
 
-describe("POST /api/sns/queue/reorder", () => {
+describe("POST /api/threads/queue/reorder", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -62,7 +62,7 @@ describe("POST /api/sns/queue/reorder", () => {
     );
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/reorder", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/reorder", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_ids: ["series-2", "series-1"] }),
@@ -93,7 +93,7 @@ describe("POST /api/sns/queue/reorder", () => {
     });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/reorder", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/reorder", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_ids: ["series-2", "series-1"] }),
@@ -113,7 +113,7 @@ describe("POST /api/sns/queue/reorder", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/reorder", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/reorder", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_ids: ["series-1", "series-2"] }),

@@ -18,7 +18,7 @@ export default function SnsDetailPage() {
   const [posts, setPosts] = useState<SnsPost[]>([]);
 
   const loadAllSeries = useCallback(async () => {
-    const res = await fetch("/api/sns/series");
+    const res = await fetch("/api/threads/series");
     if (res.ok) {
       const json = await res.json();
       setAllSeries(json.data ?? []);
@@ -28,7 +28,7 @@ export default function SnsDetailPage() {
   const load = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/sns/series/${id}`);
+      const res = await fetch(`/api/threads/series/${id}`);
       if (!res.ok) throw new Error("Not found");
       const json = await res.json();
       setSeries(json.data);
@@ -71,7 +71,7 @@ export default function SnsDetailPage() {
     if (isDisabled) return;
     setIsSaving(true);
     try {
-      await fetch(`/api/sns/series/${id}/posts/${post.id}`, {
+      await fetch(`/api/threads/series/${id}/posts/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: post.text, type: post.type }),
@@ -84,7 +84,7 @@ export default function SnsDetailPage() {
   const handleAddPost = async () => {
     if (isDisabled) return;
     const newPosition = posts.length;
-    const res = await fetch(`/api/sns/series/${id}/posts`, {
+    const res = await fetch(`/api/threads/series/${id}/posts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ position: newPosition, text: "", type: "normal" }),
@@ -98,7 +98,7 @@ export default function SnsDetailPage() {
   const handleDeletePost = async (postId: string) => {
     if (isDisabled) return;
     if (!confirm("この投稿を削除しますか？")) return;
-    await fetch(`/api/sns/series/${id}/posts/${postId}`, { method: "DELETE" });
+    await fetch(`/api/threads/series/${id}/posts/${postId}`, { method: "DELETE" });
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
@@ -123,7 +123,7 @@ export default function SnsDetailPage() {
     ];
     setPosts(reordered);
 
-    await fetch(`/api/sns/series/${id}/posts/reorder`, {
+    await fetch(`/api/threads/series/${id}/posts/reorder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ post_ids: reordered.map((p) => p.id) }),
@@ -132,14 +132,14 @@ export default function SnsDetailPage() {
 
   const handleDeleteSeries = async () => {
     if (!confirm("このシリーズを削除しますか？")) return;
-    const res = await fetch(`/api/sns/series/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
     if (res.ok) {
       router.push("/threads");
     }
   };
 
   const handleEnqueue = async () => {
-    const res = await fetch("/api/sns/queue/enqueue", {
+    const res = await fetch("/api/threads/queue/enqueue", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ series_id: id }),

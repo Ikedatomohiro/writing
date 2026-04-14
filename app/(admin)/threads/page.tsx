@@ -36,7 +36,7 @@ export default function SnsPage() {
     try {
       setIsLoading(true);
       setError(null);
-      const res = await fetch("/api/sns/series");
+      const res = await fetch("/api/threads/series");
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       setSeries(json.data ?? []);
@@ -54,7 +54,7 @@ export default function SnsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("このシリーズを削除しますか？")) return;
     try {
-      await fetch(`/api/sns/series/${id}`, { method: "DELETE" });
+      await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
       setSeries((prev) => prev.filter((s) => s.id !== id));
     } catch {
       // ignore
@@ -89,7 +89,7 @@ export default function SnsPage() {
       return [...nonQueued, ...reordered];
     });
 
-    const res = await fetch("/api/sns/queue/reorder", {
+    const res = await fetch("/api/threads/queue/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),

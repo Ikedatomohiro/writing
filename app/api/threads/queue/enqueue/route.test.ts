@@ -31,7 +31,7 @@ const mockDraftSeries: SnsSeries = {
   updated_at: "2024-01-01T00:00:00.000Z",
 };
 
-describe("POST /api/sns/queue/enqueue", () => {
+describe("POST /api/threads/queue/enqueue", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -45,7 +45,7 @@ describe("POST /api/sns/queue/enqueue", () => {
     );
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/enqueue", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/enqueue", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_id: "series-1" }),
@@ -84,7 +84,7 @@ describe("POST /api/sns/queue/enqueue", () => {
     });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/enqueue", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/enqueue", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_id: "series-1" }),
@@ -104,7 +104,7 @@ describe("POST /api/sns/queue/enqueue", () => {
     mockSupabase.from.mockReturnValue({ select: selectMock });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/queue/enqueue", {
+    const request = new NextRequest("http://localhost:3000/api/threads/queue/enqueue", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ series_id: "series-1" }),

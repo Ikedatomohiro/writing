@@ -47,7 +47,7 @@ const mockSeriesWithPosts: SnsSeriesWithPosts = {
   ],
 };
 
-describe("GET /api/sns/series", () => {
+describe("GET /api/threads/series", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -61,7 +61,7 @@ describe("GET /api/sns/series", () => {
     );
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series");
+    const request = new NextRequest("http://localhost:3000/api/threads/series");
     const response = await GET(request);
     const data = await response.json();
 
@@ -77,7 +77,7 @@ describe("GET /api/sns/series", () => {
     mockSupabase.from.mockReturnValue(fromMock);
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series");
+    const request = new NextRequest("http://localhost:3000/api/threads/series");
     const response = await GET(request);
     const data = await response.json();
 
@@ -94,14 +94,14 @@ describe("GET /api/sns/series", () => {
     mockSupabase.from.mockReturnValue(fromMock);
     const { GET } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series?status=draft");
+    const request = new NextRequest("http://localhost:3000/api/threads/series?status=draft");
     const response = await GET(request);
 
     expect(response.status).toBe(200);
   });
 });
 
-describe("POST /api/sns/series", () => {
+describe("POST /api/threads/series", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
@@ -115,7 +115,7 @@ describe("POST /api/sns/series", () => {
     );
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ posts: [] }),
@@ -143,7 +143,7 @@ describe("POST /api/sns/series", () => {
     });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -170,7 +170,7 @@ describe("POST /api/sns/series", () => {
     });
     const { POST } = await import("./route");
 
-    const request = new NextRequest("http://localhost:3000/api/sns/series", {
+    const request = new NextRequest("http://localhost:3000/api/threads/series", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ posts: [] }),

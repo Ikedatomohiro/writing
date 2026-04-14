@@ -44,7 +44,7 @@ export default function SnsNewPage() {
         ...childPosts.map((p, i) => ({ position: i + 1, text: p.text, type: p.type })),
       ];
 
-      const res = await fetch("/api/sns/series", {
+      const res = await fetch("/api/threads/series", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme: theme || undefined, pattern: pattern || undefined, posts }),
