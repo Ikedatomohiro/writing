@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsPostType } from "@/lib/types/sns";
 import { getAccountLabel } from "@/lib/constants/labels";
+import { formatApiError } from "@/lib/api/errors";
 import { useToastContext } from "@/components/common/ToastProvider";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
@@ -51,6 +52,7 @@ export default function SnsNewPage() {
   const handleSave = async () => {
     setIsSaving(true);
     setError(null);
+    let lastRes: Response | null = null;
     try {
       const posts = [
         { position: 0, text: parentPost.text, type: parentPost.type },
@@ -62,13 +64,14 @@ export default function SnsNewPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ account, theme: theme || undefined, pattern: pattern || undefined, posts }),
       });
+      lastRes = res;
 
       if (!res.ok) throw new Error("Failed to create");
       const json = await res.json();
       toast.success("下書きを保存しました");
       router.push(`/threads/${json.data.id}`);
-    } catch {
-      setError("シリーズの作成に失敗しました");
+    } catch (err) {
+      setError(formatApiError(lastRes, err));
     } finally {
       setIsSaving(false);
     }

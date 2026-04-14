@@ -6,6 +6,7 @@ import { XPostEditor } from "@/components/x/XPostEditor";
 import { X_CATEGORIES, X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 import type { XCategory } from "@/lib/types/x";
 import { getAccountLabel, getXCategoryLabel } from "@/lib/constants/labels";
+import { formatApiError } from "@/lib/api/errors";
 import { useToastContext } from "@/components/common/ToastProvider";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
@@ -62,6 +63,7 @@ export default function XNewPage() {
     }
     setIsSaving(true);
     setError(null);
+    let lastRes: Response | null = null;
     try {
       const body = {
         account,
@@ -74,12 +76,13 @@ export default function XNewPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      lastRes = res;
       if (!res.ok) throw new Error("Failed to create");
       const json = await res.json();
       toast.success("下書きを保存しました");
       router.push(`/x/${json.data.id}`);
-    } catch {
-      setError("シリーズの作成に失敗しました");
+    } catch (err) {
+      setError(formatApiError(lastRes, err));
     } finally {
       setIsSaving(false);
     }
