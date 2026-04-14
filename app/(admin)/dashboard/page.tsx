@@ -15,21 +15,21 @@ const PLATFORM_CARDS: PlatformCard[] = [
     description: "記事の管理・執筆・公開",
     href: "/articles",
     icon: "article",
-    color: "from-blue-500 to-blue-600",
+    color: "bg-blue-500",
   },
   {
     label: "Threads",
     description: "Threads投稿の管理・キュー",
     href: "/threads",
     icon: "forum",
-    color: "from-purple-500 to-purple-600",
+    color: "bg-purple-500",
   },
   {
     label: "X",
     description: "X（Twitter）投稿の管理・キュー",
     href: "/x",
     icon: "alternate_email",
-    color: "from-slate-700 to-slate-900",
+    color: "bg-slate-700",
   },
 ];
 
@@ -81,18 +81,18 @@ export default async function AdminHomePage() {
       </p>
 
       {/* KPI Section */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {kpiItems.map((kpi) => (
           <Link
             key={kpi.label}
             href={kpi.href}
-            className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-sm hover:border-slate-300 transition-all"
+            className="bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-slate-400 text-base">{kpi.icon}</span>
-              <span className="text-xs text-slate-500 font-medium">{kpi.label}</span>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-slate-400 text-lg">{kpi.icon}</span>
+              <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">{kpi.label}</span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{kpi.value}</p>
+            <p className="text-3xl font-bold text-slate-900">{kpi.value}</p>
           </Link>
         ))}
       </div>
@@ -105,7 +105,7 @@ export default async function AdminHomePage() {
             className="group bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md hover:border-slate-300 transition-all"
           >
             <div
-              className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} text-white mb-4 group-hover:scale-105 transition-transform`}
+              className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${card.color} text-white mb-4 group-hover:scale-105 transition-transform`}
             >
               <span className="material-symbols-outlined">{card.icon}</span>
             </div>

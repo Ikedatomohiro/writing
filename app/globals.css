@@ -158,32 +158,32 @@
   --md3-surface-container-highest: #dbdce4;
 }
 
-/* Tech Theme (Dark Mode) */
+/* Tech Theme (Light) */
 [data-theme="tech"],
 [data-theme="programming"] {
-  --md3-primary: #a9c7ff;
-  --md3-primary-container: #004a93;
-  --md3-on-primary: #002f65;
-  --md3-on-primary-container: #d5e3ff;
-  --md3-secondary: #b4c8e8;
-  --md3-secondary-container: #3c4f6c;
-  --md3-on-secondary: #253d58;
-  --md3-tertiary: #ffb691;
-  --md3-tertiary-container: #6e3410;
-  --md3-on-tertiary: #4a2300;
-  --md3-surface: #191c21;
-  --md3-surface-container: #1d2027;
-  --md3-surface-container-low: #191c21;
-  --md3-surface-container-lowest: #0e1116;
-  --md3-surface-container-high: #282a31;
-  --md3-surface-container-highest: #33353c;
-  --md3-on-surface: #e1e2ea;
-  --md3-on-surface-variant: #c2c6d4;
-  --md3-outline: #8c909e;
-  --md3-outline-variant: #424752;
-  --md3-inverse-surface: #e1e2ea;
-  --md3-inverse-on-surface: #2e3038;
-  --md3-surface-tint: #a9c7ff;
+  --md3-primary: #0055cc;
+  --md3-primary-container: #d5e3ff;
+  --md3-on-primary: #ffffff;
+  --md3-on-primary-container: #001b3f;
+  --md3-secondary: #4a5f83;
+  --md3-secondary-container: #cfe4ff;
+  --md3-on-secondary: #ffffff;
+  --md3-tertiary: #9f4300;
+  --md3-tertiary-container: #ffdcc6;
+  --md3-on-tertiary: #ffffff;
+  --md3-surface: #f5f7ff;
+  --md3-surface-container: #eaecf5;
+  --md3-surface-container-low: #f0f2fb;
+  --md3-surface-container-lowest: #ffffff;
+  --md3-surface-container-high: #e4e6ef;
+  --md3-surface-container-highest: #dfe1ea;
+  --md3-on-surface: #191c21;
+  --md3-on-surface-variant: #424752;
+  --md3-outline: #727783;
+  --md3-outline-variant: #c2c6d4;
+  --md3-inverse-surface: #2e3038;
+  --md3-inverse-on-surface: #f0f0f9;
+  --md3-surface-tint: #0055cc;
 }
 
 /* Health Theme */
