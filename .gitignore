@@ -35,3 +35,7 @@ docs/tasks/
 
 # OMC state
 .omc/
+
+# Playwright
+playwright-report/
+test-results/

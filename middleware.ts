@@ -2,6 +2,14 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
 export default auth((req) => {
+  // E2Eテスト用認証バイパス（dev環境かつE2E_BYPASS_AUTH=1のみ有効）
+  if (
+    process.env.NODE_ENV !== "production" &&
+    process.env.E2E_BYPASS_AUTH === "1"
+  ) {
+    return NextResponse.next();
+  }
+
   const isLoggedIn = !!req.auth;
   const isOnArticles = req.nextUrl.pathname.startsWith("/articles");
   const isOnLogin = req.nextUrl.pathname === "/login";

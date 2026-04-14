@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -26,7 +28,8 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://partner.googleadservices.com https://tpc.googlesyndication.com",
+              // dev mode requires 'unsafe-eval' for Next.js hot reloading / React hydration
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://pagead2.googlesyndication.com https://www.googletagmanager.com https://partner.googleadservices.com https://tpc.googlesyndication.com`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' https://images.unsplash.com https://*.public.blob.vercel-storage.com https://pagead2.googlesyndication.com data:",
               "connect-src 'self' https://*.supabase.co https://pagead2.googlesyndication.com",
