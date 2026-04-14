@@ -103,10 +103,10 @@ export default function SnsPage() {
   };
 
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [
-    { label: "all", value: "all" },
-    { label: "draft", value: "draft" },
-    { label: "queued", value: "queued" },
-    { label: "posted", value: "posted" },
+    { label: "すべて", value: "all" },
+    { label: "下書き", value: "draft" },
+    { label: "予約中", value: "queued" },
+    { label: "投稿済み", value: "posted" },
   ];
 
   if (error) {
@@ -242,6 +242,14 @@ function SeriesCard({
             {series.quality_score != null && (
               <p className="hidden sm:block text-xs text-slate-400 mt-0.5">
                 スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
+              </p>
+            )}
+            {isQueued && index !== undefined && (
+              <p
+                data-testid="scheduled-time"
+                className="hidden sm:block text-xs text-slate-400 mt-0.5"
+              >
+                予定: {new Date(Date.now() + (index + 1) * 2 * 3600 * 1000).toLocaleString("ja-JP", { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })}頃
               </p>
             )}
           </div>

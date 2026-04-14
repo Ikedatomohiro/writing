@@ -99,10 +99,10 @@ describe("XPage", () => {
   it("ステータスタブが表示される", async () => {
     render(<XPage />);
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "all" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "draft" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "posted" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "すべて" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "下書き" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "予約中" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "投稿済み" })).toBeInTheDocument();
     });
   });
 

@@ -79,8 +79,8 @@ describe("SnsPage", () => {
   it("allタブでシリーズ全件を表示する", async () => {
     const user = userEvent.setup();
     render(<SnsPage />);
-    await waitFor(() => screen.getByRole("button", { name: "all" }));
-    await user.click(screen.getByRole("button", { name: "all" }));
+    await waitFor(() => screen.getByRole("button", { name: "すべて" }));
+    await user.click(screen.getByRole("button", { name: "すべて" }));
     await waitFor(() => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
       expect(screen.getByText("テストテーマ2")).toBeInTheDocument();
@@ -104,10 +104,10 @@ describe("SnsPage", () => {
   it("ステータスタブが表示される", async () => {
     render(<SnsPage />);
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "all" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "draft" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "posted" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "すべて" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "下書き" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "予約中" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "投稿済み" })).toBeInTheDocument();
     });
   });
 
@@ -116,10 +116,10 @@ describe("SnsPage", () => {
     render(<SnsPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "queued" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "予約中" })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "queued" }));
+    await user.click(screen.getByRole("button", { name: "予約中" }));
 
     await waitFor(() => {
       expect(screen.getByText("テストテーマ2")).toBeInTheDocument();

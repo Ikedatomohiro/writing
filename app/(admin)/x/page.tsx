@@ -19,10 +19,10 @@ function formatCreatedAt(iso: string): string {
 }
 
 const TABS: Array<{ label: string; value: XSeriesStatus | "all" | "posted" }> = [
-  { label: "all", value: "all" },
-  { label: "draft", value: "draft" },
-  { label: "queued", value: "queued" },
-  { label: "posted", value: "posted" },
+  { label: "すべて", value: "all" },
+  { label: "下書き", value: "draft" },
+  { label: "予約中", value: "queued" },
+  { label: "投稿済み", value: "posted" },
 ];
 
 export default function XPage() {
