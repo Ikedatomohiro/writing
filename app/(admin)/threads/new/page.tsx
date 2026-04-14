@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsPostType } from "@/lib/types/sns";
 
+const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
+type Account = typeof ACCOUNTS[number];
+
 interface PostDraft {
   text: string;
   type: SnsPostType;
@@ -12,6 +15,7 @@ interface PostDraft {
 
 export default function SnsNewPage() {
   const router = useRouter();
+  const [account, setAccount] = useState<Account>("pao-pao-cho");
   const [theme, setTheme] = useState("");
   const [pattern, setPattern] = useState("");
   const [parentPost, setParentPost] = useState<PostDraft>({ text: "", type: "normal" });
@@ -47,12 +51,12 @@ export default function SnsNewPage() {
       const res = await fetch("/api/threads/series", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme: theme || undefined, pattern: pattern || undefined, posts }),
+        body: JSON.stringify({ account, theme: theme || undefined, pattern: pattern || undefined, posts }),
       });
 
       if (!res.ok) throw new Error("Failed to create");
       const json = await res.json();
-      router.push(`/sns/${json.data.id}`);
+      router.push(`/threads/${json.data.id}`);
     } catch {
       setError("シリーズの作成に失敗しました");
     } finally {
@@ -69,6 +73,20 @@ export default function SnsNewPage() {
       )}
 
       <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-5">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            アカウント <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={account}
+            onChange={(e) => setAccount(e.target.value as Account)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {ACCOUNTS.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">テーマ</label>
           <input
