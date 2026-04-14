@@ -148,7 +148,7 @@ export default function ArticleDetailPage() {
         </div>
       )}
 
-      <div className="border border-outline-variant/20 rounded-xl p-6 mb-6 min-h-[300px] whitespace-pre-wrap bg-surface-container-lowest text-on-surface font-mono text-sm">
+      <div className="border border-outline-variant/20 rounded-xl p-6 mb-6 min-h-[300px] whitespace-pre-wrap bg-surface-container-lowest text-on-surface font-body text-sm leading-relaxed">
         {article.content || (
           <span className="text-on-surface-variant italic">本文なし</span>
         )}

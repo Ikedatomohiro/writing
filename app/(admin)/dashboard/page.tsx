@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 
 interface PlatformCard {
   label: string;
@@ -32,15 +33,69 @@ const PLATFORM_CARDS: PlatformCard[] = [
   },
 ];
 
-export default function AdminHomePage() {
+interface KpiCount {
+  label: string;
+  value: number;
+  href: string;
+  icon: string;
+}
+
+async function fetchCount(url: string): Promise<number> {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return 0;
+    const json = await res.json();
+    return Array.isArray(json.data) ? json.data.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export default async function AdminHomePage() {
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "localhost:3000";
+  const protocol = host.startsWith("localhost") ? "http" : "https";
+  const base = `${protocol}://${host}`;
+
+  const [threadsDraft, threadsQueued, xDraft, xQueued] = await Promise.all([
+    fetchCount(`${base}/api/threads/series?status=draft`),
+    fetchCount(`${base}/api/threads/series?status=queued`),
+    fetchCount(`${base}/api/x/series?status=draft`),
+    fetchCount(`${base}/api/x/series?status=queued`),
+  ]);
+
+  const kpiItems: KpiCount[] = [
+    { label: "Threads 下書き", value: threadsDraft, href: "/threads", icon: "forum" },
+    { label: "Threads 予約中", value: threadsQueued, href: "/threads", icon: "schedule" },
+    { label: "X 下書き", value: xDraft, href: "/x", icon: "alternate_email" },
+    { label: "X 予約中", value: xQueued, href: "/x", icon: "schedule_send" },
+  ];
+
   return (
     <div>
       <h2 className="text-2xl font-bold font-headline text-on-surface mb-2">
-        Dashboard
+        ダッシュボード
       </h2>
       <p className="text-slate-500 text-sm mb-8">
         管理するプラットフォームを選択してください。
       </p>
+
+      {/* KPI Section */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        {kpiItems.map((kpi) => (
+          <Link
+            key={kpi.label}
+            href={kpi.href}
+            className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-sm hover:border-slate-300 transition-all"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-slate-400 text-base">{kpi.icon}</span>
+              <span className="text-xs text-slate-500 font-medium">{kpi.label}</span>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{kpi.value}</p>
+          </Link>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {PLATFORM_CARDS.map((card) => (
