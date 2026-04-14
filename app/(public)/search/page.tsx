@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/content/api";
 import type { ArticleMeta, Category } from "@/lib/content/types";
-import { SITE_CONFIG } from "@/lib/constants/site";
+import { SITE_CONFIG, CATEGORIES, HIDDEN_CATEGORIES } from "@/lib/constants/site";
 
 export const metadata: Metadata = {
   title: `Search - ${SITE_CONFIG.name}`,
@@ -24,10 +24,8 @@ const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 const FILTER_OPTIONS: { label: string; value: string }[] = [
-  { label: "All", value: "all" },
-  { label: "Health", value: "health" },
-  { label: "Finance", value: "asset" },
-  { label: "Tech", value: "tech" },
+  { label: "すべて", value: "all" },
+  ...CATEGORIES.map((c) => ({ label: c.label, value: c.slug })),
 ];
 
 function filterArticles(
@@ -35,7 +33,9 @@ function filterArticles(
   query: string,
   category: string
 ): ArticleMeta[] {
-  let filtered = articles;
+  let filtered = articles.filter(
+    (article) => !HIDDEN_CATEGORIES.has(article.category)
+  );
 
   if (query) {
     const lowerQuery = query.toLowerCase();
@@ -72,17 +72,33 @@ function SearchHeader({
 }) {
   return (
     <header className="mb-12">
-      <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface mb-2">
-        Search Results
+      <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface mb-4">
+        記事を検索
       </h1>
+      <form method="get" action="/search" className="mb-4">
+        <div className="relative max-w-xl">
+          <span
+            aria-hidden="true"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-outline material-symbols-outlined text-lg"
+          >
+            search
+          </span>
+          <input
+            type="text"
+            name="q"
+            defaultValue={query}
+            placeholder="キーワードを入力..."
+            className="w-full pl-10 pr-4 py-3 bg-surface-container border border-outline-variant/30 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+      </form>
       {query ? (
         <p className="font-body text-on-surface-variant">
-          Showing {totalResults} result{totalResults !== 1 ? "s" : ""} for{" "}
-          <span className="font-bold text-primary">&apos;{query}&apos;</span>
+          <span className="font-bold text-primary">&apos;{query}&apos;</span> の検索結果: {totalResults}件
         </p>
       ) : (
         <p className="font-body text-on-surface-variant">
-          Browse all {totalResults} articles
+          全 {totalResults} 件の記事
         </p>
       )}
     </header>
