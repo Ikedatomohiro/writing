@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import type { SnsPostType } from "@/lib/types/sns";
+import { POST_TYPE_LABELS } from "@/lib/constants/labels";
 
 const POST_TYPES: SnsPostType[] = ["normal", "comment_hook", "thread", "affiliate"];
 const MAX_CHARS = 500;
@@ -61,7 +62,7 @@ export function PostEditor({
           >
             {POST_TYPES.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {POST_TYPE_LABELS[t]}
               </option>
             ))}
           </select>

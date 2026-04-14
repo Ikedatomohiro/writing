@@ -4,6 +4,7 @@ import { useState, useId } from "react";
 import { useRouter } from "next/navigation";
 import { PostEditor } from "@/components/sns/PostEditor";
 import type { SnsPostType } from "@/lib/types/sns";
+import { getAccountLabel } from "@/lib/constants/labels";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
 type Account = typeof ACCOUNTS[number];
@@ -90,7 +91,7 @@ export default function SnsNewPage() {
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             {ACCOUNTS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+              <option key={a} value={a}>{getAccountLabel(a)}</option>
             ))}
           </select>
         </div>
@@ -101,7 +102,7 @@ export default function SnsNewPage() {
             type="text"
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
-            placeholder="テーマを入力..."
+            placeholder="例: 日常の気づき / 生活改善実験"
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           />
         </div>
@@ -112,7 +113,7 @@ export default function SnsNewPage() {
             type="text"
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
-            placeholder="パターンを入力..."
+            placeholder="例: 体験談 / How-to / 比較"
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           />
         </div>

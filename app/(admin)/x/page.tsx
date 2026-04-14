@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { getAccountLabel } from "@/lib/constants/labels";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { ErrorState } from "@/components/common/ErrorState";
@@ -133,7 +134,7 @@ export default function XPage() {
           >
             {ACCOUNTS.map((a) => (
               <option key={a} value={a}>
-                {a}
+                {getAccountLabel(a)}
               </option>
             ))}
           </select>
