@@ -119,7 +119,7 @@ export default function SnsNewPage() {
           {childPosts.map((post, index) => (
             <div key={index} className="bg-white border border-slate-200 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-400 font-mono">#{index + 1}</span>
+                <span className="text-sm font-semibold text-slate-600 px-2 py-0.5 rounded-full bg-slate-100">#{index + 1}</span>
                 <button
                   onClick={() => handleRemoveChild(index)}
                   className="p-1 rounded text-red-500 hover:bg-red-50"
