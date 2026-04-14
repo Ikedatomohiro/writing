@@ -48,7 +48,7 @@ describe("AdminLayout", () => {
     expect(screen.getByLabelText("サイドバーを開閉")).toBeInTheDocument();
   });
 
-  it("ハンバーガーボタンをクリックするとサイドバーが非表示になる", async () => {
+  it("ハンバーガーボタンをクリックするとモバイルオーバーレイとしてサイドバーが開く", async () => {
     const user = userEvent.setup();
     render(
       <AdminLayout>
@@ -57,14 +57,16 @@ describe("AdminLayout", () => {
     );
 
     const sidebar = screen.getByTestId("admin-sidebar");
-    expect(sidebar).toBeVisible();
+    // 初期状態: hidden sm:flex クラスを持つ（デスクトップでは sm:flex が有効）
+    expect(sidebar).toHaveClass("hidden");
 
     await user.click(screen.getByLabelText("サイドバーを開閉"));
 
-    expect(sidebar).toHaveClass("hidden");
+    // open=true: !flex クラスが追加されてモバイルでも表示
+    expect(sidebar).toHaveClass("!flex");
   });
 
-  it("サイドバーを閉じた後、再度クリックで開く", async () => {
+  it("サイドバーを開いた後、再度クリックで閉じる", async () => {
     const user = userEvent.setup();
     render(
       <AdminLayout>
@@ -75,12 +77,12 @@ describe("AdminLayout", () => {
     const toggleBtn = screen.getByLabelText("サイドバーを開閉");
     const sidebar = screen.getByTestId("admin-sidebar");
 
-    // 閉じる
-    await user.click(toggleBtn);
-    expect(sidebar).toHaveClass("hidden");
-
     // 開く
     await user.click(toggleBtn);
-    expect(sidebar).not.toHaveClass("hidden");
+    expect(sidebar).toHaveClass("!flex");
+
+    // 閉じる
+    await user.click(toggleBtn);
+    expect(sidebar).not.toHaveClass("!flex");
   });
 });

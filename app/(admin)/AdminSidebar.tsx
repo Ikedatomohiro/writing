@@ -5,22 +5,27 @@ import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard" },
-  { icon: "article", label: "All Posts", href: "/articles" },
-  { icon: "monitoring", label: "Analytics", href: "/articles" },
-  { icon: "category", label: "Categories", href: "/articles" },
+  { icon: "article", label: "Articles", href: "/articles" },
   { icon: "forum", label: "Threads", href: "/threads" },
   { icon: "alternate_email", label: "X", href: "/x" },
-  { icon: "settings", label: "Settings", href: "/articles" },
 ] as const;
 
 export function AdminSidebar({ open }: { open: boolean }) {
   const pathname = usePathname();
 
   return (
-    <aside
-      data-testid="admin-sidebar"
-      className={`h-screen w-64 border-r border-slate-200 bg-slate-50 flex flex-col py-6 px-4 shrink-0 sticky top-0${open ? "" : " hidden"}`}
-    >
+    <>
+      {/* モバイル: open時にオーバーレイ背景 */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 sm:hidden"
+          aria-hidden="true"
+        />
+      )}
+      <aside
+        data-testid="admin-sidebar"
+        className={`h-screen w-64 border-r border-slate-200 bg-slate-50 flex-col py-6 px-4 shrink-0 sticky top-0 hidden sm:flex${open ? " !flex fixed inset-y-0 left-0 z-50 sm:static sm:z-auto" : ""}`}
+      >
       <div className="mb-10 px-3">
         <h1 className="text-lg font-bold text-slate-900 font-headline">
           Editorial Admin
@@ -58,17 +63,28 @@ export function AdminSidebar({ open }: { open: boolean }) {
           <span className="material-symbols-outlined text-sm">add</span>
           New Post
         </Link>
-        <SidebarLink icon="account_circle" label="Account" />
-        <SidebarLink icon="help" label="Help" />
-        <SidebarLink icon="logout" label="Logout" />
+        <SidebarLink icon="account_circle" label="Account" disabled />
+        <SidebarLink icon="help" label="Help" disabled />
+        <Link
+          href="/login"
+          className="w-full flex items-center gap-3 text-slate-500 p-3 hover:text-slate-900 transition-all font-medium text-sm"
+        >
+          <span className="material-symbols-outlined">logout</span>
+          <span>Logout</span>
+        </Link>
       </div>
     </aside>
+    </>
   );
 }
 
-function SidebarLink({ icon, label }: { icon: string; label: string }) {
+function SidebarLink({ icon, label, disabled = false }: { icon: string; label: string; disabled?: boolean }) {
   return (
-    <button className="w-full flex items-center gap-3 text-slate-500 p-3 hover:text-slate-900 transition-all font-medium text-sm">
+    <button
+      disabled={disabled}
+      aria-disabled={disabled ? "true" : undefined}
+      className={`w-full flex items-center gap-3 p-3 transition-all font-medium text-sm${disabled ? " text-slate-300 opacity-40 cursor-not-allowed" : " text-slate-500 hover:text-slate-900"}`}
+    >
       <span className="material-symbols-outlined">{icon}</span>
       <span>{label}</span>
     </button>
