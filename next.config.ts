@@ -30,11 +30,11 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // dev mode requires 'unsafe-eval' for Next.js hot reloading / React hydration
               `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://pagead2.googlesyndication.com https://www.googletagmanager.com https://partner.googleadservices.com https://tpc.googlesyndication.com`,
-              "style-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' https://images.unsplash.com https://*.public.blob.vercel-storage.com https://pagead2.googlesyndication.com data:",
               "connect-src 'self' https://*.supabase.co https://pagead2.googlesyndication.com",
               "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
-              "font-src 'self' data:",
+              "font-src 'self' data: https://fonts.gstatic.com",
             ].join("; "),
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
