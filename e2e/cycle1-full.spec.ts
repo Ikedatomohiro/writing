@@ -88,7 +88,7 @@ test.describe("cycle1: admin desktop", () => {
     await page.evaluate(() => sessionStorage.clear());
     await page.reload();
     await settle(page);
-    await page.getByRole("button", { name: "queued" }).click().catch(() => {});
+    await page.getByRole("button", { name: "予約中" }).click().catch(() => {});
     await settle(page);
     await shot(page, "06-threads-queued-desktop");
   });
@@ -99,7 +99,7 @@ test.describe("cycle1: admin desktop", () => {
     await page.evaluate(() => sessionStorage.clear());
     await page.reload();
     await settle(page);
-    await page.getByRole("button", { name: "posted" }).click().catch(() => {});
+    await page.getByRole("button", { name: "投稿済み" }).click().catch(() => {});
     await settle(page);
     await shot(page, "07-threads-posted-desktop");
   });
@@ -110,7 +110,7 @@ test.describe("cycle1: admin desktop", () => {
     await page.evaluate(() => sessionStorage.clear());
     await page.reload();
     await settle(page);
-    await page.getByRole("button", { name: "all" }).click().catch(() => {});
+    await page.getByRole("button", { name: "すべて" }).click().catch(() => {});
     await settle(page);
     await shot(page, "08-threads-all-desktop");
   });
