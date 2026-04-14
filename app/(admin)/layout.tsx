@@ -14,7 +14,13 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // hydration後にlocalStorageから状態を復元（mismatch回避）
+  // モバイル（sm未満）では初期値を常に閉じた状態にする
   useEffect(() => {
+    const isMobile = !window.matchMedia("(min-width: 640px)").matches;
+    if (isMobile) {
+      setSidebarOpen(false);
+      return;
+    }
     const stored = localStorage.getItem("sidebar_open");
     if (stored !== null) {
       setSidebarOpen(stored === "true");

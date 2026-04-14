@@ -36,7 +36,14 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
       )}
       <aside
         data-testid="admin-sidebar"
-        className={`h-screen w-64 border-r border-slate-200 bg-slate-50 flex-col py-6 px-4 shrink-0 sticky top-0 hidden sm:flex${open ? " !flex fixed inset-y-0 left-0 z-50 sm:static sm:z-auto" : ""}`}
+        className={[
+          "h-screen w-64 border-r border-slate-200 bg-slate-50 flex-col py-6 px-4 shrink-0 transition-transform duration-200",
+          // デスクトップ: sticky push レイアウト（常に表示）
+          "sm:sticky sm:top-0 sm:flex sm:translate-x-0",
+          // モバイル: fixed overlay
+          "fixed inset-y-0 left-0 z-50",
+          open ? "flex translate-x-0" : "hidden -translate-x-full sm:flex sm:translate-x-0",
+        ].join(" ")}
       >
       <div className="mb-10 px-3">
         <h1 className="text-lg font-bold text-slate-900 font-headline">

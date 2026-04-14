@@ -57,13 +57,14 @@ describe("AdminLayout", () => {
     );
 
     const sidebar = screen.getByTestId("admin-sidebar");
-    // 初期状態: hidden sm:flex クラスを持つ（デスクトップでは sm:flex が有効）
+    // 初期状態: hidden クラスを持つ（モバイルでは閉じている）
     expect(sidebar).toHaveClass("hidden");
 
     await user.click(screen.getByLabelText("サイドバーを開閉"));
 
-    // open=true: !flex クラスが追加されてモバイルでも表示
-    expect(sidebar).toHaveClass("!flex");
+    // open=true: flex と translate-x-0 が付きモバイルでも表示
+    expect(sidebar).toHaveClass("flex");
+    expect(sidebar).toHaveClass("translate-x-0");
   });
 
   it("サイドバーを開いた後、再度クリックで閉じる", async () => {
@@ -79,10 +80,10 @@ describe("AdminLayout", () => {
 
     // 開く
     await user.click(toggleBtn);
-    expect(sidebar).toHaveClass("!flex");
+    expect(sidebar).toHaveClass("flex");
 
     // 閉じる
     await user.click(toggleBtn);
-    expect(sidebar).not.toHaveClass("!flex");
+    expect(sidebar).toHaveClass("hidden");
   });
 });
