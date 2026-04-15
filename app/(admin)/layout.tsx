@@ -13,25 +13,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
 
-  // hydration後にlocalStorageから状態を復元（mismatch回避）
-  // モバイル（sm未満）では初期値を常に閉じた状態にする
   useEffect(() => {
-    const isMobile = !window.matchMedia("(min-width: 640px)").matches;
-    if (isMobile) {
-      setSidebarOpen(false);
-      return;
-    }
-    const stored = localStorage.getItem("sidebar_open");
-    if (stored !== null) {
-      setSidebarOpen(stored === "true");
-    }
+    const stored = localStorage.getItem("sidebar_collapsed");
+    if (stored !== null) setSidebarCollapsed(stored === "true");
   }, []);
 
-  const handleToggleSidebar = () => {
-    setSidebarOpen((prev) => {
+  const handleToggleSidebar = () => setSidebarOpen((prev) => !prev);
+
+  const handleToggleCollapsed = () => {
+    setSidebarCollapsed((prev) => {
       const next = !prev;
-      localStorage.setItem("sidebar_open", String(next));
+      localStorage.setItem("sidebar_collapsed", String(next));
       return next;
     });
   };
@@ -40,7 +34,12 @@ export default function AdminLayout({
     <SessionProvider>
       <ToastProvider>
       <div className="flex min-h-screen bg-surface text-on-surface">
-        <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar
+          open={sidebarOpen}
+          collapsed={sidebarCollapsed}
+          onClose={() => setSidebarOpen(false)}
+          onToggleCollapsed={handleToggleCollapsed}
+        />
         <main className="flex-1 bg-surface-container-low min-w-0 overflow-y-auto flex flex-col">
           <AdminHeader onToggleSidebar={handleToggleSidebar} sidebarOpen={sidebarOpen} />
           <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full space-y-8">{children}</div>

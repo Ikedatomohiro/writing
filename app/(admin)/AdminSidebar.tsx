@@ -2,21 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ComponentType, type SVGProps } from "react";
 import { SITE_CONFIG } from "@/lib/constants/site";
+import {
+  DashboardIcon,
+  ArticleIcon,
+  ThreadsIcon,
+  XIcon,
+  LogoutIcon,
+  PlusIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@/components/icons/NavIcons";
 
-const NAV_ITEMS = [
-  { icon: "dashboard", label: "ダッシュボード", href: "/dashboard" },
-  { icon: "article", label: "記事一覧", href: "/articles" },
-  { icon: "forum", label: "Threads", href: "/threads" },
-  { icon: "alternate_email", label: "X", href: "/x" },
-] as const;
+type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 
-export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+const NAV_ITEMS: { Icon: IconComponent; label: string; href: string }[] = [
+  { Icon: DashboardIcon, label: "ダッシュボード", href: "/dashboard" },
+  { Icon: ArticleIcon, label: "記事", href: "/articles" },
+  { Icon: ThreadsIcon, label: "Threads", href: "/threads" },
+  { Icon: XIcon, label: "X", href: "/x" },
+];
+
+export function AdminSidebar({
+  open,
+  collapsed,
+  onClose,
+  onToggleCollapsed,
+}: {
+  open: boolean;
+  collapsed: boolean;
+  onClose: () => void;
+  onToggleCollapsed: () => void;
+}) {
   const pathname = usePathname();
   const firstNavRef = useRef<HTMLAnchorElement>(null);
 
-  // Esc to close
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,56 +47,18 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  // Focus first nav item on open (mobile only)
   useEffect(() => {
     if (open && window.matchMedia("(max-width: 639px)").matches) {
-      // Small timeout to let the element become visible first
       const timer = setTimeout(() => firstNavRef.current?.focus(), 50);
       return () => clearTimeout(timer);
     }
   }, [open]);
 
-  // Focus trap inside sidebar on mobile open
-  useEffect(() => {
-    if (!open) return;
-    const isMobile = window.matchMedia("(max-width: 639px)").matches;
-    if (!isMobile) return;
-
-    const sidebar = document.getElementById("admin-sidebar");
-    if (!sidebar) return;
-
-    const handleTabTrap = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      const tabbable = Array.from(
-        sidebar.querySelectorAll<HTMLElement>(
-          "a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])"
-        )
-      ).filter((el) => el.offsetParent !== null);
-      if (tabbable.length === 0) return;
-
-      const first = tabbable[0];
-      const last = tabbable[tabbable.length - 1];
-
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleTabTrap);
-    return () => document.removeEventListener("keydown", handleTabTrap);
-  }, [open]);
+  const widthClass = collapsed ? "sm:w-16" : "sm:w-60";
+  const showLabels = !collapsed;
 
   return (
     <>
-      {/* モバイル: open時にオーバーレイ背景 */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/30 sm:hidden"
@@ -90,62 +73,90 @@ export function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => 
         aria-modal={open ? "true" : undefined}
         aria-label="メインナビゲーション"
         className={[
-          "h-screen w-64 border-r border-slate-200 bg-slate-50 flex-col py-6 px-4 shrink-0 transition-transform duration-200",
-          // デスクトップ: sticky push レイアウト（常に表示）
+          "h-screen border-r border-slate-200 bg-slate-50 flex-col py-4 px-2 shrink-0 transition-[width,transform] duration-200 ease-out",
+          "w-60",
+          widthClass,
           "sm:sticky sm:top-0 sm:flex sm:translate-x-0",
-          // モバイル: fixed overlay
           "fixed inset-y-0 left-0 z-50",
           open ? "flex translate-x-0" : "hidden -translate-x-full sm:flex sm:translate-x-0",
         ].join(" ")}
       >
-      <div className="mb-10 px-3">
-        <h1 className="text-lg font-bold text-slate-900 font-headline">
-          {SITE_CONFIG.name} Admin
-        </h1>
-        <p className="text-xs text-slate-500 font-label uppercase tracking-widest mt-1">
-          管理ダッシュボード
-        </p>
-      </div>
+        {/* ヘッダー: ブランド + 折りたたみトグル */}
+        <div className={`flex items-center gap-2 px-2 mb-6 ${collapsed ? "sm:justify-center" : "justify-between"}`}>
+          {showLabels && (
+            <div className="min-w-0">
+              <h1 className="text-sm font-bold text-slate-900 font-headline truncate">
+                {SITE_CONFIG.name}
+              </h1>
+              <p className="text-[10px] text-slate-500 font-label uppercase tracking-widest">
+                Admin
+              </p>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={onToggleCollapsed}
+            aria-label={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+            title={collapsed ? "展開" : "折りたたむ"}
+            className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          >
+            {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </button>
+        </div>
 
-      <nav className="flex-1 space-y-1" aria-label="メインメニュー">
-        {NAV_ITEMS.map((item, i) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              ref={i === 0 ? firstNavRef : undefined}
-              aria-current={isActive ? "page" : undefined}
-              className={
-                isActive
-                  ? "flex items-center gap-3 bg-white text-blue-600 shadow-sm rounded-xl p-3 min-h-[44px] translate-x-1 transition-transform font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  : "flex items-center gap-3 text-slate-500 p-3 min-h-[44px] hover:text-slate-900 hover:bg-slate-200/50 transition-all font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              }
-            >
-              <span className="material-symbols-outlined">{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
+        <nav className="flex-1 space-y-1" aria-label="メインメニュー">
+          {NAV_ITEMS.map(({ Icon, label, href }, i) => {
+            const isActive = pathname === href || pathname?.startsWith(href + "/");
+            return (
+              <Link
+                key={label}
+                href={href}
+                ref={i === 0 ? firstNavRef : undefined}
+                aria-current={isActive ? "page" : undefined}
+                title={collapsed ? label : undefined}
+                className={[
+                  "group relative flex items-center rounded-xl min-h-[44px] text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                  collapsed ? "sm:justify-center sm:px-0" : "gap-3 px-3",
+                  "px-3 gap-3",
+                  isActive
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60",
+                ].join(" ")}
+              >
+                <Icon className="shrink-0" />
+                {showLabels && <span className="truncate">{label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
 
-      <div className="mt-auto space-y-1 pt-6 border-t border-slate-200">
-        <Link
-          href="/articles/new"
-          className="w-full mb-4 bg-gradient-to-br from-primary to-primary-container text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          新規記事
-        </Link>
-        <Link
-          href="/login"
-          className="w-full flex items-center gap-3 text-slate-500 p-3 min-h-[44px] hover:text-slate-900 transition-all font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-        >
-          <span className="material-symbols-outlined">logout</span>
-          <span>Logout</span>
-        </Link>
-      </div>
-    </aside>
+        <div className="mt-auto space-y-1 pt-4 border-t border-slate-200">
+          <Link
+            href="/articles/new"
+            title={collapsed ? "新規記事" : undefined}
+            className={[
+              "w-full mb-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm flex items-center min-h-[44px] shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+              collapsed ? "sm:justify-center sm:px-0" : "justify-center gap-2 px-3",
+              "justify-center gap-2 px-3",
+            ].join(" ")}
+          >
+            <PlusIcon className="shrink-0" />
+            {showLabels && <span>新規記事</span>}
+          </Link>
+          <Link
+            href="/login"
+            title={collapsed ? "ログアウト" : undefined}
+            className={[
+              "w-full flex items-center rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 min-h-[44px] text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+              collapsed ? "sm:justify-center sm:px-0" : "gap-3 px-3",
+              "gap-3 px-3",
+            ].join(" ")}
+          >
+            <LogoutIcon className="shrink-0" />
+            {showLabels && <span>ログアウト</span>}
+          </Link>
+        </div>
+      </aside>
     </>
   );
 }
