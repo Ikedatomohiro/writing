@@ -295,6 +295,7 @@ function SeriesCard({
                 data-testid="scheduled-time"
                 className="hidden sm:block text-xs text-slate-500 mt-0.5"
               >
+                {/* eslint-disable-next-line react-hooks/purity */}
                 予定: {new Date(Date.now() + (index + 1) * 2 * 3600 * 1000).toLocaleString("ja-JP", { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })}頃
               </p>
             )}

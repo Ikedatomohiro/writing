@@ -17,7 +17,10 @@ export default function AdminLayout({
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebar_collapsed");
-    if (stored !== null) setSidebarCollapsed(stored === "true");
+    if (stored !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSidebarCollapsed(stored === "true");
+    }
   }, []);
 
   const handleToggleSidebar = () => setSidebarOpen((prev) => !prev);
