@@ -7,11 +7,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/articles", "/login"],
+        disallow: ["/articles", "/login", "/health", "/asset"],
       },
       {
         userAgent: "Mediapartners-Google",
         allow: "/",
+        disallow: ["/health", "/asset"],
       },
     ],
     sitemap: `${SITE_CONFIG.url}/sitemap.xml`,
