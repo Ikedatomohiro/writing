@@ -15,14 +15,14 @@ function HeroSection() {
           このブログについて
         </span>
         <h1 className="font-headline text-6xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-[0.9] mb-8">
-          日々の気づきを<br />
+          現役エンジニアの<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-container">
             {SITE_CONFIG.name}
           </span>
         </h1>
         <p className="font-body text-xl leading-relaxed text-on-surface-variant max-w-2xl">
-          ライター・松本翔が日常の観察と思索を綴るノート。
-          仙台生まれ、50代。書くことで考え、考えることで書く。
+          36歳で異業種からエンジニアに転職した筆者が、
+          Claude Code / MCP / AIエージェント時代の実践を等身大で書くノート。
         </p>
       </div>
     </section>
@@ -37,13 +37,13 @@ function ProfileSection() {
           <div className="aspect-square bg-surface-container-highest rounded-xl overflow-hidden shadow-2xl">
             <div className="w-full h-full bg-gradient-to-br from-surface-container to-surface-container-highest flex items-center justify-center">
               <span className="text-on-surface-variant text-6xl font-headline font-bold">
-                翔
+                pao
               </span>
             </div>
           </div>
           <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-primary-container rounded-xl p-6 shadow-xl flex items-end">
             <p className="text-on-primary font-headline font-bold leading-tight">
-              書くことは、考えること。
+              まずClaude Codeにやらせてみよう。
             </p>
           </div>
         </div>
@@ -53,20 +53,24 @@ function ProfileSection() {
           </h2>
           <div className="space-y-6 font-body text-lg leading-relaxed text-on-surface-variant">
             <p>
-              松本翔（まつもと しょう）。1974年生まれ、宮城県仙台市出身。
-              フリーランスのライターとして、テクノロジー・ライフスタイル・思索の交差点にある
-              テーマを扱ってきた。
+              <span className="font-bold text-on-surface">pao.cho</span>。
+              1982年生まれ、40代の現役エンジニア。新卒で一部上場メーカーの
+              技術営業部に入り、化学系の仕事を13年経験した後、
+              36歳でプログラミング学習を開始。37歳で異業種からエンジニアに転職した。
             </p>
             <p>
-              このブログ{" "}
-              <span className="font-bold text-on-surface">{SITE_CONFIG.name}</span>{" "}
-              は、日々の気づきや読書メモ、仕事の裏側で考えたことを
-              気軽にまとめる場所として始めた。完成した原稿ではなく、
-              思考の途中経過を残しておく「ノート」として。
+              現在は三井物産スピンアウトのSaaS企業で、
+              生成AI活用推進・OCR×LLM・RAG基盤など、
+              AIをプロダクトに組み込む仕事を担当している。
+              Claude Code MAXプランを日常の開発OSにして、
+              自分で書くより「まずAIにやらせる」働き方を実践中。
             </p>
             <p>
-              書くことで考えが整理され、整理された考えがまた新しい問いを生む。
-              そのサイクルを読者と一緒に楽しめたらと思っている。
+              ブログ <span className="font-bold text-on-surface">{SITE_CONFIG.name}</span> は、
+              現場で試して効いたこと・失敗したこと・ツールの選別を、
+              同じく現役で戦うエンジニア向けに記録する場所。
+              投資で合計950万円を溶かした経験や、AI時代の生き残り戦略も、
+              感情論ではなく手を動かして得た一次情報として書いていく。
             </p>
           </div>
         </div>

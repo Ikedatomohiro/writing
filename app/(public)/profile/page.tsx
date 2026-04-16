@@ -3,7 +3,7 @@ import { SITE_CONFIG } from "@/lib/constants/site";
 
 export const metadata = {
   title: "プロフィール",
-  description: `${SITE_CONFIG.name}の運営者プロフィール`,
+  description: `${SITE_CONFIG.name}の運営者プロフィール — 36歳未経験からエンジニア転職、現役SaaS、AI活用を担当`,
   alternates: {
     canonical: "/profile",
   },
@@ -30,31 +30,43 @@ export default function ProfilePage() {
       <h1 style={{ fontSize: "1.75rem", marginBottom: "1rem" }}>プロフィール</h1>
 
       <p style={{ marginBottom: "2rem", color: "var(--text-secondary, #666)" }}>
-        「{SITE_CONFIG.name}」の運営者についてご紹介します。
+        「{SITE_CONFIG.name}」を書いている pao.cho の自己紹介です。
       </p>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>自己紹介</h2>
-        <p>
-          40代のエンジニア。
-          過去に投資で大きな失敗を経験したことをきっかけに、
-          お金・技術・健康について真剣に向き合うようになりました。
-          失敗から学んだことを等身大で発信しています。
+        <h2 style={headingStyle}>経歴</h2>
+        <ul style={{ lineHeight: 1.8, paddingLeft: "1.5rem" }}>
+          <li>2006年、一部上場メーカーに新卒入社。技術営業部で化学系の仕事を13年</li>
+          <li>2018年、36歳でプログラミング学習を開始。Udemyで挫折→プログラミングスクールでRuby on Rails習得</li>
+          <li>2019年、37歳で異業種からエンジニア転職。年収700万→400万に下がるも一度も後悔なし</li>
+          <li>現在は三井物産スピンアウトのSaaS企業で、生成AI活用推進・OCR×LLM・RAG基盤などを担当</li>
+          <li>フルリモート勤務、副業でプログラミング講師・メンター</li>
+        </ul>
+      </section>
+
+      <section style={sectionStyle}>
+        <h2 style={headingStyle}>投資で合計950万円を溶かした話</h2>
+        <p style={{ lineHeight: 1.8 }}>
+          2007年、50万円の情報商材を買ってスイングトレードで200万円を失いました。
+          その後ソーシャルレンディング（トラストレンディング）に900万円を投資し、
+          750万円が戻ってきませんでした。合計950万円の損失を経て、
+          現在は新NISAでS&P500一本に絞ったインデックス投資に落ち着いています。
+          投資の失敗から学んだことは、記事では裏側として書くことがあります。
         </p>
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={headingStyle}>ブログについて</h2>
-        <p>
-          このブログでは、プログラミング・資産形成・健康を中心に、
-          実体験をもとにした情報を発信しています。
-          ご質問やご要望がありましたら、
+        <h2 style={headingStyle}>このブログについて</h2>
+        <p style={{ lineHeight: 1.8 }}>
+          {SITE_CONFIG.name} は、現役エンジニアとして Claude Code / MCP / AIエージェント /
+          Agent SDK などを業務で使って得た実践的な知見を、
+          同じく現場で戦うエンジニア向けに記録する場所です。
+          机上の論ではなく、手を動かして効いたこと・効かなかったことを書いていきます。
+          ご質問やご要望は
           <Link href="/contact">お問い合わせ</Link>
-          よりご連絡ください。
+          からどうぞ。
         </p>
       </section>
-
-
     </main>
   );
 }
