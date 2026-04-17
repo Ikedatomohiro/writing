@@ -64,3 +64,213 @@
     no 3D render, no glossy AI skin textures, no children''s book style,
 
     no text of any language visible on books or paper.'
+- kind: illustration_a
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: a flat-vector laptop silhouette three-quarter view with the screen split
+    into two panes of abstract code rules, tiny comment bubbles floating above the
+    right pane in teal cyan, an amber checkmark on one line suggesting an approved
+    review, soft daylight from above, generous negative space on the left
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: a flat-vector laptop silhouette three-quarter view with the screen split
+    into two panes of abstract code rules, tiny comment bubbles floating above the
+    right pane in teal cyan, an amber checkmark on one line suggesting an approved
+    review, soft daylight from above, generous negative space on the left
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_a),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_b
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: two adjacent abstract monitor rectangles side by side on a navy desk, each
+    filled with horizontal ruled lines representing code, a thin teal cyan vertical
+    gutter between them suggesting a diff view, small amber minus and plus markers
+    at the margin, warm ambient light
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: two adjacent abstract monitor rectangles side by side on a navy desk, each
+    filled with horizontal ruled lines representing code, a thin teal cyan vertical
+    gutter between them suggesting a diff view, small amber minus and plus markers
+    at the margin, warm ambient light
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_b),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_c
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: a stack of three abstract document cards overlapping on an off-white surface,
+    each with horizontal rule marks and a small teal cyan checkbox column, top card
+    tilted slightly with an amber underlined heading area, a thin navy pen resting
+    beside the stack, generous empty space above
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: a stack of three abstract document cards overlapping on an off-white surface,
+    each with horizontal rule marks and a small teal cyan checkbox column, top card
+    tilted slightly with an amber underlined heading area, a thin navy pen resting
+    beside the stack, generous empty space above
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_c),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'

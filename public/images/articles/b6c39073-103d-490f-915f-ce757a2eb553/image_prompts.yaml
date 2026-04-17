@@ -64,3 +64,215 @@
     no 3D render, no glossy AI skin textures, no children''s book style,
 
     no text of any language visible on books or paper.'
+- kind: illustration_a
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: an isometric stack of three abstract cloud infrastructure tiers drawn as
+    flat rectangles with rounded corners, tiny teal LED indicators on the lowest rack,
+    thin cables rising into a soft off-white cloud silhouette, amber accent on one
+    active node, muted deep navy background
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: an isometric stack of three abstract cloud infrastructure tiers drawn as
+    flat rectangles with rounded corners, tiny teal LED indicators on the lowest rack,
+    thin cables rising into a soft off-white cloud silhouette, amber accent on one
+    active node, muted deep navy background
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_a),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_b
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: an abstract laptop silhouette seen from three-quarter angle with a single
+    flat line chart rising gently on its screen, tick marks on the baseline rendered
+    in teal cyan, a short amber highlighted segment marking a performance improvement,
+    soft daylight shadow under the laptop, off-white desk surface
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: an abstract laptop silhouette seen from three-quarter angle with a single
+    flat line chart rising gently on its screen, tick marks on the baseline rendered
+    in teal cyan, a short amber highlighted segment marking a performance improvement,
+    soft daylight shadow under the laptop, off-white desk surface
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_b),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_c
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: a top-down view of an abstract collaboration space rendered as geometric
+    shapes — a round meeting table with three silhouette chairs (no human figures),
+    a shared display panel showing soft rectangles representing agents, thin teal
+    cyan guide lines connecting the chairs to the display, a warm amber coffee cup
+    as a subtle focal accent
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: a top-down view of an abstract collaboration space rendered as geometric
+    shapes — a round meeting table with three silhouette chairs (no human figures),
+    a shared display panel showing soft rectangles representing agents, thin teal
+    cyan guide lines connecting the chairs to the display, a warm amber coffee cup
+    as a subtle focal accent
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_c),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'

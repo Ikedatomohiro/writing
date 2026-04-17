@@ -64,3 +64,75 @@
     no 3D render, no glossy AI skin textures, no children''s book style,
 
     no text of any language visible on books or paper.'
+- kind: illustration_a
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: an isometric 2x2 grid of abstract editor panels on a slate off-white desk,
+    each panel showing a different minimal abstraction (a terminal prompt, a split
+    tree view, a chat bubble stack, a nested folder diagram), thin teal cyan connecting
+    lines between panels, a single amber accent highlighting the top-right panel,
+    right 30% left as open negative space
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: an isometric 2x2 grid of abstract editor panels on a slate off-white desk,
+    each panel showing a different minimal abstraction (a terminal prompt, a split
+    tree view, a chat bubble stack, a nested folder diagram), thin teal cyan connecting
+    lines between panels, a single amber accent highlighting the top-right panel,
+    right 30% left as open negative space
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_a),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'

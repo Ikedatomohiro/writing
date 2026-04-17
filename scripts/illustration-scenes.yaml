@@ -1,0 +1,91 @@
+# 既存公開記事の本文Unsplash画像を置き換えるGemini生成用シーン定義
+# base_style.md (content-pipeline/article-creator/prompts/pao-pao-cho/blog/images/base_style.md) が共通プレフィックスとして前置される
+# kind は illustration_a/b/c... の順。aは本文上部、後ろほど下部
+
+- slug: a59f365e-5f05-4f07-ae58-0d3c1b76984e
+  title: 「コードを書かないエンジニア」の生産性の正体
+  images:
+    - kind: illustration_a
+      alt: 指揮台の譜面とタクトが並び、背景に楽器のシルエットが広がる編集部イラスト
+      scene: an abstract conductor's baton resting diagonally on an open orchestral score on a lectern, thin teal cyan staff lines visible, silhouettes of stylized string and wind instruments arranged as a soft gradient backdrop, a single warm amber music stand light on the score, generous off-white negative space on the right for editorial layout
+
+- slug: 823ba00c-480c-48d3-9306-0fcf0d037dd6
+  title: Claude Codeを3ヶ月使って気づいた『魔法じゃなく、型がある』
+  images:
+    - kind: illustration_a
+      alt: 付箋と矢印で繋がれたワークフロー計画図の俯瞰
+      scene: a top-down abstract workflow diagram on a slate off-white desk, rectangular cards arranged in a left-to-right pipeline with thin teal cyan arrows connecting them, a small amber dot highlighting one stage as the current focus, muted navy paper grain texture, generous negative space on the upper left
+
+- slug: a3568c4d-a970-4d97-884f-53bfbc1d5efa
+  title: Claude Agent SDKでAI開発を自動化
+  images:
+    - kind: illustration_a
+      alt: 抽象化されたターミナルウィンドウと実行ログのレイヤー
+      scene: two stacked abstract terminal windows with thin horizontal ruling representing code lines and prompt carets, a faint teal cyan cursor on the front window, small amber accent marks highlighting active output lines, layered paper depth with subtle grain, no literal text visible
+
+- slug: b6c39073-103d-490f-915f-ce757a2eb553
+  title: Claude Managed Agentsとは？今すぐ試すべき理由
+  images:
+    - kind: illustration_a
+      alt: サーバーラックとクラウドレイヤーが積層された抽象インフラ図
+      scene: an isometric stack of three abstract cloud infrastructure tiers drawn as flat rectangles with rounded corners, tiny teal LED indicators on the lowest rack, thin cables rising into a soft off-white cloud silhouette, amber accent on one active node, muted deep navy background
+    - kind: illustration_b
+      alt: ノートPC上のパフォーマンス分析グラフ
+      scene: an abstract laptop silhouette seen from three-quarter angle with a single flat line chart rising gently on its screen, tick marks on the baseline rendered in teal cyan, a short amber highlighted segment marking a performance improvement, soft daylight shadow under the laptop, off-white desk surface
+    - kind: illustration_c
+      alt: AIエージェント導入を進めるチームのコラボレーション空間の俯瞰
+      scene: a top-down view of an abstract collaboration space rendered as geometric shapes — a round meeting table with three silhouette chairs (no human figures), a shared display panel showing soft rectangles representing agents, thin teal cyan guide lines connecting the chairs to the display, a warm amber coffee cup as a subtle focal accent
+
+- slug: e829b03b-1772-43af-a7d2-1be56ae6f2e9
+  title: AI時代、レビュー力がエンジニアの新しい武器になる
+  images:
+    - kind: illustration_a
+      alt: 開いたノートPCのシルエットとコードレビュー画面の抽象化
+      scene: a flat-vector laptop silhouette three-quarter view with the screen split into two panes of abstract code rules, tiny comment bubbles floating above the right pane in teal cyan, an amber checkmark on one line suggesting an approved review, soft daylight from above, generous negative space on the left
+    - kind: illustration_b
+      alt: コードの差分が映る二画面の抽象イラスト
+      scene: two adjacent abstract monitor rectangles side by side on a navy desk, each filled with horizontal ruled lines representing code, a thin teal cyan vertical gutter between them suggesting a diff view, small amber minus and plus markers at the margin, warm ambient light
+    - kind: illustration_c
+      alt: レビュー観点のチェックリストと重なる資料
+      scene: a stack of three abstract document cards overlapping on an off-white surface, each with horizontal rule marks and a small teal cyan checkbox column, top card tilted slightly with an amber underlined heading area, a thin navy pen resting beside the stack, generous empty space above
+
+- slug: 939edd75-5e8c-4f14-b753-5c6b474ac4fe
+  title: Claude Code の Skills・Subagents・Agent Teams をどう使い分けるか
+  images:
+    - kind: illustration_a
+      alt: 機能ごとに分割された抽象エディタパネルのグリッド
+      scene: an isometric 2x2 grid of abstract editor panels on a slate off-white desk, each panel showing a different minimal abstraction (a terminal prompt, a split tree view, a chat bubble stack, a nested folder diagram), thin teal cyan connecting lines between panels, a single amber accent highlighting the top-right panel, right 30% left as open negative space
+
+- slug: 090555ca-e79d-4bb3-8a5e-5fc339205ed4
+  title: MCP本番導入の現実解 — Pinterestの月7000時間削減とAAIF標準化が示す未来
+  images:
+    - kind: illustration_a
+      alt: 標準規格のコネクタに多数のツールが接続された抽象プロトコル図
+      scene: a central hexagonal connector port rendered in deep navy with soft teal cyan inner glow, four abstract tool shapes (a rectangle labeled as an editor panel, a rounded chat bubble, a cloud silhouette, a server rack tile) connected to the port with thin cables, a single warm amber dot indicating an active handshake, balanced composition with wide negative space on the right
+
+- slug: 700707ad-9b92-4b81-8d94-6c107b06c1d5
+  title: Claude Code Hooks入門 ── AIをルールで自動制御する
+  images:
+    - kind: illustration_a
+      alt: イベントフックで繋がれたルールの流れ図
+      scene: a horizontal flow of three abstract event blocks with a small hook-shaped arrow bridging each transition, each block drawn as a soft navy card with an amber trigger indicator on its left edge, thin teal cyan dotted line underneath suggesting the pipeline, paper grain background, generous upper negative space
+
+- slug: de71f392-3ddb-430d-9266-71295858840f
+  title: Vibe Codingは時代遅れ？Agent Engineeringで品質と速さを両立する方法
+  images:
+    - kind: illustration_a
+      alt: 品質テストを通過するコードの抽象イメージ
+      scene: a stacked set of three abstract horizontal bars representing test cases, each with a small circular status indicator on the left — two teal cyan circles and one amber circle — suggesting a mostly passing test run, a thin navy progress line at the bottom, subtle paper grain, generous right-side negative space
+    - kind: illustration_b
+      alt: 複数モニターで構成された並列開発環境のデスク俯瞰
+      scene: a top-down abstract desk with three flat monitor rectangles arranged in a gentle arc, each displaying different simplified content (a terminal, a split editor, a task board), thin teal cyan cables running to a central navy keyboard silhouette, a single amber coffee cup as focal accent, wide off-white tabletop with paper grain
+
+- slug: c6d88ecb-29af-40c6-b479-3e573d877de7
+  title: AIエージェント時代に「Rust」が注目される理由
+  images:
+    - kind: illustration_a
+      alt: 大規模サーバーラックの抽象イラスト
+      scene: a side-view array of four abstract server rack columns with evenly spaced thin horizontal slots, tiny teal cyan LED dots on the middle rack as active indicators, a soft warm amber glow spilling from the top edge suggesting ambient light, deep navy background fading to off-white at the bottom
+    - kind: illustration_b
+      alt: 歯車と微細なパーツが組み合わさる機械工学の抽象イメージ
+      scene: three interlocking abstract gear shapes in flat-vector style, deep navy primary gear overlaid with a smaller teal cyan gear and an amber accent gear, thin line work suggesting teeth and rotation paths, a soft off-white paper grain surface, generous negative space on the right
