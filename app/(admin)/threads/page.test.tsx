@@ -53,6 +53,7 @@ describe("SnsPage", () => {
       ok: true,
       json: async () => ({ data: mockSeries }),
     });
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -129,6 +130,67 @@ describe("SnsPage", () => {
     await waitFor(() => {
       expect(screen.getByText("テストテーマ2")).toBeInTheDocument();
       expect(screen.queryByText("テストテーマ1")).not.toBeInTheDocument();
+    });
+  });
+
+  it("draftシリーズのカードに『キューに追加』ボタンが表示される", async () => {
+    renderWithToast(<SnsPage />);
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "キューに追加" })).toBeInTheDocument();
+    });
+  });
+
+  it("『キューに追加』ボタンをクリックするとenqueue APIが呼ばれる", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url === "/api/threads/queue/enqueue" && init?.method === "POST") {
+        return Promise.resolve({ ok: true, json: async () => ({ data: { id: "1" } }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    renderWithToast(<SnsPage />);
+    await waitFor(() => screen.getByRole("button", { name: "キューに追加" }));
+    await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls).toContain("/api/threads/queue/enqueue");
+    });
+  });
+
+  it("queuedシリーズのカードに『下書きに戻す』ボタンが表示される", async () => {
+    const user = userEvent.setup();
+    renderWithToast(<SnsPage />);
+    await waitFor(() => screen.getByRole("button", { name: "予約中" }));
+    await user.click(screen.getByRole("button", { name: "予約中" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "下書きに戻す" })).toBeInTheDocument();
+    });
+  });
+
+  it("『下書きに戻す』ボタンをクリックするとPATCH APIが呼ばれる", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (typeof url === "string" && url.startsWith("/api/threads/series/") && init?.method === "PATCH") {
+        return Promise.resolve({ ok: true, json: async () => ({ data: { id: "2" } }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    renderWithToast(<SnsPage />);
+    await waitFor(() => screen.getByRole("button", { name: "予約中" }));
+    await user.click(screen.getByRole("button", { name: "予約中" }));
+    await waitFor(() => screen.getByRole("button", { name: "下書きに戻す" }));
+    await user.click(screen.getByRole("button", { name: "下書きに戻す" }));
+
+    await waitFor(() => {
+      const patchCalls = mockFetch.mock.calls.filter(
+        (c) => (c[1] as RequestInit | undefined)?.method === "PATCH"
+      );
+      expect(patchCalls.length).toBeGreaterThan(0);
+      expect(patchCalls[0][0]).toMatch(/\/api\/threads\/series\/2/);
     });
   });
 });

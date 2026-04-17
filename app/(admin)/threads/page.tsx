@@ -2,6 +2,21 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useToastContext } from "@/components/common/ToastProvider";
 import { StatusBadge } from "@/components/sns/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -80,6 +95,34 @@ export default function SnsPage() {
     }
   };
 
+  const handleEnqueue = async (id: string) => {
+    const res = await fetch("/api/threads/queue/enqueue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ series_id: id }),
+    });
+    if (res.ok) {
+      toast.success("キューに追加しました");
+      loadSeries();
+    } else {
+      toast.error("キューへの追加に失敗しました");
+    }
+  };
+
+  const handleDequeue = async (id: string) => {
+    const res = await fetch(`/api/threads/series/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "draft" }),
+    });
+    if (res.ok) {
+      toast.success("下書きに戻しました");
+      loadSeries();
+    } else {
+      toast.error("ステータスの変更に失敗しました");
+    }
+  };
+
   const baseFiltered =
     activeTab === "all"
       ? series
@@ -98,32 +141,34 @@ export default function SnsPage() {
     currentPage * PAGE_SIZE
   );
 
-  const handleMove = async (index: number, direction: "up" | "down") => {
-    if (direction === "up" && index === 0) return;
-    if (direction === "down" && index === filteredSeries.length - 1) return;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
-    const newQueued = [...filteredSeries];
-    const swapIndex = direction === "up" ? index - 1 : index + 1;
-    [newQueued[index], newQueued[swapIndex]] = [newQueued[swapIndex], newQueued[index]];
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    // queue_orderを位置に合わせて更新（ソート時に正しい順序を保つ）
-    const reordered = newQueued.map((s, i) => ({ ...s, queue_order: i + 1 }));
+    const oldIndex = filteredSeries.findIndex((s) => s.id === active.id);
+    const newIndex = filteredSeries.findIndex((s) => s.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reorderedQueued = arrayMove(filteredSeries, oldIndex, newIndex).map(
+      (s, i) => ({ ...s, queue_order: i + 1 })
+    );
 
     setSeries((prev) => {
       const nonQueued = prev.filter((s) => s.status !== "queued" || s.is_posted);
-      return [...nonQueued, ...reordered];
+      return [...nonQueued, ...reorderedQueued];
     });
 
     const res = await fetch("/api/threads/queue/reorder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
+      body: JSON.stringify({ series_ids: reorderedQueued.map((s) => s.id) }),
     });
 
-    if (!res.ok) {
-      // API失敗時はDBの実際の状態に戻す
-      loadSeries();
-    }
+    if (!res.ok) loadSeries();
   };
 
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [
@@ -140,6 +185,8 @@ export default function SnsPage() {
       </div>
     );
   }
+
+  const isQueuedTab = activeTab === "queued";
 
   return (
     <>
@@ -191,22 +238,42 @@ export default function SnsPage() {
         />
       ) : (
         <>
-          <div className="flex flex-col gap-3">
-            {pagedSeries.map((s, index) => {
-              const globalIndex = (currentPage - 1) * PAGE_SIZE + index;
-              return (
+          {isQueuedTab ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={pagedSeries.map((s) => s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="flex flex-col gap-3">
+                  {pagedSeries.map((s) => (
+                    <SortableSeriesCard
+                      key={s.id}
+                      series={s}
+                      onDelete={handleDelete}
+                      onEnqueue={handleEnqueue}
+                      onDequeue={handleDequeue}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {pagedSeries.map((s) => (
                 <SeriesCard
                   key={s.id}
                   series={s}
                   onDelete={handleDelete}
-                  index={activeTab === "queued" ? globalIndex : undefined}
-                  isFirst={globalIndex === 0}
-                  isLast={globalIndex === filteredSeries.length - 1}
-                  onMove={activeTab === "queued" ? handleMove : undefined}
+                  onEnqueue={handleEnqueue}
+                  onDequeue={handleDequeue}
                 />
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
           {totalPages > 1 && (
             <div className="mt-6 flex justify-center">
               <Pagination
@@ -222,101 +289,115 @@ export default function SnsPage() {
   );
 }
 
+interface CardProps {
+  series: SnsSeriesWithPosts;
+  onDelete: (id: string) => void;
+  onEnqueue?: (id: string) => void;
+  onDequeue?: (id: string) => void;
+  dragHandleProps?: {
+    attributes?: React.HTMLAttributes<HTMLButtonElement>;
+    listeners?: React.DOMAttributes<HTMLButtonElement>;
+  };
+}
+
+function SortableSeriesCard(props: {
+  series: SnsSeriesWithPosts;
+  onDelete: (id: string) => void;
+  onEnqueue?: (id: string) => void;
+  onDequeue?: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: props.series.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <SeriesCard
+        {...props}
+        dragHandleProps={{
+          attributes: attributes as React.HTMLAttributes<HTMLButtonElement>,
+          listeners: listeners as React.DOMAttributes<HTMLButtonElement>,
+        }}
+      />
+    </div>
+  );
+}
+
 function SeriesCard({
   series,
   onDelete,
-  index,
-  isFirst,
-  isLast,
-  onMove,
-}: {
-  series: SnsSeriesWithPosts;
-  onDelete: (id: string) => void;
-  index?: number;
-  isFirst?: boolean;
-  isLast?: boolean;
-  onMove?: (index: number, direction: "up" | "down") => void;
-}) {
+  onEnqueue,
+  onDequeue,
+  dragHandleProps,
+}: CardProps) {
   const parentPost: SnsPost | undefined = series.posts?.find((p) => p.position === 0);
-  const childCount = series.posts?.filter((p) => p.position > 0).length ?? 0;
-  const isQueued = onMove !== undefined && index !== undefined;
+  const childPosts = (series.posts ?? [])
+    .filter((p) => p.position > 0)
+    .sort((a, b) => a.position - b.position);
 
   return (
     <div className="relative flex items-stretch gap-2">
-      {/* 並び替えボタン (queued時のみ) */}
-      {isQueued && (
-        <div className="flex flex-col justify-center gap-0.5">
-          <button
-            onClick={() => onMove(index, "up")}
-            disabled={isFirst}
-            className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-20"
-            aria-label="上に移動"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 17a1 1 0 01-1-1V6.414L5.707 9.707a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0l5 5a1 1 0 01-1.414 1.414L11 6.414V16a1 1 0 01-1 1z" clipRule="evenodd" />
-            </svg>
-          </button>
-          <button
-            onClick={() => onMove(index, "down")}
-            disabled={isLast}
-            className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-20"
-            aria-label="下に移動"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v9.586l3.293-3.293a1 1 0 011.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L9 13.586V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-          </button>
-        </div>
+      {dragHandleProps && (
+        <button
+          type="button"
+          {...dragHandleProps.attributes}
+          {...dragHandleProps.listeners}
+          className="flex flex-col justify-center items-center px-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
+          aria-label="ドラッグして並び替え"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M7 4a1 1 0 100 2 1 1 0 000-2zM7 9a1 1 0 100 2 1 1 0 000-2zM7 14a1 1 0 100 2 1 1 0 000-2zM13 4a1 1 0 100 2 1 1 0 000-2zM13 9a1 1 0 100 2 1 1 0 000-2zM13 14a1 1 0 100 2 1 1 0 000-2z" />
+          </svg>
+        </button>
       )}
 
       <div className="relative flex-1 min-w-0">
         <Link
           href={`/threads/${series.id}`}
-          className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer overflow-hidden"
+          scroll={false}
+          className="block bg-white border border-slate-200 rounded-xl px-4 py-3 sm:px-5 sm:py-4 pr-[150px] sm:pr-[180px] hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
         >
-          {/* メタ情報 */}
-          <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
-            <div className="flex items-center gap-2 sm:mb-1">
-              <StatusBadge status={series.status} isPosted={series.is_posted} />
-            </div>
-            <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <StatusBadge status={series.status} isPosted={series.is_posted} />
+            <h3 className="font-semibold text-slate-900 text-sm leading-snug flex-1 min-w-0">
               {series.theme ?? "（テーマなし）"}
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <span className="text-xs text-slate-500 shrink-0">
               {formatCreatedAt(series.created_at)}
-            </p>
-            {series.quality_score != null && (
-              <p className="hidden sm:block text-xs text-slate-500 mt-0.5">
-                スコア: <span className="font-medium text-slate-600">{series.quality_score}</span>
-              </p>
-            )}
-            {isQueued && index !== undefined && (
-              <p
-                data-testid="scheduled-time"
-                className="hidden sm:block text-xs text-slate-500 mt-0.5"
-              >
-                {/* eslint-disable-next-line react-hooks/purity */}
-                予定: {new Date(Date.now() + (index + 1) * 2 * 3600 * 1000).toLocaleString("ja-JP", { hour: "2-digit", minute: "2-digit", month: "short", day: "numeric" })}頃
-              </p>
-            )}
+            </span>
           </div>
 
-          {/* 投稿テキストプレビュー＋子投稿数 */}
-          <div className="flex-1 min-w-0">
-            {parentPost?.text ? (
-              <p className="text-sm text-slate-600 truncate leading-relaxed">
-                {parentPost.text.split('\n').find(l => l.trim()) ?? ''}
-              </p>
-            ) : (
-              <p className="text-xs text-slate-500 italic">投稿なし</p>
-            )}
-            {childCount > 0 && (
-              <p className="text-xs text-slate-500 mt-0.5">子投稿 {childCount}件</p>
-            )}
-          </div>
+          {parentPost?.text ? (
+            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed break-words">
+              {parentPost.text}
+            </p>
+          ) : (
+            <p className="text-xs text-slate-500 italic">親投稿なし</p>
+          )}
+
+          {childPosts.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-slate-100 space-y-3">
+              {childPosts.map((p, i) => (
+                <div key={p.id} className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed break-words">
+                  <span className="text-xs text-slate-400 font-mono mr-2">#{i + 1}</span>
+                  {p.text || <span className="italic text-slate-400">（空）</span>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {series.quality_score != null && (
+            <p className="text-xs text-slate-400 mt-2">
+              スコア: <span className="font-medium">{series.quality_score}</span>
+            </p>
+          )}
         </Link>
 
-        {/* 投稿済みの外部リンク */}
         {series.is_posted && (series as unknown as { posted_url?: string }).posted_url && (
           <a
             href={(series as unknown as { posted_url: string }).posted_url}
@@ -333,17 +414,34 @@ function SeriesCard({
           </a>
         )}
 
-        {/* 削除ボタン */}
         {!series.is_posted && (
-          <button
-            onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-            className="absolute right-2 top-2 p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-            aria-label="削除"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-          </button>
+          <div className="absolute right-2 top-2 flex gap-1 items-center">
+            {series.status === "draft" && onEnqueue && (
+              <button
+                onClick={(e) => { e.preventDefault(); onEnqueue(series.id); }}
+                className="px-3 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-medium hover:bg-orange-600 active:bg-orange-700 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                キューに追加
+              </button>
+            )}
+            {series.status === "queued" && onDequeue && (
+              <button
+                onClick={(e) => { e.preventDefault(); onDequeue(series.id); }}
+                className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-300 active:bg-slate-400 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              >
+                下書きに戻す
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
+              className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+              aria-label="削除"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
         )}
       </div>
     </div>

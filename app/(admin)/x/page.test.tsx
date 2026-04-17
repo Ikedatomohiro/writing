@@ -37,6 +37,36 @@ const mockSeries = [
       },
     ],
   },
+  {
+    id: "x2",
+    account: "pao-pao-cho",
+    theme: "Xテストテーマ2(queued)",
+    category: "note_article",
+    quality_score: null,
+    score_breakdown: null,
+    status: "queued",
+    queue_order: 1,
+    is_posted: false,
+    posted_at: null,
+    source: null,
+    source_draft_id: null,
+    note_url: null,
+    hashtags: null,
+    created_at: "2024-01-02T00:00:00.000Z",
+    updated_at: "2024-01-02T00:00:00.000Z",
+    posts: [
+      {
+        id: "xp2",
+        series_id: "x2",
+        position: 0,
+        text: "X投稿テキスト2",
+        x_post_id: null,
+        source_url: null,
+        created_at: "2024-01-02T00:00:00.000Z",
+        updated_at: "2024-01-02T00:00:00.000Z",
+      },
+    ],
+  },
 ];
 
 describe("XPage", () => {
@@ -110,6 +140,67 @@ describe("XPage", () => {
     render(<XPage />);
     await waitFor(() => {
       expect(screen.getByText("Xテストテーマ1")).toBeInTheDocument();
+    });
+  });
+
+  it("draftシリーズのカードに『キューに追加』ボタンが表示される", async () => {
+    render(<XPage />);
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "キューに追加" })).toBeInTheDocument();
+    });
+  });
+
+  it("『キューに追加』ボタンをクリックするとenqueue APIが呼ばれる", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url === "/api/x/queue/enqueue" && init?.method === "POST") {
+        return Promise.resolve({ ok: true, json: async () => ({ data: { id: "x1" } }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    render(<XPage />);
+    await waitFor(() => screen.getByRole("button", { name: "キューに追加" }));
+    await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls).toContain("/api/x/queue/enqueue");
+    });
+  });
+
+  it("queuedシリーズのカードに『下書きに戻す』ボタンが表示される", async () => {
+    const user = userEvent.setup();
+    render(<XPage />);
+    await waitFor(() => screen.getByRole("button", { name: "予約中" }));
+    await user.click(screen.getByRole("button", { name: "予約中" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "下書きに戻す" })).toBeInTheDocument();
+    });
+  });
+
+  it("『下書きに戻す』ボタンをクリックするとPATCH APIが呼ばれる", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (typeof url === "string" && url.startsWith("/api/x/series/") && init?.method === "PATCH") {
+        return Promise.resolve({ ok: true, json: async () => ({ data: { id: "x2" } }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    render(<XPage />);
+    await waitFor(() => screen.getByRole("button", { name: "予約中" }));
+    await user.click(screen.getByRole("button", { name: "予約中" }));
+    await waitFor(() => screen.getByRole("button", { name: "下書きに戻す" }));
+    await user.click(screen.getByRole("button", { name: "下書きに戻す" }));
+
+    await waitFor(() => {
+      const patchCalls = mockFetch.mock.calls.filter(
+        (c) => (c[1] as RequestInit | undefined)?.method === "PATCH"
+      );
+      expect(patchCalls.length).toBeGreaterThan(0);
+      expect(patchCalls[0][0]).toMatch(/\/api\/x\/series\/x2/);
     });
   });
 });

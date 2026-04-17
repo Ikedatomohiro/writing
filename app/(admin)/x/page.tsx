@@ -2,13 +2,28 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { getAccountLabel } from "@/lib/constants/labels";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { ErrorState } from "@/components/common/ErrorState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import type { XSeriesWithPosts, XSeriesStatus } from "@/lib/types/x";
+import type { XSeriesWithPosts, XPost, XSeriesStatus } from "@/lib/types/x";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
 type Account = typeof ACCOUNTS[number];
@@ -76,7 +91,11 @@ export default function XPage() {
           : activeTab === "all"
           ? data
           : data.filter((s) => !s.is_posted);
-      setSeries(filtered);
+      const sorted =
+        activeTab === "queued"
+          ? [...filtered].sort((a, b) => (a.queue_order ?? 0) - (b.queue_order ?? 0))
+          : filtered;
+      setSeries(sorted);
     } catch {
       setError("シリーズの読み込みに失敗しました");
     } finally {
@@ -104,6 +123,50 @@ export default function XPage() {
     }
   };
 
+  const handleEnqueue = async (id: string) => {
+    const res = await fetch("/api/x/queue/enqueue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ series_id: id }),
+    });
+    if (res.ok) loadSeries();
+  };
+
+  const handleDequeue = async (id: string) => {
+    const res = await fetch(`/api/x/series/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "draft" }),
+    });
+    if (res.ok) loadSeries();
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = series.findIndex((s) => s.id === active.id);
+    const newIndex = series.findIndex((s) => s.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(series, oldIndex, newIndex).map((s, i) => ({
+      ...s,
+      queue_order: i + 1,
+    }));
+    setSeries(reordered);
+
+    const res = await fetch("/api/x/queue/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
+    });
+    if (!res.ok) loadSeries();
+  };
+
   if (error) {
     return (
       <div className="max-w-7xl mx-auto py-8">
@@ -111,6 +174,8 @@ export default function XPage() {
       </div>
     );
   }
+
+  const isQueuedTab = activeTab === "queued";
 
   return (
     <>
@@ -175,10 +240,39 @@ export default function XPage() {
           ctaHref="/x/new"
           ctaLabel="最初の投稿を作成"
         />
+      ) : isQueuedTab ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={series.map((s) => s.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col gap-3">
+              {series.map((s) => (
+                <SortableXSeriesCard
+                  key={s.id}
+                  series={s}
+                  onDelete={handleDelete}
+                  onEnqueue={handleEnqueue}
+                  onDequeue={handleDequeue}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       ) : (
         <div className="flex flex-col gap-3">
           {series.map((s) => (
-            <XSeriesCard key={s.id} series={s} onDelete={handleDelete} />
+            <XSeriesCard
+              key={s.id}
+              series={s}
+              onDelete={handleDelete}
+              onEnqueue={handleEnqueue}
+              onDequeue={handleDequeue}
+            />
           ))}
         </div>
       )}
@@ -186,62 +280,146 @@ export default function XPage() {
   );
 }
 
+interface XCardProps {
+  series: XSeriesWithPosts;
+  onDelete: (id: string) => void;
+  onEnqueue?: (id: string) => void;
+  onDequeue?: (id: string) => void;
+  dragHandleProps?: {
+    attributes?: React.HTMLAttributes<HTMLButtonElement>;
+    listeners?: React.DOMAttributes<HTMLButtonElement>;
+  };
+}
+
+function SortableXSeriesCard(props: {
+  series: XSeriesWithPosts;
+  onDelete: (id: string) => void;
+  onEnqueue?: (id: string) => void;
+  onDequeue?: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: props.series.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <XSeriesCard
+        {...props}
+        dragHandleProps={{
+          attributes: attributes as React.HTMLAttributes<HTMLButtonElement>,
+          listeners: listeners as React.DOMAttributes<HTMLButtonElement>,
+        }}
+      />
+    </div>
+  );
+}
+
 function XSeriesCard({
   series,
   onDelete,
-}: {
-  series: XSeriesWithPosts;
-  onDelete: (id: string) => void;
-}) {
-  const firstPost = series.posts?.find((p) => p.position === 0);
-  const postCount = series.posts?.length ?? 0;
+  onEnqueue,
+  onDequeue,
+  dragHandleProps,
+}: XCardProps) {
+  const sortedPosts = (series.posts ?? [])
+    .slice()
+    .sort((a: XPost, b: XPost) => a.position - b.position);
 
   return (
-    <div className="relative flex-1 min-w-0">
-      <Link
-        href={`/x/${series.id}`}
-        className="bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4 sm:px-5 sm:py-4 hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer overflow-hidden"
-      >
-        <div className="flex items-center gap-2 sm:w-44 sm:shrink-0 sm:flex-col sm:items-start sm:gap-0">
-          <StatusBadge status={series.status} isPosted={series.is_posted} />
-          <h3 className="font-semibold text-slate-900 text-sm leading-snug truncate min-w-0 flex-1 sm:flex-none sm:line-clamp-2 sm:whitespace-normal sm:mt-1">
-            {series.theme?.startsWith("[テストデータ]") ? (
-              <>
-                <span className="mr-1 px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 text-[10px] font-medium tracking-tight">テスト</span>
-                {series.theme.replace("[テストデータ]", "").trim() || "（テーマなし）"}
-              </>
-            ) : (
-              series.theme ?? "（テーマなし）"
-            )}
-          </h3>
-          <p className="hidden sm:block text-xs text-slate-500 mt-0.5">
-            {formatCreatedAt(series.created_at)}
-          </p>
-        </div>
-        <div className="flex-1 min-w-0">
-          {firstPost?.text ? (
-            <p className="text-sm text-slate-600 truncate leading-relaxed">
-              {firstPost.text.split("\n").find((l) => l.trim()) ?? ""}
-            </p>
-          ) : (
-            <p className="text-xs text-slate-500 italic">投稿なし</p>
-          )}
-          {postCount > 1 && (
-            <p className="text-xs text-slate-500 mt-0.5">ツイート {postCount}件</p>
-          )}
-        </div>
-      </Link>
-      {!series.is_posted && (
+    <div className="relative flex items-stretch gap-2">
+      {dragHandleProps && (
         <button
-          onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
-          className="absolute right-2 top-2 p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-          aria-label="削除"
+          type="button"
+          {...dragHandleProps.attributes}
+          {...dragHandleProps.listeners}
+          className="flex flex-col justify-center items-center px-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
+          aria-label="ドラッグして並び替え"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M7 4a1 1 0 100 2 1 1 0 000-2zM7 9a1 1 0 100 2 1 1 0 000-2zM7 14a1 1 0 100 2 1 1 0 000-2zM13 4a1 1 0 100 2 1 1 0 000-2zM13 9a1 1 0 100 2 1 1 0 000-2zM13 14a1 1 0 100 2 1 1 0 000-2z" />
           </svg>
         </button>
       )}
+
+      <div className="relative flex-1 min-w-0">
+        <Link
+          href={`/x/${series.id}`}
+          scroll={false}
+          className="block bg-white border border-slate-200 rounded-xl px-4 py-3 sm:px-5 sm:py-4 pr-[150px] sm:pr-[180px] hover:shadow-sm hover:border-blue-200 transition-all cursor-pointer"
+        >
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <StatusBadge status={series.status} isPosted={series.is_posted} />
+            <h3 className="font-semibold text-slate-900 text-sm leading-snug flex-1 min-w-0">
+              {series.theme?.startsWith("[テストデータ]") ? (
+                <>
+                  <span className="mr-1 px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 text-[10px] font-medium tracking-tight">テスト</span>
+                  {series.theme.replace("[テストデータ]", "").trim() || "（テーマなし）"}
+                </>
+              ) : (
+                series.theme ?? "（テーマなし）"
+              )}
+            </h3>
+            <span className="text-xs text-slate-500 shrink-0">
+              {formatCreatedAt(series.created_at)}
+            </span>
+          </div>
+
+          {sortedPosts.length === 0 ? (
+            <p className="text-xs text-slate-500 italic">投稿なし</p>
+          ) : (
+            <div className="space-y-3">
+              {sortedPosts.map((p, i) => (
+                <div
+                  key={p.id}
+                  className={`text-sm text-slate-700 whitespace-pre-wrap leading-relaxed break-words${
+                    i > 0 ? " pt-3 border-t border-slate-100" : ""
+                  }`}
+                >
+                  {sortedPosts.length > 1 && (
+                    <span className="text-xs text-slate-400 font-mono mr-2">#{i + 1}</span>
+                  )}
+                  {p.text || <span className="italic text-slate-400">（空）</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </Link>
+
+        {!series.is_posted && (
+          <div className="absolute right-2 top-2 flex gap-1 items-center">
+            {series.status === "draft" && onEnqueue && (
+              <button
+                onClick={(e) => { e.preventDefault(); onEnqueue(series.id); }}
+                className="px-3 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-medium hover:bg-orange-600 active:bg-orange-700 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+              >
+                キューに追加
+              </button>
+            )}
+            {series.status === "queued" && onDequeue && (
+              <button
+                onClick={(e) => { e.preventDefault(); onDequeue(series.id); }}
+                className="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-300 active:bg-slate-400 shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              >
+                下書きに戻す
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.preventDefault(); onDelete(series.id); }}
+              className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+              aria-label="削除"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
