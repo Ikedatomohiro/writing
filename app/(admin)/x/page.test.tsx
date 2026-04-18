@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ push: vi.fn(), back: vi.fn(), refresh: vi.fn() }),
+  useParams: () => ({}),
+  usePathname: () => "/x",
+}));
+
 import XPage from "./page";
 
 const mockFetch = vi.fn();

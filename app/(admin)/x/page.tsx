@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -45,6 +46,7 @@ const TABS: Array<{ label: string; value: XSeriesStatus | "all" | "posted" }> = 
 ];
 
 export default function XPage() {
+  const searchParams = useSearchParams();
   const [series, setSeries] = useState<XSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,11 +55,20 @@ export default function XPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
+    const urlAccount = searchParams.get("account");
+    if (urlAccount && ACCOUNTS.includes(urlAccount as Account)) {
+      setAccount(urlAccount as Account);
+      sessionStorage.setItem("x_active_account", urlAccount);
+      return;
+    }
     const storedAccount = sessionStorage.getItem("x_active_account");
-    const storedTab = sessionStorage.getItem("x_active_tab");
     if (storedAccount && ACCOUNTS.includes(storedAccount as Account)) {
       setAccount(storedAccount as Account);
     }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const storedTab = sessionStorage.getItem("x_active_tab");
     if (storedTab) {
       setActiveTab(storedTab as XSeriesStatus | "all" | "posted");
     }

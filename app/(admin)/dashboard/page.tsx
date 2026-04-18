@@ -105,8 +105,8 @@ export default async function AdminHomePage() {
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
           未投稿の件数
         </h3>
-        <div className="space-y-3">
-          <StatusRow
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatusBlock
             title="Threads"
             subtitle="パオパオ長"
             href="/threads"
@@ -115,11 +115,11 @@ export default async function AdminHomePage() {
             counts={threads}
           />
           {Object.entries(xByAccount).map(([account, counts]) => (
-            <StatusRow
+            <StatusBlock
               key={account}
               title="X"
               subtitle={getAccountLabel(account)}
-              href="/x"
+              href={`/x?account=${encodeURIComponent(account)}`}
               icon="alternate_email"
               accentColor="bg-slate-700"
               counts={counts}
@@ -154,7 +154,7 @@ export default async function AdminHomePage() {
   );
 }
 
-function StatusRow({
+function StatusBlock({
   title,
   subtitle,
   href,
@@ -172,18 +172,20 @@ function StatusRow({
   return (
     <Link
       href={href}
-      className="flex items-center gap-4 bg-white border border-slate-200 rounded-2xl px-5 py-4 hover:shadow-md hover:border-slate-300 transition-all"
+      className="flex flex-col bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md hover:border-slate-300 transition-all"
     >
-      <div
-        className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${accentColor} text-white shrink-0`}
-      >
-        <span className="material-symbols-outlined text-[20px]">{icon}</span>
+      <div className="flex items-center gap-3 mb-4">
+        <div
+          className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${accentColor} text-white shrink-0`}
+        >
+          <span className="material-symbols-outlined text-[20px]">{icon}</span>
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">{title}</p>
+          <p className="text-xs text-slate-500 truncate">{subtitle}</p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-slate-900">{title}</p>
-        <p className="text-xs text-slate-500 truncate">{subtitle}</p>
-      </div>
-      <div className="flex items-center gap-6 shrink-0">
+      <div className="grid grid-cols-2 gap-3 mt-auto">
         <CountCell label="下書き" value={counts.draft} />
         <CountCell label="予約中" value={counts.queued} />
       </div>
@@ -193,13 +195,11 @@ function StatusRow({
 
 function CountCell({ label, value }: { label: string; value: number }) {
   return (
-    <div className="text-right">
-      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">
-        {label}
-      </p>
-      <p className="text-2xl font-bold text-slate-900 leading-tight tabular-nums">
+    <div className="flex items-baseline justify-between gap-2 bg-slate-50 rounded-lg px-3 py-2">
+      <span className="text-xs text-slate-500 font-medium">{label}</span>
+      <span className="text-2xl font-bold text-slate-900 leading-none tabular-nums">
         {value}
-      </p>
+      </span>
     </div>
   );
 }
