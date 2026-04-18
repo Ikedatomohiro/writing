@@ -167,29 +167,37 @@ export function ThreadsSeriesEditor({ seriesId, onClose, onAfterDelete }: Props)
   };
 
   const handleEnqueue = async () => {
-    const res = await fetch("/api/threads/queue/enqueue", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_id: seriesId }),
-    });
-    if (res.ok) {
+    if (!series) return;
+    const prev = series;
+    setSeries({ ...series, status: "queued" });
+    try {
+      const res = await fetch("/api/threads/queue/enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_id: seriesId }),
+      });
+      if (!res.ok) throw new Error();
       toast.success("キューに追加しました");
-      load();
-    } else {
+    } catch {
+      setSeries(prev);
       toast.error("キューへの追加に失敗しました");
     }
   };
 
   const handleDequeue = async () => {
-    const res = await fetch(`/api/threads/series/${seriesId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" }),
-    });
-    if (res.ok) {
+    if (!series) return;
+    const prev = series;
+    setSeries({ ...series, status: "draft", queue_order: null });
+    try {
+      const res = await fetch(`/api/threads/series/${seriesId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      if (!res.ok) throw new Error();
       toast.success("下書きに戻しました");
-      load();
-    } else {
+    } catch {
+      setSeries(prev);
       toast.error("ステータスの変更に失敗しました");
     }
   };

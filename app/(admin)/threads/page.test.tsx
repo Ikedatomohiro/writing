@@ -193,4 +193,47 @@ describe("SnsPage", () => {
       expect(patchCalls[0][0]).toMatch(/\/api\/threads\/series\/2/);
     });
   });
+
+  it("キュー追加に成功したらdraftタブから消えて予約中タブに追加される（optimistic）", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url === "/api/threads/queue/enqueue" && init?.method === "POST") {
+        return Promise.resolve({ ok: true, json: async () => ({ data: { id: "1" } }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    renderWithToast(<SnsPage />);
+    await waitFor(() => screen.getByText("テストテーマ1"));
+    await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText("テストテーマ1")).not.toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: "予約中" }));
+    await waitFor(() => {
+      expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
+      expect(screen.getByText("テストテーマ2")).toBeInTheDocument();
+    });
+  });
+
+  it("キュー追加に失敗したらdraftタブにアイテムが戻る（ロールバック）", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url === "/api/threads/queue/enqueue" && init?.method === "POST") {
+        return Promise.resolve({ ok: false, json: async () => ({ error: "failed" }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    renderWithToast(<SnsPage />);
+    await waitFor(() => screen.getByText("テストテーマ1"));
+    await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+    // 一旦state上は消えた後、API失敗でロールバックされて復元
+    await waitFor(() => {
+      expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
+    });
+  });
 });

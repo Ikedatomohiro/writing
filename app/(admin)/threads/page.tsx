@@ -86,39 +86,59 @@ export default function SnsPage() {
     if (!deleteTarget) return;
     const id = deleteTarget;
     setDeleteTarget(null);
+    const prevSeries = series;
+    setSeries((prev) => prev.filter((s) => s.id !== id));
     try {
-      await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
-      setSeries((prev) => prev.filter((s) => s.id !== id));
+      const res = await fetch(`/api/threads/series/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       toast.success("シリーズを削除しました");
     } catch {
+      setSeries(prevSeries);
       toast.error("削除に失敗しました");
     }
   };
 
   const handleEnqueue = async (id: string) => {
-    const res = await fetch("/api/threads/queue/enqueue", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_id: id }),
-    });
-    if (res.ok) {
+    const prevSeries = series;
+    const maxOrder = series
+      .filter((s) => s.status === "queued" && !s.is_posted)
+      .reduce((m, s) => Math.max(m, s.queue_order ?? 0), 0);
+    setSeries((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, status: "queued", queue_order: maxOrder + 1 } : s
+      )
+    );
+    try {
+      const res = await fetch("/api/threads/queue/enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_id: id }),
+      });
+      if (!res.ok) throw new Error();
       toast.success("キューに追加しました");
-      loadSeries();
-    } else {
+    } catch {
+      setSeries(prevSeries);
       toast.error("キューへの追加に失敗しました");
     }
   };
 
   const handleDequeue = async (id: string) => {
-    const res = await fetch(`/api/threads/series/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" }),
-    });
-    if (res.ok) {
+    const prevSeries = series;
+    setSeries((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, status: "draft", queue_order: null } : s
+      )
+    );
+    try {
+      const res = await fetch(`/api/threads/series/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      if (!res.ok) throw new Error();
       toast.success("下書きに戻しました");
-      loadSeries();
-    } else {
+    } catch {
+      setSeries(prevSeries);
       toast.error("ステータスの変更に失敗しました");
     }
   };
@@ -153,6 +173,7 @@ export default function SnsPage() {
     const newIndex = filteredSeries.findIndex((s) => s.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
 
+    const prevSeries = series;
     const reorderedQueued = arrayMove(filteredSeries, oldIndex, newIndex).map(
       (s, i) => ({ ...s, queue_order: i + 1 })
     );
@@ -162,13 +183,17 @@ export default function SnsPage() {
       return [...nonQueued, ...reorderedQueued];
     });
 
-    const res = await fetch("/api/threads/queue/reorder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_ids: reorderedQueued.map((s) => s.id) }),
-    });
-
-    if (!res.ok) loadSeries();
+    try {
+      const res = await fetch("/api/threads/queue/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_ids: reorderedQueued.map((s) => s.id) }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prevSeries);
+      toast.error("並び替えに失敗しました");
+    }
   };
 
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [

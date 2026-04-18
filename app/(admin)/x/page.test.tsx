@@ -203,4 +203,22 @@ describe("XPage", () => {
       expect(patchCalls[0][0]).toMatch(/\/api\/x\/series\/x2/);
     });
   });
+
+  it("キュー追加に失敗したらアイテムがdraftタブに戻る（ロールバック）", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url === "/api/x/queue/enqueue" && init?.method === "POST") {
+        return Promise.resolve({ ok: false, json: async () => ({ error: "failed" }) });
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+    });
+
+    render(<XPage />);
+    await waitFor(() => screen.getByText("Xテストテーマ1"));
+    await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Xテストテーマ1")).toBeInTheDocument();
+    });
+  });
 });

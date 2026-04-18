@@ -71,21 +71,35 @@ export function XSeriesEditor({ seriesId, onClose, onAfterDelete }: Props) {
   };
 
   const handleEnqueue = async () => {
-    const res = await fetch("/api/x/queue/enqueue", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_id: seriesId }),
-    });
-    if (res.ok) load();
+    if (!series) return;
+    const prev = series;
+    setSeries({ ...series, status: "queued" });
+    try {
+      const res = await fetch("/api/x/queue/enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_id: seriesId }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prev);
+    }
   };
 
   const handleDequeue = async () => {
-    const res = await fetch(`/api/x/series/${seriesId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" }),
-    });
-    if (res.ok) load();
+    if (!series) return;
+    const prev = series;
+    setSeries({ ...series, status: "draft", queue_order: null });
+    try {
+      const res = await fetch(`/api/x/series/${seriesId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prev);
+    }
   };
 
   if (isLoading) return <p className="text-slate-500">読み込み中...</p>;

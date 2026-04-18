@@ -115,30 +115,55 @@ export default function XPage() {
     if (!deleteTarget) return;
     const id = deleteTarget;
     setDeleteTarget(null);
+    const prevSeries = series;
+    setSeries((prev) => prev.filter((s) => s.id !== id));
     try {
-      await fetch(`/api/x/series/${id}`, { method: "DELETE" });
-      setSeries((prev) => prev.filter((s) => s.id !== id));
+      const res = await fetch(`/api/x/series/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
     } catch {
-      loadSeries();
+      setSeries(prevSeries);
     }
   };
 
   const handleEnqueue = async (id: string) => {
-    const res = await fetch("/api/x/queue/enqueue", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_id: id }),
-    });
-    if (res.ok) loadSeries();
+    const prevSeries = series;
+    const maxOrder = series
+      .filter((s) => s.status === "queued" && !s.is_posted)
+      .reduce((m, s) => Math.max(m, s.queue_order ?? 0), 0);
+    setSeries((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, status: "queued", queue_order: maxOrder + 1 } : s
+      )
+    );
+    try {
+      const res = await fetch("/api/x/queue/enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_id: id }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prevSeries);
+    }
   };
 
   const handleDequeue = async (id: string) => {
-    const res = await fetch(`/api/x/series/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "draft" }),
-    });
-    if (res.ok) loadSeries();
+    const prevSeries = series;
+    setSeries((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, status: "draft", queue_order: null } : s
+      )
+    );
+    try {
+      const res = await fetch(`/api/x/series/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prevSeries);
+    }
   };
 
   const sensors = useSensors(
@@ -153,18 +178,23 @@ export default function XPage() {
     const newIndex = series.findIndex((s) => s.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
 
+    const prevSeries = series;
     const reordered = arrayMove(series, oldIndex, newIndex).map((s, i) => ({
       ...s,
       queue_order: i + 1,
     }));
     setSeries(reordered);
 
-    const res = await fetch("/api/x/queue/reorder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
-    });
-    if (!res.ok) loadSeries();
+    try {
+      const res = await fetch("/api/x/queue/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSeries(prevSeries);
+    }
   };
 
   if (error) {
