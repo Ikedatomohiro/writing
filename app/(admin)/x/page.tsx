@@ -78,34 +78,32 @@ export default function XPage() {
       setIsLoading(true);
       setError(null);
       const params = new URLSearchParams({ account });
-      if (activeTab !== "all" && activeTab !== "posted") {
-        params.set("status", activeTab);
-      }
       const res = await fetch(`/api/x/series?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
-      const data: XSeriesWithPosts[] = json.data ?? [];
-      const filtered =
-        activeTab === "posted"
-          ? data.filter((s) => s.is_posted)
-          : activeTab === "all"
-          ? data
-          : data.filter((s) => !s.is_posted);
-      const sorted =
-        activeTab === "queued"
-          ? [...filtered].sort((a, b) => (a.queue_order ?? 0) - (b.queue_order ?? 0))
-          : filtered;
-      setSeries(sorted);
+      setSeries(json.data ?? []);
     } catch {
       setError("シリーズの読み込みに失敗しました");
     } finally {
       setIsLoading(false);
     }
-  }, [account, activeTab]);
+  }, [account]);
 
   useEffect(() => {
     loadSeries();
   }, [loadSeries]);
+
+  const baseFiltered =
+    activeTab === "all"
+      ? series
+      : activeTab === "posted"
+      ? series.filter((s) => s.is_posted)
+      : series.filter((s) => s.status === activeTab && !s.is_posted);
+
+  const filteredSeries =
+    activeTab === "queued"
+      ? [...baseFiltered].sort((a, b) => (a.queue_order ?? 0) - (b.queue_order ?? 0))
+      : baseFiltered;
 
   const handleDelete = (id: string) => {
     setDeleteTarget(id);
@@ -174,22 +172,25 @@ export default function XPage() {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = series.findIndex((s) => s.id === active.id);
-    const newIndex = series.findIndex((s) => s.id === over.id);
+    const oldIndex = filteredSeries.findIndex((s) => s.id === active.id);
+    const newIndex = filteredSeries.findIndex((s) => s.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
 
     const prevSeries = series;
-    const reordered = arrayMove(series, oldIndex, newIndex).map((s, i) => ({
-      ...s,
-      queue_order: i + 1,
-    }));
-    setSeries(reordered);
+    const reorderedQueued = arrayMove(filteredSeries, oldIndex, newIndex).map(
+      (s, i) => ({ ...s, queue_order: i + 1 })
+    );
+
+    setSeries((prev) => {
+      const nonQueued = prev.filter((s) => s.status !== "queued" || s.is_posted);
+      return [...nonQueued, ...reorderedQueued];
+    });
 
     try {
       const res = await fetch("/api/x/queue/reorder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ series_ids: reordered.map((s) => s.id) }),
+        body: JSON.stringify({ series_ids: reorderedQueued.map((s) => s.id) }),
       });
       if (!res.ok) throw new Error();
     } catch {
@@ -263,7 +264,7 @@ export default function XPage() {
 
       {isLoading ? (
         <LoadingIndicator />
-      ) : series.length === 0 ? (
+      ) : filteredSeries.length === 0 ? (
         <EmptyState
           title="まだ投稿はありません"
           description="新しいシリーズを作成してXに投稿しましょう"
@@ -277,11 +278,11 @@ export default function XPage() {
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={series.map((s) => s.id)}
+            items={filteredSeries.map((s) => s.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="flex flex-col gap-3">
-              {series.map((s) => (
+              {filteredSeries.map((s) => (
                 <SortableXSeriesCard
                   key={s.id}
                   series={s}
@@ -295,7 +296,7 @@ export default function XPage() {
         </DndContext>
       ) : (
         <div className="flex flex-col gap-3">
-          {series.map((s) => (
+          {filteredSeries.map((s) => (
             <XSeriesCard
               key={s.id}
               series={s}
