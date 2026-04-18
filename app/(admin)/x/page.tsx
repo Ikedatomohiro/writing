@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -46,6 +46,14 @@ const TABS: Array<{ label: string; value: XSeriesStatus | "all" | "posted" }> = 
 ];
 
 export default function XPage() {
+  return (
+    <Suspense>
+      <XPageContent />
+    </Suspense>
+  );
+}
+
+function XPageContent() {
   const searchParams = useSearchParams();
   const [series, setSeries] = useState<XSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
