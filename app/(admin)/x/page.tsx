@@ -93,6 +93,18 @@ export default function XPage() {
     loadSeries();
   }, [loadSeries]);
 
+  useEffect(() => {
+    const revalidate = () => {
+      if (document.visibilityState === "visible") loadSeries();
+    };
+    document.addEventListener("visibilitychange", revalidate);
+    window.addEventListener("focus", revalidate);
+    return () => {
+      document.removeEventListener("visibilitychange", revalidate);
+      window.removeEventListener("focus", revalidate);
+    };
+  }, [loadSeries]);
+
   const baseFiltered =
     activeTab === "all"
       ? series
