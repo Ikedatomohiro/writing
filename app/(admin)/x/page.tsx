@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -29,6 +29,10 @@ import type { XSeriesWithPosts, XPost, XSeriesStatus } from "@/lib/types/x";
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
 type Account = typeof ACCOUNTS[number];
 
+function isAccount(value: string | null | undefined): value is Account {
+  return !!value && (ACCOUNTS as readonly string[]).includes(value);
+}
+
 function formatCreatedAt(iso: string): string {
   return new Date(iso).toLocaleDateString("ja-JP", {
     year: "numeric",
@@ -54,26 +58,40 @@ export default function XPage() {
 }
 
 function XPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const urlAccount = searchParams.get("account");
+
   const [series, setSeries] = useState<XSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [account, setAccount] = useState<Account>("pao-pao-cho");
+  const [account, setAccount] = useState<Account>(() =>
+    isAccount(urlAccount) ? urlAccount : "pao-pao-cho"
+  );
   const [activeTab, setActiveTab] = useState<XSeriesStatus | "all" | "posted">("draft");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
+  const buildUrl = useCallback(
+    (nextAccount: Account) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("account", nextAccount);
+      return `${pathname}?${params.toString()}`;
+    },
+    [pathname, searchParams]
+  );
+
   useEffect(() => {
-    const urlAccount = searchParams.get("account");
-    if (urlAccount && ACCOUNTS.includes(urlAccount as Account)) {
-      setAccount(urlAccount as Account);
+    if (isAccount(urlAccount)) {
+      if (urlAccount !== account) setAccount(urlAccount);
       sessionStorage.setItem("x_active_account", urlAccount);
       return;
     }
-    const storedAccount = sessionStorage.getItem("x_active_account");
-    if (storedAccount && ACCOUNTS.includes(storedAccount as Account)) {
-      setAccount(storedAccount as Account);
-    }
-  }, [searchParams]);
+    const stored = sessionStorage.getItem("x_active_account");
+    const fallback: Account = isAccount(stored) ? stored : "pao-pao-cho";
+    if (fallback !== account) setAccount(fallback);
+    router.replace(buildUrl(fallback), { scroll: false });
+  }, [urlAccount, account, router, buildUrl]);
 
   useEffect(() => {
     const storedTab = sessionStorage.getItem("x_active_tab");
@@ -85,6 +103,7 @@ function XPageContent() {
   const handleAccountChange = (newAccount: Account) => {
     setAccount(newAccount);
     sessionStorage.setItem("x_active_account", newAccount);
+    router.replace(buildUrl(newAccount), { scroll: false });
   };
 
   const handleTabChange = (tab: XSeriesStatus | "all" | "posted") => {
@@ -92,24 +111,30 @@ function XPageContent() {
     sessionStorage.setItem("x_active_tab", tab);
   };
 
-  const loadSeries = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const params = new URLSearchParams({ account });
-      const res = await fetch(`/api/x/series?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      setSeries(json.data ?? []);
-    } catch {
-      setError("シリーズの読み込みに失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [account]);
+  const loadSeries = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const params = new URLSearchParams({ account });
+        const res = await fetch(`/api/x/series?${params.toString()}`, { signal });
+        if (!res.ok) throw new Error("Failed to fetch");
+        const json = await res.json();
+        if (!signal?.aborted) setSeries(json.data ?? []);
+      } catch (e) {
+        if ((e as { name?: string }).name === "AbortError") return;
+        setError("シリーズの読み込みに失敗しました");
+      } finally {
+        if (!signal?.aborted) setIsLoading(false);
+      }
+    },
+    [account]
+  );
 
   useEffect(() => {
-    loadSeries();
+    const controller = new AbortController();
+    loadSeries(controller.signal);
+    return () => controller.abort();
   }, [loadSeries]);
 
   useEffect(() => {

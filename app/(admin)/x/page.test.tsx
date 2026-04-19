@@ -1,14 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+const mockReplace = vi.fn();
+
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams(),
-  useRouter: () => ({ push: vi.fn(), back: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: mockReplace, back: vi.fn(), refresh: vi.fn() })),
   useParams: () => ({}),
   usePathname: () => "/x",
 }));
 
+import { useSearchParams } from "next/navigation";
 import XPage from "./page";
 
 const mockFetch = vi.fn();
@@ -80,6 +83,7 @@ const mockSeries = [
 describe("XPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams());
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ data: mockSeries }),
@@ -115,9 +119,8 @@ describe("XPage", () => {
   it("デフォルトアカウントはpao-pao-choでfetch URLにaccount=pao-pao-choが含まれる", async () => {
     render(<XPage />);
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("account=pao-pao-cho")
-      );
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls.some((url) => url.includes("account=pao-pao-cho"))).toBe(true);
     });
   });
 
@@ -209,6 +212,66 @@ describe("XPage", () => {
       );
       expect(patchCalls.length).toBeGreaterThan(0);
       expect(patchCalls[0][0]).toMatch(/\/api\/x\/series\/x2/);
+    });
+  });
+
+  it("URLクエリ ?account=morita_rin のとき、初期fetchは morita_rin で呼ばれる（pao-pao-cho を先に呼ばない）", async () => {
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams("account=morita_rin"));
+
+    render(<XPage />);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+    const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+    expect(calls.every((url) => !url.includes("account=pao-pao-cho"))).toBe(true);
+    expect(calls.some((url) => url.includes("account=morita_rin"))).toBe(true);
+  });
+
+  it("URL優先: sessionStorage に別アカウントが残っていても URL が優先される", async () => {
+    sessionStorage.setItem("x_active_account", "pao-pao-cho");
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams("account=morita_rin"));
+
+    render(<XPage />);
+
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls.some((url) => url.includes("account=morita_rin"))).toBe(true);
+    });
+    const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+    expect(calls.every((url) => !url.includes("account=pao-pao-cho"))).toBe(true);
+  });
+
+  it("URLクエリが無く sessionStorage に値があるとき、その値で fetch + URL にも反映される", async () => {
+    sessionStorage.setItem("x_active_account", "matsumoto_sho");
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams());
+
+    render(<XPage />);
+
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls.some((url) => url.includes("account=matsumoto_sho"))).toBe(true);
+    });
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith(
+        expect.stringContaining("account=matsumoto_sho"),
+        expect.anything()
+      );
+    });
+  });
+
+  it("アカウント切替時に URL (router.replace) にも反映される", async () => {
+    const user = userEvent.setup();
+    render(<XPage />);
+
+    await waitFor(() => screen.getByRole("combobox"));
+    await user.selectOptions(screen.getByRole("combobox"), "matsumoto_sho");
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith(
+        expect.stringContaining("account=matsumoto_sho"),
+        expect.anything()
+      );
     });
   });
 
