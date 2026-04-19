@@ -34,7 +34,7 @@ const PLATFORM_CARDS: PlatformCard[] = [
   },
 ];
 
-const X_ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
+const X_ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
 
 type StatusCounts = { draft: number; queued: number };
 

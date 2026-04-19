@@ -26,7 +26,7 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import type { XSeriesWithPosts, XPost, XSeriesStatus } from "@/lib/types/x";
 
-const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
+const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
 type Account = typeof ACCOUNTS[number];
 
 function formatCreatedAt(iso: string): string {

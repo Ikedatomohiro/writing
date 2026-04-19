@@ -9,7 +9,7 @@ import { getAccountLabel, getXCategoryLabel } from "@/lib/constants/labels";
 import { formatApiError } from "@/lib/api/errors";
 import { useToastContext } from "@/components/common/ToastProvider";
 
-const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho"] as const;
+const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
 type Account = typeof ACCOUNTS[number];
 
 interface PostDraft {

@@ -4,6 +4,7 @@ import type { XCategory } from "@/lib/types/x";
 export const ACCOUNT_LABELS: Record<string, string> = {
   "pao-pao-cho": "パオパオ長 (Threads/X)",
   "matsumoto_sho": "松本翔 (note/X)",
+  "morita_rin": "森田凛",
 } as const;
 
 export const POST_TYPE_LABELS: Record<SnsPostType, string> = {

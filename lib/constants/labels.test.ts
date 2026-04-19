@@ -16,6 +16,10 @@ describe("ACCOUNT_LABELS", () => {
   it("maps matsumoto_sho to Japanese label", () => {
     expect(ACCOUNT_LABELS["matsumoto_sho"]).toBe("松本翔 (note/X)");
   });
+
+  it("maps morita_rin to Japanese label", () => {
+    expect(ACCOUNT_LABELS["morita_rin"]).toBe("森田凛");
+  });
 });
 
 describe("POST_TYPE_LABELS", () => {
