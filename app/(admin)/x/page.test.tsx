@@ -275,6 +275,52 @@ describe("XPage", () => {
     });
   });
 
+  it("投稿済みタブでは posted_at の降順で並ぶ", async () => {
+    const postedSeries = [
+      {
+        ...mockSeries[0],
+        id: "xp-old",
+        theme: "古い投稿",
+        status: "posted",
+        is_posted: true,
+        posted_at: "2024-02-01T00:00:00.000Z",
+      },
+      {
+        ...mockSeries[0],
+        id: "xp-new",
+        theme: "新しい投稿",
+        status: "posted",
+        is_posted: true,
+        posted_at: "2024-04-01T00:00:00.000Z",
+      },
+      {
+        ...mockSeries[0],
+        id: "xp-mid",
+        theme: "中間投稿",
+        status: "posted",
+        is_posted: true,
+        posted_at: "2024-03-01T00:00:00.000Z",
+      },
+    ];
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: postedSeries }),
+    });
+
+    const user = userEvent.setup();
+    render(<XPage />);
+    await waitFor(() => screen.getByRole("button", { name: "投稿済み" }));
+    await user.click(screen.getByRole("button", { name: "投稿済み" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("新しい投稿")).toBeInTheDocument();
+    });
+
+    const headings = screen.getAllByRole("heading", { level: 3 });
+    const themes = headings.map((h) => h.textContent?.trim());
+    expect(themes).toEqual(["新しい投稿", "中間投稿", "古い投稿"]);
+  });
+
   it("キュー追加に失敗したらアイテムがdraftタブに戻る（ロールバック）", async () => {
     const user = userEvent.setup();
     mockFetch.mockImplementation((url: string, init?: RequestInit) => {

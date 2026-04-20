@@ -165,6 +165,10 @@ export default function SnsPage() {
   const filteredSeries =
     activeTab === "queued"
       ? [...baseFiltered].sort((a, b) => (a.queue_order ?? 0) - (b.queue_order ?? 0))
+      : activeTab === "posted"
+      ? [...baseFiltered].sort(
+          (a, b) => (b.posted_at ?? "").localeCompare(a.posted_at ?? "")
+        )
       : baseFiltered;
 
   const totalPages = Math.ceil(filteredSeries.length / PAGE_SIZE);
