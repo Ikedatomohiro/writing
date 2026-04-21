@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# git-secrets（シークレット漏洩検知）を継続して実行
+if command -v git-secrets >/dev/null 2>&1; then
+  git secrets --pre_commit_hook -- "$@" || exit 1
+fi
+
+# 変更ファイルに対して ESLint を走らせる（Vercel ビルド失敗を事前に検知）
+npx lint-staged
