@@ -180,12 +180,10 @@ describe("DELETE /api/x/series/[id]/posts/[postId]", () => {
       .fn()
       .mockResolvedValue({ data: parent, error: null });
 
-    let tableCall = 0;
     mockSupabase.from.mockImplementation((table: string) => {
       if (table === "x_series") {
         return { select: () => ({ eq: () => ({ single: fetchSeriesSingleMock }) }) };
       }
-      tableCall++;
       return {
         select: () => ({
           eq: () => ({ eq: () => ({ single: fetchPostSingleMock }) }),
