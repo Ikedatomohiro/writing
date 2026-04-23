@@ -84,6 +84,24 @@ describe("Content API", () => {
 
       expect(articles.length).toBe(3);
     });
+
+    it("excludes published articles whose title or description is empty (defense for malformed data)", async () => {
+      mockListArticleFiles.mockResolvedValue([
+        "good",
+        "empty-title",
+        "empty-desc",
+        "whitespace-title",
+      ]);
+      mockReadArticleFile
+        .mockResolvedValueOnce(createArticle({ slug: "good", title: "Good", description: "good desc" }))
+        .mockResolvedValueOnce(createArticle({ slug: "empty-title", title: "", description: "desc" }))
+        .mockResolvedValueOnce(createArticle({ slug: "empty-desc", title: "title", description: "" }))
+        .mockResolvedValueOnce(createArticle({ slug: "whitespace-title", title: "   ", description: "desc" }));
+
+      const articles = await getArticlesByCategory("asset");
+
+      expect(articles.map((a) => a.slug)).toEqual(["good"]);
+    });
   });
 
   describe("getAllArticles", () => {

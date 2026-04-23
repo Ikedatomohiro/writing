@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SITE_CONFIG } from "@/lib/constants/site";
 
 const FOOTER_LINKS = [
+  { label: "運営者について", href: "/about" },
   { label: "プライバシーポリシー", href: "/privacy" },
   { label: "利用規約", href: "/terms" },
   { label: "お問い合わせ", href: "/contact" },

@@ -20,6 +20,7 @@ describe("Footer", () => {
 
   it("フッターリンクが日本語で表示される", () => {
     render(<Footer />);
+    expect(screen.getByText("運営者について")).toBeInTheDocument();
     expect(screen.getByText("プライバシーポリシー")).toBeInTheDocument();
     expect(screen.getByText("利用規約")).toBeInTheDocument();
     expect(screen.getByText("お問い合わせ")).toBeInTheDocument();
@@ -33,6 +34,7 @@ describe("Footer", () => {
 
   it("フッターリンクが正しいhrefを持つ", () => {
     render(<Footer />);
+    expect(screen.getByRole("link", { name: "運営者について" })).toHaveAttribute("href", "/about");
     expect(screen.getByRole("link", { name: "プライバシーポリシー" })).toHaveAttribute("href", "/privacy");
     expect(screen.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", "/terms");
     expect(screen.getByRole("link", { name: "お問い合わせ" })).toHaveAttribute("href", "/contact");

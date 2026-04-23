@@ -36,11 +36,13 @@ export async function getArticlesByCategory(
 
   const articles: ArticleMeta[] = [];
   for (const article of results) {
-    if (article && (includeDrafts || article.published)) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { content, ...meta } = article;
-      articles.push(meta);
-    }
+    if (!article) continue;
+    if (!includeDrafts && !article.published) continue;
+    // 公開記事でも、タイトルか説明が空のものはAdSense審査対策で公開リストから除外する
+    if (!includeDrafts && (!article.title?.trim() || !article.description?.trim())) continue;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { content, ...meta } = article;
+    articles.push(meta);
   }
 
   return sortByDateDesc(articles);

@@ -24,7 +24,24 @@ export default function PrivacyPolicyPage() {
 
       <section className={sectionClass}>
         <h2 className={headingClass}>運営者情報</h2>
-        <p>サイト名: {SITE_CONFIG.name}</p>
+        <ul className="list-none space-y-1 text-on-surface-variant">
+          <li>サイト名: {SITE_CONFIG.name}</li>
+          <li>運営者: pao.cho（ハンドルネーム）</li>
+          <li>
+            連絡先:{" "}
+            <Link href="/contact" className="underline">
+              お問い合わせフォーム
+            </Link>
+            よりご連絡ください
+          </li>
+          <li>
+            運営者の経歴・スタンスは{" "}
+            <Link href="/about" className="underline">
+              このブログについて
+            </Link>{" "}
+            をご覧ください
+          </li>
+        </ul>
       </section>
 
       <section className={sectionClass}>
