@@ -54,13 +54,12 @@ function ProfileSection() {
           <div className="space-y-6 font-body text-lg leading-relaxed text-on-surface-variant">
             <p>
               <span className="font-bold text-on-surface">pao.cho</span>。
-              1982年生まれ、40代の現役エンジニア。新卒で一部上場メーカーの
+              40代の現役エンジニア。新卒で一部上場メーカーの
               技術営業部に入り、化学系の仕事を13年経験した後、
               36歳でプログラミング学習を開始。37歳で異業種からエンジニアに転職した。
             </p>
             <p>
-              現在は三井物産スピンアウトのSaaS企業で、
-              生成AI活用推進・OCR×LLM・RAG基盤など、
+              現在はSaaS企業で、生成AI活用推進・LLM・RAG基盤など、
               AIをプロダクトに組み込む仕事を担当している。
               Claude Code MAXプランを日常の開発OSにして、
               自分で書くより「まずAIにやらせる」働き方を実践中。
@@ -69,7 +68,7 @@ function ProfileSection() {
               ブログ <span className="font-bold text-on-surface">{SITE_CONFIG.name}</span> は、
               現場で試して効いたこと・失敗したこと・ツールの選別を、
               同じく現役で戦うエンジニア向けに記録する場所。
-              投資で合計950万円を溶かした経験や、AI時代の生き残り戦略も、
+              投資で合計1,000万円を溶かした経験や、AI時代の生き残り戦略も、
               感情論ではなく手を動かして得た一次情報として書いていく。
             </p>
           </div>
