@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BlogArticleCard } from "@/components/blog/BlogArticleCard/BlogArticleCard";
 import { getArticlesByCategory } from "@/lib/content/api";
-import type { Category, ArticleMeta } from "@/lib/content/types";
-import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
+import type { ArticleMeta } from "@/lib/content/types";
+import { SITE_CONFIG } from "@/lib/constants/site";
 
 export const revalidate = 60;
 
@@ -20,12 +20,6 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 };
-
-const CATEGORY_CONFIG = CATEGORIES.map(({ slug, label, href }) => ({
-  category: slug as Category,
-  label,
-  href,
-}));
 
 function HeroSection({ article }: { article: ArticleMeta }) {
   const href = `/${article.category}/${article.slug}`;
@@ -67,25 +61,6 @@ function HeroSection({ article }: { article: ArticleMeta }) {
         </div>
       </div>
     </section>
-  );
-}
-
-function CategoryNavigation() {
-  return (
-    <div className="flex flex-wrap items-center gap-6 mb-12 border-b border-outline-variant/20 pb-6">
-      <span className="text-outline font-label text-[10px] tracking-[0.2em] uppercase font-bold">
-        カテゴリ
-      </span>
-      {CATEGORY_CONFIG.map(({ category, label, href }) => (
-        <Link
-          key={category}
-          href={href}
-          className="text-on-surface-variant font-headline font-bold text-lg hover:text-primary transition-colors"
-        >
-          {label}
-        </Link>
-      ))}
-    </div>
   );
 }
 
@@ -184,9 +159,6 @@ export default async function Home() {
     <div className="max-w-7xl mx-auto px-6">
       {/* Hero Section: Content Spotlight */}
       {featuredArticle && <HeroSection article={featuredArticle} />}
-
-      {/* Category Navigation */}
-      <CategoryNavigation />
 
       {/* Bento Grid Article List */}
       {gridArticles.length > 0 && <BentoGrid articles={gridArticles} hasMore={hasMore} />}
