@@ -349,4 +349,46 @@ describe("SnsPage", () => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
     });
   });
+
+  describe("タブ件数バッジ", () => {
+    it("各タブボタンに件数バッジが表示される（mockSeries: all=2, draft=1, queued=1, posted=0）", async () => {
+      const { within } = await import("@testing-library/react");
+      renderWithToast(<SnsPage />);
+
+      await waitFor(() => {
+        const allTab = screen.getByRole("button", { name: "すべて" });
+        const draftTab = screen.getByRole("button", { name: "下書き" });
+        const queuedTab = screen.getByRole("button", { name: "予約中" });
+        const postedTab = screen.getByRole("button", { name: "投稿済み" });
+
+        expect(within(allTab).getByText("2")).toBeInTheDocument();
+        expect(within(draftTab).getByText("1")).toBeInTheDocument();
+        expect(within(queuedTab).getByText("1")).toBeInTheDocument();
+        // 0件時もバッジを表示する
+        expect(within(postedTab).getByText("0")).toBeInTheDocument();
+      });
+    });
+
+    it("キュー追加後に件数バッジがリアルタイムに更新される（draft: 1→0, queued: 1→2）", async () => {
+      const { within } = await import("@testing-library/react");
+      const user = userEvent.setup();
+      mockFetch.mockImplementation((url: string, init?: RequestInit) => {
+        if (url === "/api/threads/queue/enqueue" && init?.method === "POST") {
+          return Promise.resolve({ ok: true, json: async () => ({ data: { id: "1" } }) });
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ data: mockSeries }) });
+      });
+
+      renderWithToast(<SnsPage />);
+      await waitFor(() => screen.getByText("テストテーマ1"));
+      await user.click(screen.getByRole("button", { name: "キューに追加" }));
+
+      await waitFor(() => {
+        const draftTab = screen.getByRole("button", { name: "下書き" });
+        const queuedTab = screen.getByRole("button", { name: "予約中" });
+        expect(within(draftTab).getByText("0")).toBeInTheDocument();
+        expect(within(queuedTab).getByText("2")).toBeInTheDocument();
+      });
+    });
+  });
 });

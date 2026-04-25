@@ -271,6 +271,12 @@ function SnsPageContent() {
     }
   };
 
+  function countForTab(tab: SnsSeriesStatus | "all" | "posted"): number {
+    if (tab === "all") return series.length;
+    if (tab === "posted") return series.filter((s) => s.is_posted).length;
+    return series.filter((s) => s.status === tab && !s.is_posted).length;
+  }
+
   const uniqueTabs: Array<{ label: string; value: SnsSeriesStatus | "all" | "posted" }> = [
     { label: "すべて", value: "all" },
     { label: "下書き", value: "draft" },
@@ -327,19 +333,34 @@ function SnsPageContent() {
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
-        {uniqueTabs.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => handleTabChange(tab.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors shrink-0 ${
-              activeTab === tab.value
-                ? "bg-blue-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        {uniqueTabs.map((tab) => {
+          const count = countForTab(tab.value);
+          const isActive = activeTab === tab.value;
+          return (
+            <button
+              key={tab.value}
+              aria-label={tab.label}
+              onClick={() => handleTabChange(tab.value)}
+              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors shrink-0 ${
+                isActive
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {tab.label}
+              <span
+                aria-hidden="true"
+                className={`inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded-full text-xs font-semibold ${
+                  isActive
+                    ? "bg-white/25 text-white"
+                    : "bg-slate-300 text-slate-700"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {isLoading ? (
