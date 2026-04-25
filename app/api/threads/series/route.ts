@@ -19,17 +19,19 @@ export async function GET(request: NextRequest) {
   const authError = await requireAuth();
   if (authError) return authError;
 
-  const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status") as SnsSeriesStatus | null;
   const account = searchParams.get("account");
 
-  // matsumoto_sho / morita_rin have no Threads data yet (sns_series has no account column).
-  // Return empty array so the UI shows an empty state without a schema change.
-  if (isThreadsAccount(account) && account !== "pao-pao-cho") {
-    return NextResponse.json({ data: [] });
+  // account パラメータが指定されている場合は許可リストで検証
+  if (account !== null && !isThreadsAccount(account)) {
+    return NextResponse.json(
+      { error: `Invalid account: ${account}` },
+      { status: 400 }
+    );
   }
 
+  const supabase = createServerClient();
   let query = supabase
     .from("sns_series")
     .select("*, posts:sns_posts(*)")
@@ -37,6 +39,10 @@ export async function GET(request: NextRequest) {
 
   if (status) {
     query = query.eq("status", status) as typeof query;
+  }
+
+  if (isThreadsAccount(account)) {
+    query = query.eq("account", account) as typeof query;
   }
 
   const { data, error } = await query;

@@ -13,6 +13,7 @@ export interface SnsSeries {
   posted_at: string | null
   source: string | null
   source_draft_id: string | null
+  account: string
   created_at: string
   updated_at: string
 }

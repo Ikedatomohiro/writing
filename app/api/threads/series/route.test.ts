@@ -27,6 +27,7 @@ const mockSeries: SnsSeries = {
   posted_at: null,
   source: null,
   source_draft_id: null,
+  account: "pao-pao-cho",
   created_at: "2024-01-01T00:00:00.000Z",
   updated_at: "2024-01-01T00:00:00.000Z",
 };
@@ -100,8 +101,9 @@ describe("GET /api/threads/series", () => {
     expect(response.status).toBe(200);
   });
 
-  it("account=pao-pao-choのとき通常のDBクエリを実行する", async () => {
-    const orderMock = vi.fn().mockResolvedValue({ data: [mockSeries], error: null });
+  it("account=pao-pao-choのとき .eq('account','pao-pao-cho') でフィルタする", async () => {
+    const eqAccountMock = vi.fn().mockResolvedValue({ data: [mockSeries], error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqAccountMock });
     const fromMock = {
       select: vi.fn().mockReturnValue({ order: orderMock }),
     };
@@ -114,9 +116,17 @@ describe("GET /api/threads/series", () => {
 
     expect(response.status).toBe(200);
     expect(data).toHaveProperty("data");
+    expect(eqAccountMock).toHaveBeenCalledWith("account", "pao-pao-cho");
   });
 
-  it("account=matsumoto_shoのとき空配列を返す（スキーマ未対応）", async () => {
+  it("account=matsumoto_shoのとき .eq('account','matsumoto_sho') でフィルタする", async () => {
+    const matsumotoSeries: SnsSeries = { ...mockSeries, account: "matsumoto_sho" };
+    const eqAccountMock = vi.fn().mockResolvedValue({ data: [matsumotoSeries], error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqAccountMock });
+    const fromMock = {
+      select: vi.fn().mockReturnValue({ order: orderMock }),
+    };
+    mockSupabase.from.mockReturnValue(fromMock);
     const { GET } = await import("./route");
 
     const request = new NextRequest("http://localhost:3000/api/threads/series?account=matsumoto_sho");
@@ -124,12 +134,18 @@ describe("GET /api/threads/series", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.data).toEqual([]);
-    // DB should not be queried for non-pao-pao-cho accounts
-    expect(mockSupabase.from).not.toHaveBeenCalled();
+    expect(data.data).toEqual([matsumotoSeries]);
+    expect(eqAccountMock).toHaveBeenCalledWith("account", "matsumoto_sho");
   });
 
-  it("account=morita_rinのとき空配列を返す（スキーマ未対応）", async () => {
+  it("account=morita_rinのとき .eq('account','morita_rin') でフィルタする", async () => {
+    const rinSeries: SnsSeries = { ...mockSeries, account: "morita_rin" };
+    const eqAccountMock = vi.fn().mockResolvedValue({ data: [rinSeries], error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqAccountMock });
+    const fromMock = {
+      select: vi.fn().mockReturnValue({ order: orderMock }),
+    };
+    mockSupabase.from.mockReturnValue(fromMock);
     const { GET } = await import("./route");
 
     const request = new NextRequest("http://localhost:3000/api/threads/series?account=morita_rin");
@@ -137,7 +153,36 @@ describe("GET /api/threads/series", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.data).toEqual([]);
+    expect(data.data).toEqual([rinSeries]);
+    expect(eqAccountMock).toHaveBeenCalledWith("account", "morita_rin");
+  });
+
+  it("account 未指定のとき account フィルタを適用しない（全アカウント返却）", async () => {
+    const orderMock = vi.fn().mockResolvedValue({ data: [mockSeries], error: null });
+    const fromMock = {
+      select: vi.fn().mockReturnValue({ order: orderMock }),
+    };
+    mockSupabase.from.mockReturnValue(fromMock);
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data).toHaveProperty("data");
+  });
+
+  it("不正な account 値はバリデーションエラー400を返す", async () => {
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series?account=unknown_account");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.error).toBeDefined();
+    // 不正なaccountで Supabase をクエリしてはならない
     expect(mockSupabase.from).not.toHaveBeenCalled();
   });
 });

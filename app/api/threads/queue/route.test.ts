@@ -27,6 +27,7 @@ const mockQueuedSeries: SnsSeriesWithPosts = {
   posted_at: null,
   source: null,
   source_draft_id: null,
+  account: "pao-pao-cho",
   created_at: "2024-01-01T00:00:00.000Z",
   updated_at: "2024-01-01T00:00:00.000Z",
   posts: [],
@@ -54,7 +55,7 @@ describe("GET /api/threads/queue", () => {
     expect(data.error).toBe("Unauthorized");
   });
 
-  it("キュー一覧をqueue_order昇順で取得する", async () => {
+  it("キュー一覧をqueue_order昇順で取得する（account 未指定: 全アカウント）", async () => {
     const orderMock = vi.fn().mockResolvedValue({ data: [mockQueuedSeries], error: null });
     const eqMock = vi.fn().mockReturnValue({ order: orderMock });
     const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
@@ -68,5 +69,33 @@ describe("GET /api/threads/queue", () => {
     expect(response.status).toBe(200);
     expect(data).toHaveProperty("data");
     expect(Array.isArray(data.data)).toBe(true);
+  });
+
+  it("account=morita_rin 指定時は account でもフィルタする", async () => {
+    const accountEqMock = vi.fn().mockResolvedValue({ data: [mockQueuedSeries], error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: accountEqMock });
+    const statusEqMock = vi.fn().mockReturnValue({ order: orderMock });
+    const selectMock = vi.fn().mockReturnValue({ eq: statusEqMock });
+    mockSupabase.from.mockReturnValue({ select: selectMock });
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/queue?account=morita_rin");
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    expect(statusEqMock).toHaveBeenCalledWith("status", "queued");
+    expect(accountEqMock).toHaveBeenCalledWith("account", "morita_rin");
+  });
+
+  it("不正な account はバリデーションエラー400を返す", async () => {
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/queue?account=bogus");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.error).toBeDefined();
+    expect(mockSupabase.from).not.toHaveBeenCalled();
   });
 });

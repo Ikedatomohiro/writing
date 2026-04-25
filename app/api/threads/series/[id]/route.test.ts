@@ -27,6 +27,7 @@ const mockSeries: SnsSeries = {
   posted_at: null,
   source: null,
   source_draft_id: null,
+  account: "pao-pao-cho",
   created_at: "2024-01-01T00:00:00.000Z",
   updated_at: "2024-01-01T00:00:00.000Z",
 };

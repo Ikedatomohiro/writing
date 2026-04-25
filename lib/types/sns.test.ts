@@ -25,11 +25,13 @@ describe('sns types', () => {
       posted_at: null,
       source: 'content-pipeline',
       source_draft_id: 'draft_001',
+      account: 'pao-pao-cho',
       created_at: '2026-04-07T00:00:00Z',
       updated_at: '2026-04-07T00:00:00Z',
     }
     expect(series.id).toBe('test-id')
     expect(series.is_posted).toBe(false)
+    expect(series.account).toBe('pao-pao-cho')
   })
 
   it('SnsPost has required fields', () => {

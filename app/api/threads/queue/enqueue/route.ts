@@ -36,10 +36,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // queue_order の UNIQUE は (account, queue_order) スコープのため、
+  // max_order は対象アカウントのキュー内だけで集計する。
+  // これを怠ると pao と rin が同じ番号を採番して reorder の前提を壊す。
   const { data: maxOrderData } = await supabase
     .from("sns_series")
     .select("queue_order")
     .eq("status", "queued")
+    .eq("account", series.account)
     .order("queue_order", { ascending: false })
     .limit(1);
 
