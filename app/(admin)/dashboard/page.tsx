@@ -48,7 +48,7 @@ async function fetchCounts(): Promise<{
     const [{ data: snsRows }, { data: xRows }] = await Promise.all([
       supabase
         .from("sns_series")
-        .select("status, is_posted")
+        .select("status, account, is_posted")
         .in("status", ["draft", "queued"])
         .eq("is_posted", false),
       supabase
@@ -58,15 +58,19 @@ async function fetchCounts(): Promise<{
         .eq("is_posted", false),
     ]);
 
-    // sns_series has no account column yet; all existing rows belong to pao-pao-cho.
-    // matsumoto_sho and morita_rin show 0 counts until schema is extended.
+    // sns_series.account 列は 20260425000000 マイグレーションで追加済み。
+    // 該当列を直接 GROUP BY せず、行を pull して JS でバケットする
+    // （x_series と同じ方式で統一）。
     const threadsByAccount: Record<string, StatusCounts> = {};
     for (const account of ACCOUNTS) {
       threadsByAccount[account] = { draft: 0, queued: 0 };
     }
-    for (const row of (snsRows ?? []) as Array<{ status: string }>) {
-      if (row.status === "draft") threadsByAccount["pao-pao-cho"].draft++;
-      if (row.status === "queued") threadsByAccount["pao-pao-cho"].queued++;
+    for (const row of (snsRows ?? []) as Array<{ status: string; account: string }>) {
+      if (!threadsByAccount[row.account]) {
+        threadsByAccount[row.account] = { draft: 0, queued: 0 };
+      }
+      if (row.status === "draft") threadsByAccount[row.account].draft++;
+      if (row.status === "queued") threadsByAccount[row.account].queued++;
     }
 
     const xByAccount: Record<string, StatusCounts> = {};
