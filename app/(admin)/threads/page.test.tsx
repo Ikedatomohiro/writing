@@ -1,6 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+const mockReplace = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: mockReplace, back: vi.fn(), refresh: vi.fn() })),
+  useParams: () => ({}),
+  usePathname: () => "/threads",
+}));
+
+import { useSearchParams } from "next/navigation";
 import SnsPage from "./page";
 import { ToastProvider } from "@/components/common/ToastProvider";
 
@@ -49,6 +60,7 @@ const mockSeries = [
 describe("SnsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams());
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ data: mockSeries }),
@@ -71,6 +83,62 @@ describe("SnsPage", () => {
     renderWithToast(<SnsPage />);
     await waitFor(() => {
       expect(screen.getByRole("link", { name: /新規作成/ })).toBeInTheDocument();
+    });
+  });
+
+  it("アカウント切替ドロップダウンが表示される", async () => {
+    renderWithToast(<SnsPage />);
+    await waitFor(() => {
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
+    });
+  });
+
+  it("デフォルトアカウントはpao-pao-choでfetch URLにaccount=pao-pao-choが含まれる", async () => {
+    renderWithToast(<SnsPage />);
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls.some((url) => url.includes("account=pao-pao-cho"))).toBe(true);
+    });
+  });
+
+  it("アカウント切替でfetch URLが変わる", async () => {
+    const user = userEvent.setup();
+    renderWithToast(<SnsPage />);
+
+    await waitFor(() => screen.getByRole("combobox"));
+    await user.selectOptions(screen.getByRole("combobox"), "matsumoto_sho");
+
+    await waitFor(() => {
+      const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+      expect(calls.some((url) => url.includes("account=matsumoto_sho"))).toBe(true);
+    });
+  });
+
+  it("URLクエリ ?account=morita_rin のとき、初期fetchは morita_rin で呼ばれる", async () => {
+    (useSearchParams as Mock).mockReturnValue(new URLSearchParams("account=morita_rin"));
+
+    renderWithToast(<SnsPage />);
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled();
+    });
+    const calls = mockFetch.mock.calls.map((c) => c[0] as string);
+    expect(calls.every((url) => !url.includes("account=pao-pao-cho"))).toBe(true);
+    expect(calls.some((url) => url.includes("account=morita_rin"))).toBe(true);
+  });
+
+  it("アカウント切替時に URL (router.replace) にも反映される", async () => {
+    const user = userEvent.setup();
+    renderWithToast(<SnsPage />);
+
+    await waitFor(() => screen.getByRole("combobox"));
+    await user.selectOptions(screen.getByRole("combobox"), "matsumoto_sho");
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith(
+        expect.stringContaining("account=matsumoto_sho"),
+        expect.anything()
+      );
     });
   });
 
@@ -277,7 +345,6 @@ describe("SnsPage", () => {
     await waitFor(() => screen.getByText("テストテーマ1"));
     await user.click(screen.getByRole("button", { name: "キューに追加" }));
 
-    // 一旦state上は消えた後、API失敗でロールバックされて復元
     await waitFor(() => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
     });

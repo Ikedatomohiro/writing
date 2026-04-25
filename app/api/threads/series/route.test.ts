@@ -99,6 +99,47 @@ describe("GET /api/threads/series", () => {
 
     expect(response.status).toBe(200);
   });
+
+  it("account=pao-pao-choのとき通常のDBクエリを実行する", async () => {
+    const orderMock = vi.fn().mockResolvedValue({ data: [mockSeries], error: null });
+    const fromMock = {
+      select: vi.fn().mockReturnValue({ order: orderMock }),
+    };
+    mockSupabase.from.mockReturnValue(fromMock);
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series?account=pao-pao-cho");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data).toHaveProperty("data");
+  });
+
+  it("account=matsumoto_shoのとき空配列を返す（スキーマ未対応）", async () => {
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series?account=matsumoto_sho");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data).toEqual([]);
+    // DB should not be queried for non-pao-pao-cho accounts
+    expect(mockSupabase.from).not.toHaveBeenCalled();
+  });
+
+  it("account=morita_rinのとき空配列を返す（スキーマ未対応）", async () => {
+    const { GET } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series?account=morita_rin");
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data).toEqual([]);
+    expect(mockSupabase.from).not.toHaveBeenCalled();
+  });
 });
 
 describe("POST /api/threads/series", () => {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -24,9 +25,17 @@ import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { ErrorState } from "@/components/common/ErrorState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
+import { getAccountLabel } from "@/lib/constants/labels";
 import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
 
 const PAGE_SIZE = 20;
+
+const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
+type Account = typeof ACCOUNTS[number];
+
+function isAccount(value: string | null | undefined): value is Account {
+  return !!value && (ACCOUNTS as readonly string[]).includes(value);
+}
 
 function formatCreatedAt(iso: string): string {
   return new Date(iso).toLocaleDateString("ja-JP", {
@@ -38,13 +47,50 @@ function formatCreatedAt(iso: string): string {
 }
 
 export default function SnsPage() {
+  return (
+    <Suspense>
+      <SnsPageContent />
+    </Suspense>
+  );
+}
+
+function SnsPageContent() {
   const { toast } = useToastContext();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const urlAccount = searchParams.get("account");
+
   const [series, setSeries] = useState<SnsSeriesWithPosts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [account, setAccount] = useState<Account>(() =>
+    isAccount(urlAccount) ? urlAccount : "pao-pao-cho"
+  );
   const [activeTab, setActiveTab] = useState<SnsSeriesStatus | "all" | "posted">("draft");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const buildUrl = useCallback(
+    (nextAccount: Account) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("account", nextAccount);
+      return `${pathname}?${params.toString()}`;
+    },
+    [pathname, searchParams]
+  );
+
+  useEffect(() => {
+    if (isAccount(urlAccount)) {
+      if (urlAccount !== account) setAccount(urlAccount);
+      sessionStorage.setItem("threads_active_account", urlAccount);
+      return;
+    }
+    const stored = sessionStorage.getItem("threads_active_account");
+    const fallback: Account = isAccount(stored) ? stored : "pao-pao-cho";
+    if (fallback !== account) setAccount(fallback);
+    router.replace(buildUrl(fallback), { scroll: false });
+  }, [urlAccount, account, router, buildUrl]);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("threads_active_tab");
@@ -53,29 +99,42 @@ export default function SnsPage() {
     }
   }, []);
 
+  const handleAccountChange = (newAccount: Account) => {
+    setAccount(newAccount);
+    sessionStorage.setItem("threads_active_account", newAccount);
+    router.replace(buildUrl(newAccount), { scroll: false });
+  };
+
   const handleTabChange = (tab: SnsSeriesStatus | "all" | "posted") => {
     setActiveTab(tab);
     setCurrentPage(1);
     sessionStorage.setItem("threads_active_tab", tab);
   };
 
-  const loadSeries = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const res = await fetch("/api/threads/series");
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      setSeries(json.data ?? []);
-    } catch {
-      setError("シリーズの読み込みに失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const loadSeries = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const params = new URLSearchParams({ account });
+        const res = await fetch(`/api/threads/series?${params.toString()}`, { signal });
+        if (!res.ok) throw new Error("Failed to fetch");
+        const json = await res.json();
+        if (!signal?.aborted) setSeries(json.data ?? []);
+      } catch (e) {
+        if ((e as { name?: string }).name === "AbortError") return;
+        setError("シリーズの読み込みに失敗しました");
+      } finally {
+        if (!signal?.aborted) setIsLoading(false);
+      }
+    },
+    [account]
+  );
 
   useEffect(() => {
-    loadSeries();
+    const controller = new AbortController();
+    loadSeries(controller.signal);
+    return () => controller.abort();
   }, [loadSeries]);
 
   useEffect(() => {
@@ -239,17 +298,32 @@ export default function SnsPage() {
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
       />
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 className="text-2xl font-bold font-headline text-on-surface">Threads管理</h2>
-        <Link
-          href="/threads/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shrink-0"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          <span className="hidden sm:inline">新規作成</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <label htmlFor="threads-account-select" className="sr-only">アカウント</label>
+          <select
+            id="threads-account-select"
+            value={account}
+            onChange={(e) => handleAccountChange(e.target.value as Account)}
+            className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          >
+            {ACCOUNTS.map((a) => (
+              <option key={a} value={a}>
+                {getAccountLabel(a)}
+              </option>
+            ))}
+          </select>
+          <Link
+            href="/threads/new"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 shrink-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            <span className="hidden sm:inline">新規作成</span>
+          </Link>
+        </div>
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">

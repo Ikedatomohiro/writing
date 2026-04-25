@@ -8,6 +8,13 @@ import type {
   CreateSeriesRequest,
 } from "@/lib/types/sns";
 
+const THREADS_ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
+type ThreadsAccount = typeof THREADS_ACCOUNTS[number];
+
+function isThreadsAccount(value: string | null): value is ThreadsAccount {
+  return !!value && (THREADS_ACCOUNTS as readonly string[]).includes(value);
+}
+
 export async function GET(request: NextRequest) {
   const authError = await requireAuth();
   if (authError) return authError;
@@ -15,6 +22,13 @@ export async function GET(request: NextRequest) {
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status") as SnsSeriesStatus | null;
+  const account = searchParams.get("account");
+
+  // matsumoto_sho / morita_rin have no Threads data yet (sns_series has no account column).
+  // Return empty array so the UI shows an empty state without a schema change.
+  if (isThreadsAccount(account) && account !== "pao-pao-cho") {
+    return NextResponse.json({ data: [] });
+  }
 
   let query = supabase
     .from("sns_series")

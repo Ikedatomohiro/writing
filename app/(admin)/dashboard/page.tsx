@@ -34,12 +34,12 @@ const PLATFORM_CARDS: PlatformCard[] = [
   },
 ];
 
-const X_ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
+const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
 
 type StatusCounts = { draft: number; queued: number };
 
 async function fetchCounts(): Promise<{
-  threads: StatusCounts;
+  threadsByAccount: Record<string, StatusCounts>;
   xByAccount: Record<string, StatusCounts>;
 }> {
   try {
@@ -58,14 +58,19 @@ async function fetchCounts(): Promise<{
         .eq("is_posted", false),
     ]);
 
-    const threads: StatusCounts = { draft: 0, queued: 0 };
+    // sns_series has no account column yet; all existing rows belong to pao-pao-cho.
+    // matsumoto_sho and morita_rin show 0 counts until schema is extended.
+    const threadsByAccount: Record<string, StatusCounts> = {};
+    for (const account of ACCOUNTS) {
+      threadsByAccount[account] = { draft: 0, queued: 0 };
+    }
     for (const row of (snsRows ?? []) as Array<{ status: string }>) {
-      if (row.status === "draft") threads.draft++;
-      if (row.status === "queued") threads.queued++;
+      if (row.status === "draft") threadsByAccount["pao-pao-cho"].draft++;
+      if (row.status === "queued") threadsByAccount["pao-pao-cho"].queued++;
     }
 
     const xByAccount: Record<string, StatusCounts> = {};
-    for (const account of X_ACCOUNTS) {
+    for (const account of ACCOUNTS) {
       xByAccount[account] = { draft: 0, queued: 0 };
     }
     for (const row of (xRows ?? []) as Array<{ status: string; account: string }>) {
@@ -76,12 +81,14 @@ async function fetchCounts(): Promise<{
       if (row.status === "queued") xByAccount[row.account].queued++;
     }
 
-    return { threads, xByAccount };
+    return { threadsByAccount, xByAccount };
   } catch {
     return {
-      threads: { draft: 0, queued: 0 },
+      threadsByAccount: Object.fromEntries(
+        ACCOUNTS.map((a) => [a, { draft: 0, queued: 0 }])
+      ),
       xByAccount: Object.fromEntries(
-        X_ACCOUNTS.map((a) => [a, { draft: 0, queued: 0 }])
+        ACCOUNTS.map((a) => [a, { draft: 0, queued: 0 }])
       ),
     };
   }
@@ -90,7 +97,7 @@ async function fetchCounts(): Promise<{
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomePage() {
-  const { threads, xByAccount } = await fetchCounts();
+  const { threadsByAccount, xByAccount } = await fetchCounts();
 
   return (
     <div>
@@ -106,17 +113,20 @@ export default async function AdminHomePage() {
           未投稿の件数
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatusBlock
-            title="Threads"
-            subtitle="パオパオ長"
-            href="/threads"
-            icon="forum"
-            accentColor="bg-purple-500"
-            counts={threads}
-          />
+          {Object.entries(threadsByAccount).map(([account, counts]) => (
+            <StatusBlock
+              key={`threads-${account}`}
+              title="Threads"
+              subtitle={getAccountLabel(account)}
+              href={`/threads?account=${encodeURIComponent(account)}`}
+              icon="forum"
+              accentColor="bg-purple-500"
+              counts={counts}
+            />
+          ))}
           {Object.entries(xByAccount).map(([account, counts]) => (
             <StatusBlock
-              key={account}
+              key={`x-${account}`}
               title="X"
               subtitle={getAccountLabel(account)}
               href={`/x?account=${encodeURIComponent(account)}`}
