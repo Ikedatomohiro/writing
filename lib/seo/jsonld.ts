@@ -10,6 +10,8 @@ export interface ArticleJsonLdProps {
   url: string;
   image?: string;
   authorName: string;
+  authorUrl?: string;
+  authorJobTitle?: string;
 }
 
 export interface BreadcrumbItem {
@@ -29,6 +31,8 @@ interface ArticleJsonLd {
   author: {
     "@type": string;
     name: string;
+    url?: string;
+    jobTitle?: string;
   };
 }
 
@@ -51,6 +55,19 @@ interface BreadcrumbJsonLd {
 export function generateArticleJsonLd(
   props: ArticleJsonLdProps
 ): ArticleJsonLd {
+  const author: ArticleJsonLd["author"] = {
+    "@type": "Person",
+    name: props.authorName,
+  };
+
+  if (props.authorUrl) {
+    author.url = props.authorUrl;
+  }
+
+  if (props.authorJobTitle) {
+    author.jobTitle = props.authorJobTitle;
+  }
+
   const jsonLd: ArticleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -58,10 +75,7 @@ export function generateArticleJsonLd(
     description: props.description,
     datePublished: props.datePublished,
     url: props.url,
-    author: {
-      "@type": "Person",
-      name: props.authorName,
-    },
+    author,
   };
 
   if (props.dateModified) {

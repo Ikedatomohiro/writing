@@ -1,4 +1,13 @@
 /**
+ * 著者情報の定数（E-E-A-T シグナル強化用）
+ */
+export const AUTHOR_CONFIG = {
+  name: "pao.cho",
+  url: "/about",
+  jobTitle: "現役エンジニア",
+} as const;
+
+/**
  * サイト情報の定数
  */
 export const SITE_CONFIG = {
