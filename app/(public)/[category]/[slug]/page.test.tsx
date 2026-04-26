@@ -21,6 +21,14 @@ vi.mock("@/components/blog/ArticleBody", () => ({
   ),
 }));
 
+vi.mock("@/components/blog/AuthorByline", () => ({
+  AuthorByline: ({ name, href }: { name: string; href: string }) => (
+    <div data-testid="author-byline">
+      <a href={href}>{name}</a>
+    </div>
+  ),
+}));
+
 vi.mock("@/components/blog/RelatedArticles", () => ({
   RelatedArticles: () => <div data-testid="related-articles">Related Articles</div>,
 }));
@@ -209,6 +217,26 @@ describe("ArticleDetailPage", () => {
 
       const ads = screen.getAllByTestId(/^ad-/);
       expect(ads.length).toBeGreaterThan(0);
+    });
+
+    it("renders author byline linking to /about", async () => {
+      vi.mocked(getArticleBySlug).mockResolvedValue(mockArticle);
+      vi.mocked(compileMDXContent).mockResolvedValue({
+        content: <p>Compiled content</p>,
+        frontmatter: {},
+      });
+
+      const page = await ArticleDetailPage({
+        params: Promise.resolve({ category: "tech", slug: "test-article" }),
+      });
+      render(page);
+
+      const bylines = screen.getAllByTestId("author-byline");
+      expect(bylines.length).toBeGreaterThan(0);
+
+      const link = bylines[0].querySelector("a");
+      expect(link).toHaveAttribute("href", "/about");
+      expect(link).toHaveTextContent("pao.cho");
     });
   });
 

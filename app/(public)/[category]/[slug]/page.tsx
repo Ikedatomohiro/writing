@@ -6,12 +6,13 @@ import { isPublicCategory } from "@/lib/content/types";
 import { getArticleBySlug } from "@/lib/content/api";
 import { compileMDXContent } from "@/lib/content/mdx";
 import { ArticleBody } from "@/components/blog/ArticleBody";
+import { AuthorByline } from "@/components/blog/AuthorByline";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { ShareButtonGroup } from "@/components/ui/ShareButton";
 import { Ad } from "@/components/ui/Ad";
 import { TableOfContentsContainer } from "@/components/layout/Sidebar";
 import { ARTICLE_BODY_SELECTOR } from "@/lib/constants/styles";
-import { SITE_CONFIG, CATEGORY_META } from "@/lib/constants/site";
+import { SITE_CONFIG, AUTHOR_CONFIG, CATEGORY_META } from "@/lib/constants/site";
 import { generateArticleJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 interface ArticleDetailPageProps {
@@ -78,7 +79,9 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
     dateModified: article.updatedAt,
     url: fullUrl,
     image: imageUrl,
-    authorName: SITE_CONFIG.name,
+    authorName: AUTHOR_CONFIG.name,
+    authorUrl: `${SITE_CONFIG.url}${AUTHOR_CONFIG.url}`,
+    authorJobTitle: AUTHOR_CONFIG.jobTitle,
   });
 
   const categoryMeta = CATEGORY_META[article.category];
@@ -128,12 +131,13 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
               <div className="flex items-center gap-6 py-6 border-y border-outline-variant/20">
                 <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-headline font-bold text-lg">
-                  {SITE_CONFIG.name[0]}
+                  {AUTHOR_CONFIG.name[0]}
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-headline font-bold text-on-surface">
-                    {SITE_CONFIG.name}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <AuthorByline
+                    name={AUTHOR_CONFIG.name}
+                    href={AUTHOR_CONFIG.url}
+                  />
                   <span className="text-sm text-on-surface-variant">
                     {formatDate(article.date)}
                     {article.updatedAt && ` (更新: ${formatDate(article.updatedAt)})`}

@@ -69,6 +69,40 @@ describe("JSON-LD Generator", () => {
 
       expect(jsonLd.image).toBeUndefined();
     });
+
+    it("authorUrlが指定されている場合はauthor.urlを含む", () => {
+      const articleWithAuthorUrl = {
+        ...baseArticle,
+        authorUrl: "https://example.com/about",
+      };
+
+      const jsonLd = generateArticleJsonLd(articleWithAuthorUrl);
+
+      expect(jsonLd.author.url).toBe("https://example.com/about");
+    });
+
+    it("authorJobTitleが指定されている場合はauthor.jobTitleを含む", () => {
+      const articleWithJobTitle = {
+        ...baseArticle,
+        authorJobTitle: "現役エンジニア",
+      };
+
+      const jsonLd = generateArticleJsonLd(articleWithJobTitle);
+
+      expect(jsonLd.author.jobTitle).toBe("現役エンジニア");
+    });
+
+    it("authorUrlが指定されていない場合はauthor.urlを含まない", () => {
+      const jsonLd = generateArticleJsonLd(baseArticle);
+
+      expect(jsonLd.author.url).toBeUndefined();
+    });
+
+    it("authorJobTitleが指定されていない場合はauthor.jobTitleを含まない", () => {
+      const jsonLd = generateArticleJsonLd(baseArticle);
+
+      expect(jsonLd.author.jobTitle).toBeUndefined();
+    });
   });
 
   describe("generateBreadcrumbJsonLd", () => {
