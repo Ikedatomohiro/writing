@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         <h2 className={headingClass}>運営者情報</h2>
         <ul className="list-none space-y-1 text-on-surface-variant">
           <li>サイト名: {SITE_CONFIG.name}</li>
-          <li>運営者: pao.cho（ハンドルネーム）</li>
+          <li>運営者: pao-pao-cho（屋号運用）</li>
           <li>
             連絡先:{" "}
             <Link href="/contact" className="underline">
@@ -183,7 +183,7 @@ export default function PrivacyPolicyPage() {
 
       <div className="mt-8 p-4 text-right text-slate-500 text-sm">
         <p>制定日: 2026年1月28日</p>
-        <p>最終改定日: 2026年1月28日</p>
+        <p>最終改定日: 2026年5月6日</p>
       </div>
     </main>
   );

@@ -95,12 +95,22 @@ describe("PrivacyPolicyPage", () => {
       const elements = screen.getAllByText(/Pogo Notes/);
       expect(elements.length).toBeGreaterThan(0);
     });
+
+    it("運営者として pao-pao-cho が表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(screen.getByText(/pao-pao-cho/)).toBeInTheDocument();
+    });
   });
 
   describe("制定日・改定日", () => {
     it("制定日が2026年1月28日と表示される", () => {
       render(<PrivacyPolicyPage />);
       expect(screen.getByText(/制定日.*2026年1月28日/)).toBeInTheDocument();
+    });
+
+    it("最終改定日が2026年5月6日と表示される", () => {
+      render(<PrivacyPolicyPage />);
+      expect(screen.getByText(/最終改定日.*2026年5月6日/)).toBeInTheDocument();
     });
   });
 
