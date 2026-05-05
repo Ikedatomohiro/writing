@@ -101,10 +101,14 @@ describe("TermsPage", () => {
 
     it("プライバシーポリシーページへのリンクが含まれる", () => {
       render(<TermsPage />);
-      const privacyLink = screen.getByRole("link", {
+      const privacyLinks = screen.getAllByRole("link", {
         name: /プライバシーポリシー/,
       });
-      expect(privacyLink).toHaveAttribute("href", "/privacy");
+      const exactLink = privacyLinks.find(
+        (link) => link.textContent === "プライバシーポリシー"
+      );
+      expect(exactLink).toBeDefined();
+      expect(exactLink).toHaveAttribute("href", "/privacy");
     });
   });
 
@@ -117,6 +121,51 @@ describe("TermsPage", () => {
     it("最終改定日が表示される", () => {
       render(<TermsPage />);
       expect(screen.getByText(/最終改定日/)).toBeInTheDocument();
+    });
+  });
+
+  describe("追加セクション（AdSense審査対応）", () => {
+    it("利用条件セクションが表示される", () => {
+      render(<TermsPage />);
+      expect(
+        screen.getByRole("heading", { name: /利用条件/ })
+      ).toBeInTheDocument();
+    });
+
+    it("広告の掲載セクションが表示される", () => {
+      render(<TermsPage />);
+      expect(
+        screen.getByRole("heading", { name: /広告の掲載/ })
+      ).toBeInTheDocument();
+    });
+
+    it("広告の掲載セクションにAdSenseの記述が含まれる", () => {
+      render(<TermsPage />);
+      const elements = screen.getAllByText(/AdSense/i);
+      expect(elements.length).toBeGreaterThan(0);
+    });
+
+    it("広告の掲載セクションにCookieの記述が含まれる", () => {
+      render(<TermsPage />);
+      const elements = screen.getAllByText(/Cookie/);
+      expect(elements.length).toBeGreaterThan(0);
+    });
+
+    it("準拠法・管轄セクションが表示される", () => {
+      render(<TermsPage />);
+      expect(
+        screen.getByRole("heading", { name: /準拠法/ })
+      ).toBeInTheDocument();
+    });
+
+    it("準拠法セクションに日本法の記述が含まれる", () => {
+      render(<TermsPage />);
+      expect(document.body.textContent).toMatch(/日本法|日本の法令/);
+    });
+
+    it("準拠法セクションに管轄裁判所の記述が含まれる", () => {
+      render(<TermsPage />);
+      expect(document.body.textContent).toMatch(/東京|管轄裁判所/);
     });
   });
 });

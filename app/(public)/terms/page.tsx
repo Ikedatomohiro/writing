@@ -31,6 +31,20 @@ export default function TermsPage() {
       </section>
 
       <section className={sectionClass}>
+        <h2 className={headingClass}>利用条件</h2>
+        <p className="mb-4">
+          当サイトのコンテンツは個人的な閲覧・情報収集を目的とした利用に限り許可します。
+          以下の条件に従ってご利用ください。
+        </p>
+        <ul className="list-disc pl-6 space-y-1 text-on-surface-variant">
+          <li>記事の一部引用は出典（サイト名・URL）を明記した場合に限り許可します</li>
+          <li>引用は著作権法上の範囲内（必要最小限）にとどめてください</li>
+          <li>コンテンツの無断複製・再配布・スクレイピングによる大量取得は禁止します</li>
+          <li>商業目的での利用は事前に運営者へお問い合わせください</li>
+        </ul>
+      </section>
+
+      <section className={sectionClass}>
         <h2 className={headingClass}>禁止事項</h2>
         <p className="mb-4">
           当サイトの利用にあたり、以下の行為を禁止します。
@@ -74,6 +88,37 @@ export default function TermsPage() {
       </section>
 
       <section className={sectionClass}>
+        <h2 className={headingClass}>広告の掲載</h2>
+        <p className="mb-4">
+          当サイトでは、Google AdSense をはじめとする第三者配信の広告サービスを使用しています。
+          また、アフィリエイトプログラムを通じた広告を掲載する場合があります。
+        </p>
+        <p className="mb-4">
+          これらの広告配信事業者は、ユーザーの興味に応じた広告を表示するために Cookie を使用することがあります。
+          Cookie を通じて収集されるデータは匿名であり、個人を特定するものではありません。
+        </p>
+        <p className="mb-4">
+          パーソナライズ広告を望まない場合は、
+          <a
+            href="https://www.google.com/settings/ads"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            広告設定
+          </a>
+          からパーソナライズ広告を無効にすることができます。
+          また、Cookie の使用については個人情報の取扱いに関する詳細を
+          <Link href="/privacy" className="underline">プライバシーポリシーページ</Link>
+          でご確認ください。
+        </p>
+        <p>
+          当サイトの広告収益はサイト運営・コンテンツ制作費用に充てられます。
+          広告収益の保証はなく、投資・購買判断はご自身の責任でお願いします。
+        </p>
+      </section>
+
+      <section className={sectionClass}>
         <h2 className={headingClass}>プライバシーポリシー</h2>
         <p>
           個人情報の取扱いについては、
@@ -91,6 +136,16 @@ export default function TermsPage() {
       </section>
 
       <section className={sectionClass}>
+        <h2 className={headingClass}>準拠法・管轄裁判所</h2>
+        <p className="mb-4">
+          本規約の解釈にあたっては、日本法を準拠法とします。
+        </p>
+        <p>
+          本規約に関して生じた紛争については、東京地方裁判所を第一審の専属的合意管轄裁判所とします。
+        </p>
+      </section>
+
+      <section className={sectionClass}>
         <h2 className={headingClass}>お問い合わせ</h2>
         <p>
           利用規約に関するお問い合わせは、
@@ -101,7 +156,7 @@ export default function TermsPage() {
 
       <div className="mt-8 p-4 text-right text-slate-500 text-sm">
         <p>制定日: 2026年4月1日</p>
-        <p>最終改定日: 2026年4月1日</p>
+        <p>最終改定日: 2026年5月6日</p>
       </div>
     </main>
   );
