@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import ArticleDetailPage, { generateMetadata } from "./page";
 import type { Category, Article } from "@/lib/content/types";
 
@@ -77,6 +77,10 @@ const mockArticle: Article = {
 describe("ArticleDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   describe("Page Rendering", () => {
@@ -241,6 +245,32 @@ describe("ArticleDetailPage", () => {
           ]),
         })
       );
+    });
+
+    it("renders article tags as links to /tag/<encoded slug>", async () => {
+      vi.mocked(getArticleBySlug).mockResolvedValue({
+        ...mockArticle,
+        tags: ["ClaudeCode", "プログラミング"],
+      });
+      vi.mocked(compileMDXContent).mockResolvedValue({
+        content: <p>Compiled content</p>,
+        frontmatter: {},
+      });
+
+      const page = await ArticleDetailPage({
+        params: Promise.resolve({ category: "tech", slug: "test-article" }),
+      });
+      render(page);
+
+      const tagsList = screen.getByTestId("article-tags");
+      expect(tagsList).toBeInTheDocument();
+
+      // article-tags 配下のリンクのみを対象にする（パンくずと衝突するため）
+      const tagLinks = tagsList.querySelectorAll("a");
+      const hrefs = Array.from(tagLinks).map((a) => a.getAttribute("href"));
+
+      expect(hrefs).toContain(`/tag/${encodeURIComponent("ClaudeCode")}`);
+      expect(hrefs).toContain(`/tag/${encodeURIComponent("プログラミング")}`);
     });
 
     it("renders author byline linking to /about", async () => {
