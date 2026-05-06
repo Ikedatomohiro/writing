@@ -219,6 +219,30 @@ describe("ArticleDetailPage", () => {
       expect(ads.length).toBeGreaterThan(0);
     });
 
+    it("includes author sameAs URLs (Threads + X) in Article JSON-LD", async () => {
+      vi.mocked(getArticleBySlug).mockResolvedValue(mockArticle);
+      vi.mocked(compileMDXContent).mockResolvedValue({
+        content: <p>Compiled content</p>,
+        frontmatter: {},
+      });
+
+      const { generateArticleJsonLd } = await import("@/lib/seo/jsonld");
+
+      const page = await ArticleDetailPage({
+        params: Promise.resolve({ category: "tech", slug: "test-article" }),
+      });
+      render(page);
+
+      expect(generateArticleJsonLd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          authorSameAs: expect.arrayContaining([
+            "https://www.threads.com/@pao_engineer",
+            "https://x.com/cssk_pao",
+          ]),
+        })
+      );
+    });
+
     it("renders author byline linking to /about", async () => {
       vi.mocked(getArticleBySlug).mockResolvedValue(mockArticle);
       vi.mocked(compileMDXContent).mockResolvedValue({

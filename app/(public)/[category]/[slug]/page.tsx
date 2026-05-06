@@ -82,6 +82,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
     authorName: AUTHOR_CONFIG.name,
     authorUrl: `${SITE_CONFIG.url}${AUTHOR_CONFIG.url}`,
     authorJobTitle: AUTHOR_CONFIG.jobTitle,
+    authorSameAs: [...AUTHOR_CONFIG.sameAs],
   });
 
   const categoryMeta = CATEGORY_META[article.category];
