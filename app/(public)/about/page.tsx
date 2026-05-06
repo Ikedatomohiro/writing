@@ -77,6 +77,34 @@ function ProfileSection() {
   );
 }
 
+function SnsLinksSection() {
+  return (
+    <section className="ml-[8%] mr-[12%] mb-24">
+      <h2 className="font-headline text-2xl font-bold mb-6 tracking-tight">
+        SNS
+      </h2>
+      <div className="flex flex-wrap gap-4">
+        <a
+          href="https://www.threads.com/@pao_engineer"
+          target="_blank"
+          rel="noopener noreferrer me"
+          className="inline-flex items-center gap-2 font-body text-base text-primary hover:underline"
+        >
+          Threads @pao_engineer
+        </a>
+        <a
+          href="https://x.com/cssk_pao"
+          target="_blank"
+          rel="noopener noreferrer me"
+          className="inline-flex items-center gap-2 font-body text-base text-primary hover:underline"
+        >
+          X @cssk_pao
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function CtaSection() {
   return (
     <section className="ml-[8%] mr-[12%] text-center mb-24">
@@ -108,6 +136,7 @@ export default function AboutPage() {
     <main className="pt-32 pb-20 bg-surface font-body text-on-surface">
       <HeroSection />
       <ProfileSection />
+      <SnsLinksSection />
       <CtaSection />
     </main>
   );

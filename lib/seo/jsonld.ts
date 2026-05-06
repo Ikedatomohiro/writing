@@ -12,6 +12,11 @@ export interface ArticleJsonLdProps {
   authorName: string;
   authorUrl?: string;
   authorJobTitle?: string;
+  /**
+   * 著者の同一性を示す外部URL一覧（schema.org `sameAs`）。
+   * E-E-A-Tシグナル強化のため、Threads / X等のSNSプロフィールを指定する。
+   */
+  authorSameAs?: string[];
 }
 
 export interface BreadcrumbItem {
@@ -33,6 +38,7 @@ interface ArticleJsonLd {
     name: string;
     url?: string;
     jobTitle?: string;
+    sameAs?: string[];
   };
 }
 
@@ -66,6 +72,10 @@ export function generateArticleJsonLd(
 
   if (props.authorJobTitle) {
     author.jobTitle = props.authorJobTitle;
+  }
+
+  if (props.authorSameAs && props.authorSameAs.length > 0) {
+    author.sameAs = props.authorSameAs;
   }
 
   const jsonLd: ArticleJsonLd = {

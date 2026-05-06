@@ -96,3 +96,43 @@ export async function getRelatedArticles(
   const related = articles.filter((a) => a.slug !== currentSlug);
   return related.slice(0, limit);
 }
+
+/**
+ * タグでマッチする公開記事を取得（全カテゴリ横断・大文字小文字を区別しない）
+ */
+export async function getArticlesByTag(tag: string): Promise<ArticleMeta[]> {
+  const normalized = tag.toLowerCase();
+  const articles = await getAllArticles();
+  return articles.filter((article) =>
+    article.tags.some((t) => t.toLowerCase() === normalized)
+  );
+}
+
+/**
+ * 集計タグ情報
+ */
+export interface TagAggregation {
+  tag: string;
+  count: number;
+}
+
+/**
+ * 全公開記事に出現するタグの一覧を集計し、出現数降順 → 名前昇順で返す
+ */
+export async function getAllTags(): Promise<TagAggregation[]> {
+  const articles = await getAllArticles();
+  const counts = new Map<string, number>();
+
+  for (const article of articles) {
+    for (const tag of article.tags ?? []) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+
+  return Array.from(counts.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.tag.localeCompare(b.tag);
+    });
+}

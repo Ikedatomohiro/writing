@@ -1,10 +1,17 @@
 /**
  * 著者情報の定数（E-E-A-T シグナル強化用）
+ *
+ * `sameAs`: schema.org Person の同一性検証URL。
+ * Google が著者を SNS プロフィールと結びつけて E-E-A-T を判定する材料。
  */
 export const AUTHOR_CONFIG = {
   name: "pao.cho",
   url: "/about",
   jobTitle: "現役エンジニア",
+  sameAs: [
+    "https://www.threads.com/@pao_engineer",
+    "https://x.com/cssk_pao",
+  ],
 } as const;
 
 /**

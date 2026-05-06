@@ -103,6 +103,40 @@ describe("JSON-LD Generator", () => {
 
       expect(jsonLd.author.jobTitle).toBeUndefined();
     });
+
+    it("authorSameAsが指定されている場合はauthor.sameAsを含む", () => {
+      const articleWithSameAs = {
+        ...baseArticle,
+        authorSameAs: [
+          "https://www.threads.com/@pao_engineer",
+          "https://x.com/cssk_pao",
+        ],
+      };
+
+      const jsonLd = generateArticleJsonLd(articleWithSameAs);
+
+      expect(jsonLd.author.sameAs).toEqual([
+        "https://www.threads.com/@pao_engineer",
+        "https://x.com/cssk_pao",
+      ]);
+    });
+
+    it("authorSameAsが指定されていない場合はauthor.sameAsを含まない", () => {
+      const jsonLd = generateArticleJsonLd(baseArticle);
+
+      expect(jsonLd.author.sameAs).toBeUndefined();
+    });
+
+    it("authorSameAsが空配列の場合はauthor.sameAsを含まない", () => {
+      const articleWithEmptySameAs = {
+        ...baseArticle,
+        authorSameAs: [],
+      };
+
+      const jsonLd = generateArticleJsonLd(articleWithEmptySameAs);
+
+      expect(jsonLd.author.sameAs).toBeUndefined();
+    });
   });
 
   describe("generateBreadcrumbJsonLd", () => {

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import ArticleDetailPage, { generateMetadata } from "./page";
 import type { Category, Article } from "@/lib/content/types";
 
@@ -77,6 +77,10 @@ const mockArticle: Article = {
 describe("ArticleDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   describe("Page Rendering", () => {
@@ -217,6 +221,56 @@ describe("ArticleDetailPage", () => {
 
       const ads = screen.getAllByTestId(/^ad-/);
       expect(ads.length).toBeGreaterThan(0);
+    });
+
+    it("includes author sameAs URLs (Threads + X) in Article JSON-LD", async () => {
+      vi.mocked(getArticleBySlug).mockResolvedValue(mockArticle);
+      vi.mocked(compileMDXContent).mockResolvedValue({
+        content: <p>Compiled content</p>,
+        frontmatter: {},
+      });
+
+      const { generateArticleJsonLd } = await import("@/lib/seo/jsonld");
+
+      const page = await ArticleDetailPage({
+        params: Promise.resolve({ category: "tech", slug: "test-article" }),
+      });
+      render(page);
+
+      expect(generateArticleJsonLd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          authorSameAs: expect.arrayContaining([
+            "https://www.threads.com/@pao_engineer",
+            "https://x.com/cssk_pao",
+          ]),
+        })
+      );
+    });
+
+    it("renders article tags as links to /tag/<encoded slug>", async () => {
+      vi.mocked(getArticleBySlug).mockResolvedValue({
+        ...mockArticle,
+        tags: ["ClaudeCode", "プログラミング"],
+      });
+      vi.mocked(compileMDXContent).mockResolvedValue({
+        content: <p>Compiled content</p>,
+        frontmatter: {},
+      });
+
+      const page = await ArticleDetailPage({
+        params: Promise.resolve({ category: "tech", slug: "test-article" }),
+      });
+      render(page);
+
+      const tagsList = screen.getByTestId("article-tags");
+      expect(tagsList).toBeInTheDocument();
+
+      // article-tags 配下のリンクのみを対象にする（パンくずと衝突するため）
+      const tagLinks = tagsList.querySelectorAll("a");
+      const hrefs = Array.from(tagLinks).map((a) => a.getAttribute("href"));
+
+      expect(hrefs).toContain(`/tag/${encodeURIComponent("ClaudeCode")}`);
+      expect(hrefs).toContain(`/tag/${encodeURIComponent("プログラミング")}`);
     });
 
     it("renders author byline linking to /about", async () => {

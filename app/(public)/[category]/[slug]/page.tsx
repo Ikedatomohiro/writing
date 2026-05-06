@@ -82,6 +82,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
     authorName: AUTHOR_CONFIG.name,
     authorUrl: `${SITE_CONFIG.url}${AUTHOR_CONFIG.url}`,
     authorJobTitle: AUTHOR_CONFIG.jobTitle,
+    authorSameAs: [...AUTHOR_CONFIG.sameAs],
   });
 
   const categoryMeta = CATEGORY_META[article.category];
@@ -172,6 +173,30 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             <div className="mt-12">
               <Ad variant="leaderboard" />
             </div>
+
+            {/* タグチップ */}
+            {article.tags.length > 0 && (
+              <div className="py-6 mt-8 border-t border-outline-variant/20">
+                <p className="text-sm font-label font-medium mb-3 text-on-surface-variant tracking-widest uppercase">
+                  Tags
+                </p>
+                <ul
+                  data-testid="article-tags"
+                  className="flex flex-wrap gap-2"
+                >
+                  {article.tags.map((tag) => (
+                    <li key={tag}>
+                      <Link
+                        href={`/tag/${encodeURIComponent(tag)}`}
+                        className="inline-flex items-center px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-label hover:bg-primary-container hover:text-primary transition-colors"
+                      >
+                        # {tag}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* シェアボタン */}
             <div className="py-8 mt-8 border-t border-outline-variant/20">
