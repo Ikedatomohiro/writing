@@ -12,6 +12,8 @@ import {
   getLatestArticles,
   getArticleBySlug,
   getRelatedArticles,
+  getArticlesByTag,
+  getAllTags,
 } from "./api";
 import { listArticleFiles, readArticleFile } from "./reader";
 import type { Article } from "./types";
@@ -231,6 +233,180 @@ describe("Content API", () => {
       const articles = await getRelatedArticles("health", "health-article", 5);
 
       expect(articles).toEqual([]);
+    });
+  });
+
+  describe("getArticlesByTag", () => {
+    function setupAllCategories(articles: Article[]) {
+      const byCategory: Record<string, Article[]> = {
+        asset: [],
+        tech: [],
+        health: [],
+      };
+      for (const a of articles) {
+        byCategory[a.category].push(a);
+      }
+      // 前テストの mockResolvedValueOnce キュー残骸を一掃する
+      mockListArticleFiles.mockReset();
+      mockReadArticleFile.mockReset();
+      mockListArticleFiles.mockImplementation(async (category: string) =>
+        (byCategory[category] ?? []).map((a) => a.slug)
+      );
+      mockReadArticleFile.mockImplementation(async (category: string, slug: string) => {
+        return (byCategory[category] ?? []).find((a) => a.slug === slug) ?? null;
+      });
+    }
+
+    it("returns published articles tagged with the given tag (case-insensitive match)", async () => {
+      setupAllCategories([
+        createArticle({
+          slug: "claude-1",
+          category: "tech",
+          tags: ["ClaudeCode", "AIエージェント"],
+          date: "2026-01-20",
+        }),
+        createArticle({
+          slug: "no-tag",
+          category: "tech",
+          tags: ["プログラミング"],
+          date: "2026-01-19",
+        }),
+        createArticle({
+          slug: "claude-2",
+          category: "tech",
+          tags: ["claudecode"],
+          date: "2026-01-22",
+        }),
+      ]);
+
+      const articles = await getArticlesByTag("ClaudeCode");
+
+      expect(articles.length).toBe(2);
+      expect(articles.map((a) => a.slug).sort()).toEqual(
+        ["claude-1", "claude-2"].sort()
+      );
+    });
+
+    it("excludes draft articles", async () => {
+      setupAllCategories([
+        createArticle({
+          slug: "draft",
+          category: "tech",
+          tags: ["AIエージェント"],
+          published: false,
+        }),
+        createArticle({
+          slug: "published",
+          category: "tech",
+          tags: ["AIエージェント"],
+          published: true,
+        }),
+      ]);
+
+      const articles = await getArticlesByTag("AIエージェント");
+
+      expect(articles.map((a) => a.slug)).toEqual(["published"]);
+    });
+
+    it("returns empty array when no article matches", async () => {
+      setupAllCategories([
+        createArticle({ slug: "x", category: "tech", tags: ["foo"] }),
+      ]);
+
+      const articles = await getArticlesByTag("nonexistent");
+
+      expect(articles).toEqual([]);
+    });
+
+    it("sorts results by date desc", async () => {
+      setupAllCategories([
+        createArticle({
+          slug: "old",
+          category: "tech",
+          tags: ["AI"],
+          date: "2026-01-10",
+        }),
+        createArticle({
+          slug: "new",
+          category: "tech",
+          tags: ["AI"],
+          date: "2026-01-20",
+        }),
+      ]);
+
+      const articles = await getArticlesByTag("AI");
+
+      expect(articles[0].slug).toBe("new");
+      expect(articles[1].slug).toBe("old");
+    });
+  });
+
+  describe("getAllTags", () => {
+    function setupAllCategories(articles: Article[]) {
+      const byCategory: Record<string, Article[]> = {
+        asset: [],
+        tech: [],
+        health: [],
+      };
+      for (const a of articles) {
+        byCategory[a.category].push(a);
+      }
+      mockListArticleFiles.mockImplementation(async (category: string) =>
+        (byCategory[category] ?? []).map((a) => a.slug)
+      );
+      mockReadArticleFile.mockImplementation(async (category: string, slug: string) => {
+        return (byCategory[category] ?? []).find((a) => a.slug === slug) ?? null;
+      });
+    }
+
+    it("aggregates tag counts across all published articles", async () => {
+      setupAllCategories([
+        createArticle({
+          slug: "a1",
+          category: "tech",
+          tags: ["ClaudeCode", "AIエージェント"],
+        }),
+        createArticle({
+          slug: "a2",
+          category: "tech",
+          tags: ["ClaudeCode", "プログラミング"],
+        }),
+      ]);
+
+      const tags = await getAllTags();
+
+      const claude = tags.find((t) => t.tag === "ClaudeCode");
+      expect(claude?.count).toBe(2);
+      const ai = tags.find((t) => t.tag === "AIエージェント");
+      expect(ai?.count).toBe(1);
+    });
+
+    it("returns tags sorted by count desc then by name asc", async () => {
+      setupAllCategories([
+        createArticle({ slug: "a1", category: "tech", tags: ["a", "b", "c"] }),
+        createArticle({ slug: "a2", category: "tech", tags: ["b"] }),
+        createArticle({ slug: "a3", category: "tech", tags: ["b", "c"] }),
+      ]);
+
+      const tags = await getAllTags();
+
+      // b=3, c=2, a=1
+      expect(tags.map((t) => t.tag)).toEqual(["b", "c", "a"]);
+    });
+
+    it("excludes draft articles", async () => {
+      setupAllCategories([
+        createArticle({
+          slug: "draft",
+          category: "tech",
+          tags: ["secret-tag"],
+          published: false,
+        }),
+      ]);
+
+      const tags = await getAllTags();
+
+      expect(tags.find((t) => t.tag === "secret-tag")).toBeUndefined();
     });
   });
 });

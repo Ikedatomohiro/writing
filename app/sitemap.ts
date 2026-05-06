@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllArticles } from "@/lib/content/api";
+import { getAllArticles, getAllTags } from "@/lib/content/api";
 import { SITE_CONFIG, CATEGORIES } from "@/lib/constants/site";
 
 export const dynamic = "force-dynamic";
@@ -31,5 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...categoryPages, ...articlePages];
+  const tags = await getAllTags().catch(() => []);
+  const tagPages: MetadataRoute.Sitemap = tags.map((entry) => ({
+    url: `${baseUrl}/tag/${encodeURIComponent(entry.tag)}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...categoryPages, ...articlePages, ...tagPages];
 }
