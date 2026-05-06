@@ -56,9 +56,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // draft への遷移では queue_order も必ず NULL に揃える。
+  // UI の "下書きに戻す" は body に { status: "draft" } しか送らないため、
+  // ここで明示的にクリアしないと draft 行が queue_order=N を持ったまま残る。
+  // この dangling 値が原因で、後段の enqueue/reorder の前提が壊れる。
+  const updatePayload =
+    body.status === "draft" ? { ...body, queue_order: null } : body;
+
   const { data: updated, error: updateError } = await supabase
     .from("sns_series")
-    .update(body)
+    .update(updatePayload)
     .eq("id", id)
     .select()
     .single();

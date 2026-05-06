@@ -183,6 +183,42 @@ describe("PATCH /api/threads/series/[id]", () => {
     expect(response.status).toBe(409);
     expect(data.error).toBeDefined();
   });
+
+  it("status=draft への変更時には queue_order も NULL に揃える（draft 行に古い順序が残らないように）", async () => {
+    // 背景: queued → draft に戻す UI（"下書きに戻す"）は body に { status: "draft" } しか送らない。
+    // ここで queue_order を NULL にしないと draft 行が queue_order=N を持ったまま残り、
+    // 次の reorder/enqueue 時の状態がぶれる。draft への遷移は必ず順序情報を捨てる。
+    const queuedSeries: SnsSeries = { ...mockSeries, status: "queued", queue_order: 5 };
+    const updatedSeries: SnsSeries = { ...mockSeries, status: "draft", queue_order: null };
+
+    const fetchSingleMock = vi.fn().mockResolvedValue({ data: queuedSeries, error: null });
+    const fetchEqMock = vi.fn().mockReturnValue({ single: fetchSingleMock });
+    const fetchSelectMock = vi.fn().mockReturnValue({ eq: fetchEqMock });
+
+    const updateSingleMock = vi.fn().mockResolvedValue({ data: updatedSeries, error: null });
+    const updateSelectMock = vi.fn().mockReturnValue({ single: updateSingleMock });
+    const updateEqMock = vi.fn().mockReturnValue({ select: updateSelectMock });
+    const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
+
+    mockSupabase.from.mockReturnValue({
+      select: fetchSelectMock,
+      update: updateMock,
+    });
+    const { PATCH } = await import("./route");
+
+    const request = new NextRequest("http://localhost:3000/api/threads/series/series-1", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "draft" }),
+    });
+    const params: RouteParams = { params: Promise.resolve({ id: "series-1" }) };
+    const response = await PATCH(request, params);
+
+    expect(response.status).toBe(200);
+    const updatePayload = updateMock.mock.calls[0][0];
+    expect(updatePayload.status).toBe("draft");
+    expect(updatePayload.queue_order).toBeNull();
+  });
 });
 
 describe("DELETE /api/threads/series/[id]", () => {

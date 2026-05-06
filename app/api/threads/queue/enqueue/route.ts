@@ -39,11 +39,18 @@ export async function POST(request: NextRequest) {
   // queue_order の UNIQUE は (account, queue_order) スコープのため、
   // max_order は対象アカウントのキュー内だけで集計する。
   // これを怠ると pao と rin が同じ番号を採番して reorder の前提を壊す。
+  //
+  // また reorder API が「全件 NULL → 順次採番」の2段階で動く都合上、途中で中断すると
+  // status=queued / queue_order=NULL の行が残り得る。PostgREST の DESC 既定は
+  // NULLS FIRST なので、NULL を除外せずに max を取ると 0 起点で再採番してしまい、
+  // 既存の queue_order=1 と UNIQUE 衝突して 500 になる（"draft → 予約中" のエラーの主因）。
+  // 実在する整数の最大値だけを採番に使うため、NULL は明示的に除外する。
   const { data: maxOrderData } = await supabase
     .from("sns_series")
     .select("queue_order")
     .eq("status", "queued")
     .eq("account", series.account)
+    .not("queue_order", "is", null)
     .order("queue_order", { ascending: false })
     .limit(1);
 
