@@ -64,4 +64,19 @@ describe("AboutPage", () => {
     expect(screen.queryByText("Marcus Chen")).toBeNull();
     expect(screen.queryByText("Elena Rodriguez")).toBeNull();
   });
+
+  it("renders Threads link with correct URL", () => {
+    render(<AboutPage />);
+    const link = screen.getByRole("link", { name: /Threads/ });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://www.threads.com/@pao_engineer"
+    );
+  });
+
+  it("renders X link with correct URL", () => {
+    render(<AboutPage />);
+    const link = screen.getByRole("link", { name: /X @cssk_pao/ });
+    expect(link).toHaveAttribute("href", "https://x.com/cssk_pao");
+  });
 });
