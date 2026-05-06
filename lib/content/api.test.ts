@@ -246,7 +246,9 @@ describe("Content API", () => {
       for (const a of articles) {
         byCategory[a.category].push(a);
       }
-      // CATEGORIES の表示順 (tech のみ) に合わせるが mock は毎回呼ばれる
+      // 前テストの mockResolvedValueOnce キュー残骸を一掃する
+      mockListArticleFiles.mockReset();
+      mockReadArticleFile.mockReset();
       mockListArticleFiles.mockImplementation(async (category: string) =>
         (byCategory[category] ?? []).map((a) => a.slug)
       );
