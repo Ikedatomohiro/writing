@@ -100,6 +100,14 @@ export function generateArticleJsonLd(
 }
 
 /**
+ * JSON-LDを `<script>` タグへ安全に埋め込むための文字列にシリアライズする。
+ * `<` を `<` にエスケープし、本文中の `</script>` によるHTMLブレイクアウト（XSS）を防ぐ。
+ */
+export function serializeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/**
  * BreadcrumbList スキーマのJSON-LDを生成
  */
 export function generateBreadcrumbJsonLd(

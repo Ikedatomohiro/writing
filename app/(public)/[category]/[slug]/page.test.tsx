@@ -55,6 +55,9 @@ vi.mock("@/components/layout/Sidebar", () => ({
 vi.mock("@/lib/seo/jsonld", () => ({
   generateArticleJsonLd: vi.fn(() => ({})),
   generateBreadcrumbJsonLd: vi.fn(() => ({})),
+  serializeJsonLd: vi.fn((data: unknown) =>
+    JSON.stringify(data).replace(/</g, "\\u003c")
+  ),
 }));
 
 import { getArticleBySlug } from "@/lib/content/api";

@@ -54,6 +54,24 @@ const mockArticles = {
       tags: [],
       published: true,
     },
+    {
+      slug: "tech-2",
+      title: "プログラミング記事2",
+      description: "説明2",
+      date: "2026-01-05",
+      category: "tech" as const,
+      tags: [],
+      published: true,
+    },
+    {
+      slug: "tech-3",
+      title: "プログラミング記事3",
+      description: "説明3",
+      date: "2026-01-03",
+      category: "tech" as const,
+      tags: [],
+      published: true,
+    },
   ],
   health: [
     {
@@ -82,9 +100,9 @@ describe("Home (Top Page)", () => {
   it("renders hero section with featured article title", async () => {
     render(await Home());
     expect(screen.getByTestId("hero-section")).toBeInTheDocument();
-    // The h1 shows the featured article title (latest by date)
+    // Home は公開カテゴリ tech のみ取得する。h1 は最新日付の tech 記事タイトル。
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "健康記事1"
+      "プログラミング記事2"
     );
   });
 
@@ -97,13 +115,6 @@ describe("Home (Top Page)", () => {
   it("renders 'Read Article' link in hero section", async () => {
     render(await Home());
     expect(screen.getByText("記事を読む")).toBeInTheDocument();
-  });
-
-  it("renders category navigation with all categories", async () => {
-    render(await Home());
-    expect(screen.getByText("資産形成")).toBeInTheDocument();
-    expect(screen.getByText("プログラミング")).toBeInTheDocument();
-    expect(screen.getByText("健康")).toBeInTheDocument();
   });
 
   it("renders bento grid with remaining articles", async () => {

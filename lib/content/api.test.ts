@@ -38,7 +38,9 @@ function createArticle(overrides: Partial<Article>): Article {
 
 describe("Content API", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // resetAllMocks は mockResolvedValueOnce のキューも破棄する。
+    // clearAllMocks だと消費されなかった once 値が後続テストへ漏れるため使わない。
+    vi.resetAllMocks();
   });
 
   describe("getArticlesByCategory", () => {
@@ -107,36 +109,27 @@ describe("Content API", () => {
   });
 
   describe("getAllArticles", () => {
-    it("returns all published articles from all categories", async () => {
-      // Called for asset, tech, health
-      mockListArticleFiles
-        .mockResolvedValueOnce(["article-1", "article-2"])
-        .mockResolvedValueOnce(["tech-article"])
-        .mockResolvedValueOnce(["health-article"]);
-
+    // getAllArticles は CATEGORIES を走査する。現在の公開カテゴリは tech のみ
+    // （asset/health は HIDDEN_CATEGORIES）。よって tech のみが集約対象となる。
+    it("returns all published articles from public categories (tech only)", async () => {
+      mockListArticleFiles.mockResolvedValue(["tech-1", "tech-2"]);
       mockReadArticleFile
-        .mockResolvedValueOnce(createArticle({ slug: "article-1", category: "asset", date: "2026-01-20" }))
-        .mockResolvedValueOnce(createArticle({ slug: "article-2", category: "asset", date: "2026-01-22" }))
-        .mockResolvedValueOnce(createArticle({ slug: "tech-article", category: "tech", date: "2026-01-21" }))
-        .mockResolvedValueOnce(createArticle({ slug: "health-article", category: "health", date: "2026-01-24" }));
+        .mockResolvedValueOnce(createArticle({ slug: "tech-1", category: "tech", date: "2026-01-20" }))
+        .mockResolvedValueOnce(createArticle({ slug: "tech-2", category: "tech", date: "2026-01-22" }));
 
       const articles = await getAllArticles();
 
-      expect(articles.length).toBe(4);
+      expect(articles.length).toBe(2);
       expect(articles.every((a) => a.published)).toBe(true);
+      expect(articles.every((a) => a.category === "tech")).toBe(true);
     });
 
     it("returns articles sorted by date descending", async () => {
-      mockListArticleFiles
-        .mockResolvedValueOnce(["a1", "a2"])
-        .mockResolvedValueOnce(["t1"])
-        .mockResolvedValueOnce(["h1"]);
-
+      mockListArticleFiles.mockResolvedValue(["t1", "t2", "t3"]);
       mockReadArticleFile
-        .mockResolvedValueOnce(createArticle({ slug: "a1", date: "2026-01-20" }))
-        .mockResolvedValueOnce(createArticle({ slug: "a2", date: "2026-01-22" }))
-        .mockResolvedValueOnce(createArticle({ slug: "t1", date: "2026-01-21" }))
-        .mockResolvedValueOnce(createArticle({ slug: "h1", date: "2026-01-24" }));
+        .mockResolvedValueOnce(createArticle({ slug: "t1", category: "tech", date: "2026-01-20" }))
+        .mockResolvedValueOnce(createArticle({ slug: "t2", category: "tech", date: "2026-01-24" }))
+        .mockResolvedValueOnce(createArticle({ slug: "t3", category: "tech", date: "2026-01-21" }));
 
       const articles = await getAllArticles();
       const dates = articles.map((a) => a.date);
@@ -147,16 +140,11 @@ describe("Content API", () => {
 
   describe("getLatestArticles", () => {
     it("returns the specified number of latest articles", async () => {
-      mockListArticleFiles
-        .mockResolvedValueOnce(["a1", "a2"])
-        .mockResolvedValueOnce(["t1"])
-        .mockResolvedValueOnce(["h1"]);
-
+      mockListArticleFiles.mockResolvedValue(["t1", "t2", "t3"]);
       mockReadArticleFile
-        .mockResolvedValueOnce(createArticle({ slug: "a1", date: "2026-01-20" }))
-        .mockResolvedValueOnce(createArticle({ slug: "a2", date: "2026-01-22" }))
-        .mockResolvedValueOnce(createArticle({ slug: "t1", date: "2026-01-21" }))
-        .mockResolvedValueOnce(createArticle({ slug: "h1", date: "2026-01-24" }));
+        .mockResolvedValueOnce(createArticle({ slug: "t1", category: "tech", date: "2026-01-20" }))
+        .mockResolvedValueOnce(createArticle({ slug: "t2", category: "tech", date: "2026-01-24" }))
+        .mockResolvedValueOnce(createArticle({ slug: "t3", category: "tech", date: "2026-01-22" }));
 
       const articles = await getLatestArticles(2);
 

@@ -89,17 +89,12 @@ describe("CategoryPage", () => {
     cleanup();
   });
 
-  describe("有効なカテゴリ", () => {
-    it("assetカテゴリのページが表示される", async () => {
-      await renderPage({ category: "asset" });
-
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        "資産形成"
-      );
+  describe("公開カテゴリ (tech)", () => {
+    beforeEach(() => {
+      vi.mocked(getArticlesByCategory).mockResolvedValue(mockTechArticles);
     });
 
     it("techカテゴリのページが表示される", async () => {
-      vi.mocked(getArticlesByCategory).mockResolvedValue(mockTechArticles);
       await renderPage({ category: "tech" });
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
@@ -107,25 +102,35 @@ describe("CategoryPage", () => {
       );
     });
 
-    it("healthカテゴリのページが表示される", async () => {
-      await renderPage({ category: "health" });
-
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        "健康"
-      );
-    });
-
     it("記事カードが表示される", async () => {
-      await renderPage({ category: "asset" });
+      await renderPage({ category: "tech" });
 
-      expect(screen.getByText("テスト記事1")).toBeInTheDocument();
-      expect(screen.getByText("テスト記事2")).toBeInTheDocument();
+      expect(screen.getByText("Tech記事1")).toBeInTheDocument();
+      expect(screen.getByText("Tech記事2")).toBeInTheDocument();
     });
 
     it("getArticlesByCategoryが正しいカテゴリで呼ばれる", async () => {
+      await renderPage({ category: "tech" });
+
+      expect(getArticlesByCategory).toHaveBeenCalledWith("tech");
+    });
+  });
+
+  describe("非公開カテゴリ (asset / health は HIDDEN_CATEGORIES)", () => {
+    // asset / health は isPublicCategory=false のため公開ルートでは notFound となる。
+    // 再表示時（HIDDEN_CATEGORIESから除外時）にこのガードが破れないよう検知する。
+    it("assetカテゴリはnotFoundが呼ばれレンダーされない", async () => {
       await renderPage({ category: "asset" });
 
-      expect(getArticlesByCategory).toHaveBeenCalledWith("asset");
+      expect(notFound).toHaveBeenCalled();
+      expect(screen.queryByTestId("category-theme-container")).not.toBeInTheDocument();
+    });
+
+    it("healthカテゴリはnotFoundが呼ばれレンダーされない", async () => {
+      await renderPage({ category: "health" });
+
+      expect(notFound).toHaveBeenCalled();
+      expect(screen.queryByTestId("category-theme-container")).not.toBeInTheDocument();
     });
   });
 
@@ -141,7 +146,7 @@ describe("CategoryPage", () => {
     it("記事がない場合はメッセージが表示される", async () => {
       vi.mocked(getArticlesByCategory).mockResolvedValue([]);
 
-      await renderPage({ category: "asset" });
+      await renderPage({ category: "tech" });
 
       expect(
         screen.getByText("まだ記事がありません。")
@@ -157,20 +162,6 @@ describe("CategoryPage", () => {
       const themeContainer = screen.getByTestId("category-theme-container");
       expect(themeContainer).toHaveAttribute("data-theme", "programming");
     });
-
-    it("assetカテゴリではdata-theme='asset'が設定される", async () => {
-      await renderPage({ category: "asset" });
-
-      const themeContainer = screen.getByTestId("category-theme-container");
-      expect(themeContainer).toHaveAttribute("data-theme", "asset");
-    });
-
-    it("healthカテゴリではdata-theme='health'が設定される", async () => {
-      await renderPage({ category: "health" });
-
-      const themeContainer = screen.getByTestId("category-theme-container");
-      expect(themeContainer).toHaveAttribute("data-theme", "health");
-    });
   });
 
   describe("Fix 2: Tech glass-card bento layout", () => {
@@ -181,17 +172,12 @@ describe("CategoryPage", () => {
       const bentoGrid = screen.getByTestId("tech-bento-grid");
       expect(bentoGrid).toBeInTheDocument();
     });
-
-    it("assetカテゴリではglass-cardは使われない", async () => {
-      await renderPage({ category: "asset" });
-
-      expect(screen.queryByTestId("tech-bento-grid")).not.toBeInTheDocument();
-    });
   });
 
   describe("Fix 3: Category header size", () => {
     it("カテゴリタイトルがtext-5xlクラスを持つ", async () => {
-      await renderPage({ category: "asset" });
+      vi.mocked(getArticlesByCategory).mockResolvedValue(mockTechArticles);
+      await renderPage({ category: "tech" });
 
       const heading = screen.getByRole("heading", { level: 1 });
       expect(heading.className).toContain("text-5xl");
@@ -201,25 +187,7 @@ describe("CategoryPage", () => {
     });
   });
 
-  describe("Fix 4: Sub-category filter pills for all categories", () => {
-    it("assetカテゴリでフィルターピルが表示される", async () => {
-      await renderPage({ category: "asset" });
-
-      const pills = screen.getByTestId("category-pills");
-      expect(pills).toBeInTheDocument();
-      expect(screen.getByText("Markets")).toBeInTheDocument();
-      expect(screen.getByText("Retirement")).toBeInTheDocument();
-    });
-
-    it("healthカテゴリでフィルターピルが表示される", async () => {
-      await renderPage({ category: "health" });
-
-      const pills = screen.getByTestId("category-pills");
-      expect(pills).toBeInTheDocument();
-      expect(screen.getByText("Nutrition")).toBeInTheDocument();
-      expect(screen.getByText("Fitness")).toBeInTheDocument();
-    });
-
+  describe("Fix 4: Sub-category filter pills", () => {
     it("techカテゴリでフィルターピルが表示される", async () => {
       vi.mocked(getArticlesByCategory).mockResolvedValue(mockTechArticles);
       await renderPage({ category: "tech" });
@@ -232,8 +200,12 @@ describe("CategoryPage", () => {
   });
 
   describe("Fix 5: 12-column grid layout", () => {
+    beforeEach(() => {
+      vi.mocked(getArticlesByCategory).mockResolvedValue(mockTechArticles);
+    });
+
     it("メインコンテンツとサイドバーが12カラムグリッドで配置される", async () => {
-      await renderPage({ category: "asset" });
+      await renderPage({ category: "tech" });
 
       const gridContainer = screen.getByTestId("category-grid");
       expect(gridContainer.className).toContain("grid");
@@ -241,14 +213,14 @@ describe("CategoryPage", () => {
     });
 
     it("メインコンテンツがlg:col-span-8を持つ", async () => {
-      await renderPage({ category: "asset" });
+      await renderPage({ category: "tech" });
 
       const main = screen.getByRole("main");
       expect(main.className).toContain("lg:col-span-8");
     });
 
     it("サイドバーがlg:col-span-4を持つ", async () => {
-      await renderPage({ category: "asset" });
+      await renderPage({ category: "tech" });
 
       const sidebarWrapper = screen.getByTestId("sidebar-wrapper");
       expect(sidebarWrapper.className).toContain("lg:col-span-4");
