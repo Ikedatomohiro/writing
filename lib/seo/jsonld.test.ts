@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateArticleJsonLd,
   generateBreadcrumbJsonLd,
+  serializeJsonLd,
   type ArticleJsonLdProps,
   type BreadcrumbItem,
 } from "./jsonld";
@@ -182,6 +183,33 @@ describe("JSON-LD Generator", () => {
       const jsonLd = generateBreadcrumbJsonLd([]);
 
       expect(jsonLd.itemListElement).toHaveLength(0);
+    });
+  });
+
+  describe("serializeJsonLd", () => {
+    it("通常のオブジェクトをJSON文字列にシリアライズする", () => {
+      const result = serializeJsonLd({ headline: "テスト記事" });
+
+      expect(result).toBe('{"headline":"テスト記事"}');
+      expect(JSON.parse(result)).toEqual({ headline: "テスト記事" });
+    });
+
+    it("`<`をエスケープして</script>ブレイクアウトを防ぐ", () => {
+      const result = serializeJsonLd({
+        headline: "</script><script>alert('xss')</script>",
+      });
+
+      expect(result).not.toContain("</script>");
+      expect(result).not.toContain("<");
+      expect(result).toContain("\\u003c");
+    });
+
+    it("エスケープ後もJSONとしてパース可能で元の値を保持する", () => {
+      const payload = { description: "a < b かつ </script> を含む" };
+
+      const result = serializeJsonLd(payload);
+
+      expect(JSON.parse(result)).toEqual(payload);
     });
   });
 });

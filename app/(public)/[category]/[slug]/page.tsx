@@ -13,7 +13,7 @@ import { Ad } from "@/components/ui/Ad";
 import { TableOfContentsContainer } from "@/components/layout/Sidebar";
 import { ARTICLE_BODY_SELECTOR } from "@/lib/constants/styles";
 import { SITE_CONFIG, AUTHOR_CONFIG, CATEGORY_META } from "@/lib/constants/site";
-import { generateArticleJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { generateArticleJsonLd, generateBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/jsonld";
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -97,11 +97,11 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
       {/* JSON-LD構造化データ */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
 
       <main className="max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-12">
