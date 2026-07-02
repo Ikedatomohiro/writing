@@ -46,7 +46,7 @@ describe("AboutPage", () => {
 
   it("renders the author name", () => {
     render(<AboutPage />);
-    const elements = screen.getAllByText(/松本翔/);
+    const elements = screen.getAllByText(/pao\.cho/);
     expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 

@@ -35,20 +35,24 @@ describe("BlogHeader", () => {
   });
 
   describe("navigation", () => {
-    it("renders all category navigation links on desktop", () => {
+    // 公開カテゴリは tech のみ（asset/health は HIDDEN_CATEGORIES で非表示）
+    it("renders the public category navigation link on desktop", () => {
       render(<BlogHeader />);
 
-      expect(screen.getByRole("link", { name: "資産形成" })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "プログラミング" })).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "健康" })).toBeInTheDocument();
     });
 
-    it("has correct href for each category", () => {
+    it("does not render hidden category links", () => {
       render(<BlogHeader />);
 
-      expect(screen.getByRole("link", { name: "資産形成" })).toHaveAttribute("href", "/asset");
+      expect(screen.queryByRole("link", { name: "資産形成" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("link", { name: "健康" })).not.toBeInTheDocument();
+    });
+
+    it("has correct href for the public category", () => {
+      render(<BlogHeader />);
+
       expect(screen.getByRole("link", { name: "プログラミング" })).toHaveAttribute("href", "/tech");
-      expect(screen.getByRole("link", { name: "健康" })).toHaveAttribute("href", "/health");
     });
   });
 
