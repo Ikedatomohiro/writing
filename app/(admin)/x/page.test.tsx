@@ -339,6 +339,29 @@ describe("XPage", () => {
     });
   });
 
+  describe("カードレイアウト", () => {
+    it("ヘッダー行にタイトルとアクションボタンが横並びで配置される（本文を圧迫しない）", async () => {
+      const { within } = await import("@testing-library/react");
+      render(<XPage />);
+      await waitFor(() => screen.getByText("Xテストテーマ1"));
+
+      const headers = screen.getAllByTestId("series-card-header");
+      const header = headers.find((h) => within(h).queryByText("Xテストテーマ1"));
+      expect(header).toBeDefined();
+      expect(
+        within(header as HTMLElement).getByRole("button", { name: "キューに追加" })
+      ).toBeInTheDocument();
+    });
+
+    it("本文カラムに固定の右余白パディングを持たせない", async () => {
+      render(<XPage />);
+      await waitFor(() => screen.getByText("Xテストテーマ1"));
+
+      const body = screen.getByTestId("series-card-body-x1");
+      expect(body.className).not.toMatch(/pr-\[\d+px\]/);
+    });
+  });
+
   describe("タブ件数バッジ", () => {
     it("各タブボタンに件数バッジが表示される（mockSeries: all=2, draft=1, queued=1, posted=0）", async () => {
       const { within } = await import("@testing-library/react");
