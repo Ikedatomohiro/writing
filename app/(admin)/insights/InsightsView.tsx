@@ -112,6 +112,24 @@ export function InsightsView({
         </p>
       ) : null}
 
+      {/* ── 主役: リーチ（views）= どれだけ読まれたか ── */}
+      <section data-testid="reach-primary" className="mb-8">
+        <h3 className="text-base font-bold text-slate-900 mb-1">
+          どれだけ読まれたか（リーチ＝views）
+        </h3>
+        <p className="text-xs text-slate-500 mb-4">
+          views 合計の大きさ＝規模・到達。「何が一番読まれたか」はまずここで見る。
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <ViewsBarPanel title="テーマ別 リーチ（views 合計・Threads）" stats={summary.themeViews} />
+          <ViewsBarPanel
+            title="アカウント別 リーチ（views 合計）"
+            stats={summary.accountViews}
+            keyFormatter={getAccountLabel}
+          />
+        </div>
+      </section>
+
       <section data-testid="kpi-cards" className="mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <KpiCard label="累計 views" value={formatInt(summary.totals.totalViews)} />
@@ -120,43 +138,30 @@ export function InsightsView({
         </div>
       </section>
 
-      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">
-        リーチ（どれだけ見られたか＝views）
-      </h3>
-      <p className="text-xs text-slate-400 mb-3">
-        views 合計の大きさ。規模・到達を表す。
-      </p>
-      <section className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ViewsBarPanel title="テーマ別 リーチ（views 合計・Threads）" stats={summary.themeViews} />
-        <ViewsBarPanel
-          title="アカウント別 リーチ（views 合計）"
-          stats={summary.accountViews}
-          keyFormatter={getAccountLabel}
-        />
+      {/* ── 補助: 刺さり度（率）= 見た人がどれだけ反応したか ── */}
+      <section data-testid="rate-secondary" className="mb-8">
+        <h3 className="text-sm font-semibold text-slate-500 mb-1">
+          【補助】刺さり度（エンゲージメント率）
+        </h3>
+        <p className="text-xs text-slate-400 mb-1">
+          見た人の反応の濃さ。<strong className="text-slate-500">拡散力（リーチ）ではない</strong>。
+          リーチが小さくても高く出るため、規模の比較には上のリーチを使う。
+        </p>
+        <p className="text-xs text-slate-400 mb-4">
+          n&lt;{MIN_SAMPLE_SIZE} は「参考値」、平均 views&lt;{MIN_VIEWS_FOR_RATE} は「低リーチ」として淡色（閾値は暫定・1箇所で変更可）。
+          <strong className="text-slate-500">低リーチ投稿は率が 100% を超えうる</strong>（反応数が表示回数を上回るため）。
+          率 = (いいね+返信+リポスト+引用+保存) / views。views=0 は「—」。
+        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <BarChartPanel title="パターン別 平均エンゲージメント率（Threads）" stats={summary.patternStats} />
+          <BarChartPanel title="テーマ別 平均エンゲージメント率（Threads）" stats={summary.themeStats} />
+          <BarChartPanel
+            title="時間帯別 平均エンゲージメント率（JST）"
+            stats={summary.hourlyStats}
+            keyFormatter={(k) => `${k}時`}
+          />
+        </div>
       </section>
-
-      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">
-        刺さり度（見た人がどれだけ反応したか＝率）
-      </h3>
-      <p className="text-xs text-slate-400 mb-3">
-        エンゲージメント率の平均。リーチとは別軸で、リーチが小さくても高く出うる。
-      </p>
-      <section className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <BarChartPanel title="パターン別 平均エンゲージメント率（Threads）" stats={summary.patternStats} />
-        <BarChartPanel title="テーマ別 平均エンゲージメント率（Threads）" stats={summary.themeStats} />
-        <BarChartPanel
-          title="時間帯別 平均エンゲージメント率（JST）"
-          stats={summary.hourlyStats}
-          keyFormatter={(k) => `${k}時`}
-        />
-      </section>
-
-      <p className="text-xs text-slate-400 mb-8">
-        n はサンプル数。n&lt;{MIN_SAMPLE_SIZE} は「参考値」、平均 views&lt;{MIN_VIEWS_FOR_RATE} は「低リーチ」として淡色表示（閾値は暫定）。
-        エンゲージメント率 = (いいね+返信+リポスト+引用+保存) / views。views=0 は「—」。
-        <strong className="text-slate-500">リーチが小さい投稿は率が 100% を超えることがある</strong>（反応数が表示回数を上回るため）。
-        「一番読まれた」を見るならリーチ（上）、「刺さった」を見るなら率（下）を参照。
-      </p>
 
       <section>
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
