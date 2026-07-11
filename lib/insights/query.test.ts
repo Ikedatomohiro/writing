@@ -41,12 +41,14 @@ function rows(n: number): Array<{ id: string }> {
 }
 
 describe("fetchMetricRows", () => {
-  it("1ページに収まる場合は全件返す", async () => {
+  it("1ページに収まる場合は全件返す（窓では絞らない・W-b）", async () => {
     const { client, calls } = makeClient(rows(3));
     const result = await fetchMetricRows(client as never, {}, 10);
     expect(result).toHaveLength(3);
     expect(calls).toContainEqual(["from", ["sns_metrics"]]);
-    expect(calls).toContainEqual(["in", ["metric_window", ["24h", "latest"]]]);
+    // 窓フィルタは掛けない（全窓取得して TS 側で代表窓へ畳む）
+    expect(calls.some(([n]) => n === "in")).toBe(false);
+    expect(calls.some(([n, a]) => n === "eq" && (a as string[])[0] === "metric_window")).toBe(false);
   });
 
   it("行数上限（pageSize）を超えても全件をページングで取得する（D1: 切り捨て検出）", async () => {
@@ -76,18 +78,18 @@ describe("fetchMetricRows", () => {
     expect(calls).toContainEqual(["order", ["id", { ascending: true }]]);
   });
 
-  it("platform=threads は threads/24h で絞る", async () => {
+  it("platform=threads は platform だけで絞る（窓フィルタ無し）", async () => {
     const { client, calls } = makeClient([]);
     await fetchMetricRows(client as never, { platform: "threads" });
     expect(calls).toContainEqual(["eq", ["platform", "threads"]]);
-    expect(calls).toContainEqual(["eq", ["metric_window", "24h"]]);
+    expect(calls.some(([n, a]) => n === "eq" && (a as string[])[0] === "metric_window")).toBe(false);
   });
 
-  it("platform=x は x/latest で絞る", async () => {
+  it("platform=x は platform だけで絞る（窓フィルタ無し）", async () => {
     const { client, calls } = makeClient([]);
     await fetchMetricRows(client as never, { platform: "x" });
     expect(calls).toContainEqual(["eq", ["platform", "x"]]);
-    expect(calls).toContainEqual(["eq", ["metric_window", "latest"]]);
+    expect(calls.some(([n, a]) => n === "eq" && (a as string[])[0] === "metric_window")).toBe(false);
   });
 
   it("account 指定で account 絞りを追加する", async () => {

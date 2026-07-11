@@ -2,33 +2,30 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MetricRow, Platform } from "./types";
 
 const TABLE = "sns_metrics";
-/** 集計に使う代表窓。Threads は 24h、X は latest（伸びカーブは初回スコープ外）。 */
-const THREADS_WINDOW = "24h";
-const X_WINDOW = "latest";
 
 /**
- * 1ページの取得行数。PostgREST の暗黙行数上限（Supabase 既定 ~1000）に依存すると
- * 全アカウント横断集計が沈黙切り捨てされるため、明示ページングで全行を引く（D1 対応）。
+ * 1ページの取得行数。PostgREST の暗黙行数上限（Supabase 既定 ~1000）と同値だと、
+ * 上限が下げられた場合に1ページ目で沈黙 under-read する。安全マージンのため 500。
  */
-export const PAGE_SIZE = 1000;
+export const PAGE_SIZE = 500;
 
 export interface QueryFilter {
   account?: string | null;
   platform?: Platform | null;
 }
 
-/** account/platform/代表窓の絞り込みだけを適用したクエリを都度構築する。 */
+/**
+ * account/platform の絞り込みだけを適用する（窓では絞らない）。
+ * 窓の選択（代表窓への畳み込み）は取得後に dedupeToRepresentative で行う。
+ * こうすることで 24h が欠損し 1h/6h しか無い投稿も落とさない（W-b）。
+ */
 function buildFilteredQuery(client: SupabaseClient, filter: QueryFilter) {
   let q = client.from(TABLE).select("*");
   if (filter.account) {
     q = q.eq("account", filter.account);
   }
-  if (filter.platform === "threads") {
-    q = q.eq("platform", "threads").eq("metric_window", THREADS_WINDOW);
-  } else if (filter.platform === "x") {
-    q = q.eq("platform", "x").eq("metric_window", X_WINDOW);
-  } else {
-    q = q.in("metric_window", [THREADS_WINDOW, X_WINDOW]);
+  if (filter.platform === "threads" || filter.platform === "x") {
+    q = q.eq("platform", filter.platform);
   }
   return q;
 }
@@ -47,7 +44,7 @@ function toError(error: unknown): Error {
  * PostgREST の暗黙行数上限で先頭 N 行に切り詰められると横断集計が歪むため、
  * `id` 昇順で安定ソートしつつ `.range()` でページを進め、
  * ページ長が pageSize 未満になるまで全ページを連結する。
- * platform 未指定なら Threads(24h) と X(latest) の代表窓のみ取得（1h/6h は除外）。
+ * 窓では絞らず全窓を取得する（代表窓への畳み込みは呼び出し側の dedupeToRepresentative）。
  */
 export async function fetchMetricRows(
   client: SupabaseClient,

@@ -253,3 +253,64 @@ describe("MIN_VIEWS_FOR_RATE", () => {
     expect(MIN_VIEWS_FOR_RATE).toBeGreaterThan(0);
   });
 });
+
+// --- F-1 / W-b: 代表窓への dedup（post_id 重複ガード + 窓欠損投稿の保持） -------
+
+import { dedupeToRepresentative } from "./aggregate";
+
+describe("dedupeToRepresentative", () => {
+  it("同一投稿の複数窓は代表窓（24h > 6h > 1h）1行に畳む（F-1: 二重加算防止）", () => {
+    const rows = [
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", metric_window: "1h", views: 10 }),
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", metric_window: "24h", views: 100 }),
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", metric_window: "6h", views: 50 }),
+    ];
+    const out = dedupeToRepresentative(rows);
+    expect(out).toHaveLength(1);
+    expect(out[0].metric_window).toBe("24h");
+    expect(out[0].views).toBe(100);
+  });
+
+  it("24h が無ければ 6h > 1h の順で最良窓を残す（W-b: 窓欠損投稿を落とさない）", () => {
+    const rows = [
+      row({ platform: "threads", post_id: "T2", metric_window: "1h", views: 10 }),
+      row({ platform: "threads", post_id: "T2", metric_window: "6h", views: 50 }),
+    ];
+    const out = dedupeToRepresentative(rows);
+    expect(out).toHaveLength(1);
+    expect(out[0].metric_window).toBe("6h");
+  });
+
+  it("別アカウントの同一 post_id は畳まない（platform+account+post_id キー）", () => {
+    const rows = [
+      row({ platform: "x", account: "pao-pao-cho", post_id: "X1", metric_window: "latest" }),
+      row({ platform: "x", account: "matsumoto_sho", post_id: "X1", metric_window: "latest" }),
+    ];
+    expect(dedupeToRepresentative(rows)).toHaveLength(2);
+  });
+
+  it("回帰ガード: 24h のみの現行データは行数も内容も不変", () => {
+    const rows = [
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "A", metric_window: "24h", views: 100 }),
+      row({ platform: "threads", account: "morita_rin", post_id: "B", metric_window: "24h", views: 50 }),
+      row({ platform: "x", account: "tomohiro", post_id: "C", metric_window: "latest", views: 30 }),
+    ];
+    const out = dedupeToRepresentative(rows);
+    expect(out).toHaveLength(3);
+    expect(out.map((r) => r.post_id).sort()).toEqual(["A", "B", "C"]);
+  });
+});
+
+describe("buildSummary は dedup 済みで集計する（F-1）", () => {
+  it("複数窓があっても views を二重加算しない", () => {
+    const rows = [
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", theme: "金融", metric_window: "1h", views: 10 }),
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", theme: "金融", metric_window: "24h", views: 100 }),
+    ];
+    const s = buildSummary(rows, null, null);
+    // 代表窓 24h の 100 のみ（10+100=110 にならない）
+    expect(s.totals.totalViews).toBe(100);
+    expect(s.themeViews.find((v) => v.key === "金融")!.totalViews).toBe(100);
+    expect(s.totals.postCount).toBe(1);
+  });
+});
