@@ -160,3 +160,96 @@ describe("buildSummary", () => {
     expect(s.rowCount).toBe(2);
   });
 });
+
+// --- C: views(リーチ) 集計 + 低リーチフラグ + 反転回帰テスト -------------------
+
+import { MIN_VIEWS_FOR_RATE, groupSumViews } from "./aggregate";
+import type { ViewStat } from "./types";
+
+describe("groupAverageRate: avgViews と lowReach", () => {
+  it("グループの平均 views を返す", () => {
+    const rows = [
+      row({ pattern: "A", views: 100, likes: 1, replies: 0, reposts: 0, quotes: 0, saves: 0 }),
+      row({ pattern: "A", views: 300, likes: 1, replies: 0, reposts: 0, quotes: 0, saves: 0 }),
+    ];
+    const s = groupAverageRate(rows, (r) => r.pattern)[0];
+    expect(s.avgViews).toBe(200);
+  });
+
+  it("平均 views が閾値未満なら lowReach=true（除外はしない）", () => {
+    const rows = [row({ pattern: "A", views: 40, likes: 50, replies: 0, reposts: 0, quotes: 0, saves: 0 })];
+    const s = groupAverageRate(rows, (r) => r.pattern)[0];
+    expect(s.lowReach).toBe(true);
+    expect(s.avgRate).toBeGreaterThan(1); // 低リーチで率が100%超になりうる（除外せず残す）
+  });
+
+  it("平均 views が閾値以上なら lowReach=false", () => {
+    const rows = [row({ pattern: "A", views: 5000, likes: 50, replies: 0, reposts: 0, quotes: 0, saves: 0 })];
+    expect(groupAverageRate(rows, (r) => r.pattern)[0].lowReach).toBe(false);
+  });
+});
+
+describe("groupSumViews", () => {
+  it("キー別の views 合計と n を降順で返す", () => {
+    const rows = [
+      row({ theme: "金融", views: 10000 }),
+      row({ theme: "金融", views: 5000 }),
+      row({ theme: "HSP", views: 40 }),
+    ];
+    const stats = groupSumViews(rows, (r) => r.theme);
+    expect(stats[0]).toMatchObject({ key: "金融", totalViews: 15000, n: 2 });
+    expect(stats[1]).toMatchObject({ key: "HSP", totalViews: 40, n: 1 });
+  });
+
+  it("キーが null/空 の行は無視、views 欠損は 0 扱い", () => {
+    const rows = [row({ theme: null, views: 999 }), row({ theme: "X", views: null })];
+    const stats = groupSumViews(rows, (r) => r.theme);
+    expect(stats).toEqual<ViewStat[]>([{ key: "X", totalViews: 0, n: 1 }]);
+  });
+});
+
+describe("反転回帰: リーチ(views) と 刺さり度(率) は逆順になりうる（C の核心）", () => {
+  // 金融 = 高リーチ低率、HSP = 低リーチ高率。views と率で順位が逆転することを固定する。
+  const finance = Array.from({ length: 6 }, () =>
+    row({ theme: "金融", views: 10000, likes: 100, replies: 0, reposts: 0, quotes: 0, saves: 0 }),
+  ); // rate 1%, views 10000
+  const hsp = Array.from({ length: 6 }, () =>
+    row({ theme: "HSP", views: 40, likes: 50, replies: 0, reposts: 0, quotes: 0, saves: 0 }),
+  ); // rate 125%, views 40
+  const rows = [...finance, ...hsp];
+
+  it("率チャートは HSP が上位（低リーチが率を過大化）", () => {
+    const rate = groupAverageRate(rows, (r) => r.theme);
+    expect(rate[0].key).toBe("HSP");
+    expect(rate[1].key).toBe("金融");
+    expect(rate.find((s) => s.key === "HSP")!.lowReach).toBe(true);
+    expect(rate.find((s) => s.key === "金融")!.lowReach).toBe(false);
+  });
+
+  it("views チャートは金融が上位（実リーチ順）＝率と逆", () => {
+    const views = groupSumViews(rows, (r) => r.theme);
+    expect(views[0].key).toBe("金融");
+    expect(views[1].key).toBe("HSP");
+  });
+});
+
+describe("buildSummary: themeViews / accountViews", () => {
+  it("themeViews(Threads) と accountViews(全体) を含む", () => {
+    const rows = [
+      row({ platform: "threads", account: "pao-pao-cho", theme: "金融", views: 10000 }),
+      row({ platform: "x", account: "tomohiro", theme: null, views: 200 }),
+    ];
+    const s = buildSummary(rows, null, null);
+    expect(s.themeViews[0]).toMatchObject({ key: "金融", totalViews: 10000 });
+    const accts = Object.fromEntries(s.accountViews.map((v) => [v.key, v.totalViews]));
+    expect(accts["pao-pao-cho"]).toBe(10000);
+    expect(accts["tomohiro"]).toBe(200);
+  });
+});
+
+describe("MIN_VIEWS_FOR_RATE", () => {
+  it("定数として公開されている", () => {
+    expect(typeof MIN_VIEWS_FOR_RATE).toBe("number");
+    expect(MIN_VIEWS_FOR_RATE).toBeGreaterThan(0);
+  });
+});

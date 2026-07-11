@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { getAccountLabel } from "@/lib/constants/labels";
 import { formatInt } from "@/lib/insights/format";
-import { MIN_SAMPLE_SIZE } from "@/lib/insights/aggregate";
+import { MIN_SAMPLE_SIZE, MIN_VIEWS_FOR_RATE } from "@/lib/insights/aggregate";
 import type { InsightsSummary, MetricRow, Platform } from "@/lib/insights/types";
-import { BarChartPanel } from "./InsightsCharts";
+import { BarChartPanel, ViewsBarPanel } from "./InsightsCharts";
 import { MetricsTable } from "./MetricsTable";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
@@ -120,7 +120,28 @@ export function InsightsView({
         </div>
       </section>
 
-      <section className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">
+        リーチ（どれだけ見られたか＝views）
+      </h3>
+      <p className="text-xs text-slate-400 mb-3">
+        views 合計の大きさ。規模・到達を表す。
+      </p>
+      <section className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ViewsBarPanel title="テーマ別 リーチ（views 合計・Threads）" stats={summary.themeViews} />
+        <ViewsBarPanel
+          title="アカウント別 リーチ（views 合計）"
+          stats={summary.accountViews}
+          keyFormatter={getAccountLabel}
+        />
+      </section>
+
+      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">
+        刺さり度（見た人がどれだけ反応したか＝率）
+      </h3>
+      <p className="text-xs text-slate-400 mb-3">
+        エンゲージメント率の平均。リーチとは別軸で、リーチが小さくても高く出うる。
+      </p>
+      <section className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <BarChartPanel title="パターン別 平均エンゲージメント率（Threads）" stats={summary.patternStats} />
         <BarChartPanel title="テーマ別 平均エンゲージメント率（Threads）" stats={summary.themeStats} />
         <BarChartPanel
@@ -131,8 +152,10 @@ export function InsightsView({
       </section>
 
       <p className="text-xs text-slate-400 mb-8">
-        n はサンプル数。n&lt;{MIN_SAMPLE_SIZE} のカテゴリは「参考値」として淡色表示しています（閾値は暫定）。
+        n はサンプル数。n&lt;{MIN_SAMPLE_SIZE} は「参考値」、平均 views&lt;{MIN_VIEWS_FOR_RATE} は「低リーチ」として淡色表示（閾値は暫定）。
         エンゲージメント率 = (いいね+返信+リポスト+引用+保存) / views。views=0 は「—」。
+        <strong className="text-slate-500">リーチが小さい投稿は率が 100% を超えることがある</strong>（反応数が表示回数を上回るため）。
+        「一番読まれた」を見るならリーチ（上）、「刺さった」を見るなら率（下）を参照。
       </p>
 
       <section>

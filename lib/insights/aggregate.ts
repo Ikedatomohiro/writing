@@ -1,10 +1,26 @@
-import type { GroupStat, InsightsSummary, MetricRow, Platform } from "./types";
+import type {
+  GroupStat,
+  InsightsSummary,
+  MetricRow,
+  Platform,
+  ViewStat,
+} from "./types";
 
 /**
  * 最小サンプル閾値（暫定値。ユーザー確定後にここだけ変更する）。
  * n < MIN_SAMPLE_SIZE のグループは「参考値」として淡色表示する。
  */
 export const MIN_SAMPLE_SIZE = 5;
+
+/**
+ * 率を「低リーチ」と見なす平均 views の下限（暫定値・ここだけで変更）。
+ * これ未満の平均 views を持つグループは lowReach=true とし、率チャートで淡色＋注記する
+ * （除外はしない。低リーチ×高エンゲージは実在の有効な信号のため）。
+ * 実データ根拠: morita の各テーマは平均 views ≈ 43 で率が 100% を超えうる。pao の
+ * 主要テーマ（資産形成 avg≈11000 / プログラミング avg≈950）は十分上回るため、300 で
+ * 「低リーチの率は参考」を弁別できる。
+ */
+export const MIN_VIEWS_FOR_RATE = 300;
 
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
@@ -35,16 +51,33 @@ export function isProvisional(n: number, minN: number = MIN_SAMPLE_SIZE): boolea
   return n < minN;
 }
 
-function buildStat(key: string, rates: number[], minN: number): GroupStat {
+function buildStat(
+  key: string,
+  rates: number[],
+  viewsList: number[],
+  minN: number,
+): GroupStat {
   const n = rates.length;
   const avgRate = n === 0 ? null : rates.reduce((a, b) => a + b, 0) / n;
-  return { key, avgRate, n, provisional: isProvisional(n, minN) };
+  const avgViews =
+    viewsList.length === 0
+      ? 0
+      : viewsList.reduce((a, b) => a + b, 0) / viewsList.length;
+  return {
+    key,
+    avgRate,
+    n,
+    provisional: isProvisional(n, minN),
+    avgViews,
+    lowReach: avgViews < MIN_VIEWS_FOR_RATE,
+  };
 }
 
 /**
  * keyFn で行をグルーピングし、キー別の平均エンゲージメント率とサンプル数を返す。
  * - 率が null（views=0 等）の行はサンプルに数えない。
  * - キーが null/空 の行は無視する。
+ * - 併せて平均 views（avgViews）と低リーチ印（lowReach）を付す（除外はしない）。
  * - avgRate 降順（null は末尾）で返す。
  */
 export function groupAverageRate(
@@ -52,18 +85,46 @@ export function groupAverageRate(
   keyFn: (row: MetricRow) => string | null | undefined,
   minN: number = MIN_SAMPLE_SIZE,
 ): GroupStat[] {
-  const buckets = new Map<string, number[]>();
+  const rateBuckets = new Map<string, number[]>();
+  const viewsBuckets = new Map<string, number[]>();
   for (const row of rows) {
     const key = keyFn(row);
     if (!key) continue;
-    if (!buckets.has(key)) buckets.set(key, []);
+    if (!rateBuckets.has(key)) {
+      rateBuckets.set(key, []);
+      viewsBuckets.set(key, []);
+    }
     const rate = engagementRate(row);
-    if (rate !== null) buckets.get(key)!.push(rate);
+    if (rate === null) continue; // views=0 等は率/リーチのサンプルにしない（グループ自体は残す）
+    rateBuckets.get(key)!.push(rate);
+    viewsBuckets.get(key)!.push(num(row.views));
   }
-  const stats = Array.from(buckets.entries()).map(([key, rates]) =>
-    buildStat(key, rates, minN),
+  const stats = Array.from(rateBuckets.entries()).map(([key, rates]) =>
+    buildStat(key, rates, viewsBuckets.get(key)!, minN),
   );
   return sortByRateDesc(stats);
+}
+
+/**
+ * keyFn で行をグルーピングし、キー別の views 合計（リーチ）と n を降順で返す。
+ * 率とは別軸の「規模（どれだけ見られたか）」指標。キーが null/空 の行は無視する。
+ */
+export function groupSumViews(
+  rows: MetricRow[],
+  keyFn: (row: MetricRow) => string | null | undefined,
+): ViewStat[] {
+  const buckets = new Map<string, { totalViews: number; n: number }>();
+  for (const row of rows) {
+    const key = keyFn(row);
+    if (!key) continue;
+    if (!buckets.has(key)) buckets.set(key, { totalViews: 0, n: 0 });
+    const b = buckets.get(key)!;
+    b.totalViews += num(row.views);
+    b.n += 1;
+  }
+  return Array.from(buckets.entries())
+    .map(([key, b]) => ({ key, totalViews: b.totalViews, n: b.n }))
+    .sort((a, b) => b.totalViews - a.totalViews);
 }
 
 function sortByRateDesc(stats: GroupStat[]): GroupStat[] {
@@ -129,6 +190,8 @@ export function buildSummary(
     patternStats: groupAverageRate(threadsRows, (r) => r.pattern),
     themeStats: groupAverageRate(threadsRows, (r) => r.theme),
     hourlyStats: hourlyAverageRate(rows),
+    themeViews: groupSumViews(threadsRows, (r) => r.theme),
+    accountViews: groupSumViews(rows, (r) => r.account),
     totals: totals(rows),
     rowCount: rows.length,
   };

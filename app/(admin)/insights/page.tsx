@@ -1,12 +1,30 @@
+import { unstable_cache } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
 import { fetchMetricRows } from "@/lib/insights/query";
 import { buildSummary } from "@/lib/insights/aggregate";
-import type { MetricRow, Platform } from "@/lib/insights/types";
+import type { InsightsSummary, MetricRow, Platform } from "@/lib/insights/types";
 import { InsightsView } from "./InsightsView";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"];
 
-export const dynamic = "force-dynamic";
+// データ取得＋集計を 1 時間キャッシュする（B1）。sns_metrics は日次同期（A）で更新される
+// 低頻度データのため 1h の陳腐化は許容範囲。cold start と毎訪問の全件フェッチを消す。
+// 認証は middleware がリクエスト毎に実行するのでキャッシュ対象外。
+const CACHE_TTL_SECONDS = 3600;
+
+/** account/platform 別に読み取り＋集計をキャッシュ。行データも表用に同梱して返す。 */
+const getCachedInsights = unstable_cache(
+  async (
+    account: string | null,
+    platform: Platform | null,
+  ): Promise<{ summary: InsightsSummary; rows: MetricRow[] }> => {
+    const client = createServerClient();
+    const rows = await fetchMetricRows(client, { account, platform });
+    return { summary: buildSummary(rows, account, platform), rows };
+  },
+  ["insights-summary-v1"],
+  { revalidate: CACHE_TTL_SECONDS, tags: ["insights"] },
+);
 
 function parseAccount(raw?: string): string | null {
   return raw && ACCOUNTS.includes(raw) ? raw : null;
@@ -16,16 +34,19 @@ function parsePlatform(raw?: string): Platform | null {
   return raw === "threads" || raw === "x" ? raw : null;
 }
 
-async function loadRows(
+async function loadInsights(
   account: string | null,
   platform: Platform | null,
-): Promise<{ rows: MetricRow[]; error: boolean }> {
+): Promise<{ summary: InsightsSummary; rows: MetricRow[]; error: boolean }> {
   try {
-    const client = createServerClient();
-    const rows = await fetchMetricRows(client, { account, platform });
-    return { rows, error: false };
+    const { summary, rows } = await getCachedInsights(account, platform);
+    return { summary, rows, error: false };
   } catch {
-    return { rows: [], error: true };
+    return {
+      summary: buildSummary([], account, platform),
+      rows: [],
+      error: true,
+    };
   }
 }
 
@@ -38,8 +59,7 @@ export default async function InsightsPage({
   const account = parseAccount(sp.account);
   const platform = parsePlatform(sp.platform);
 
-  const { rows, error } = await loadRows(account, platform);
-  const summary = buildSummary(rows, account, platform);
+  const { summary, rows, error } = await loadInsights(account, platform);
 
   return (
     <InsightsView
