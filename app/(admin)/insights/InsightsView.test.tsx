@@ -59,6 +59,18 @@ describe("InsightsView", () => {
     expect(screen.getByText(/参考値/)).toBeInTheDocument();
   });
 
+  it("account=null（既定）はプール平均の注記を出す（W-a）", () => {
+    const summary = buildSummary([], null, null);
+    render(<InsightsView summary={summary} rows={[]} account={null} platform={null} error={false} />);
+    expect(screen.getByTestId("pool-notice")).toBeInTheDocument();
+  });
+
+  it("account 指定時はプール注記を出さない", () => {
+    const summary = buildSummary([], "morita_rin", null);
+    render(<InsightsView summary={summary} rows={[]} account={"morita_rin"} platform={null} error={false} />);
+    expect(screen.queryByTestId("pool-notice")).toBeNull();
+  });
+
   it("アカウント・プラットフォームのフィルタリンクを表示する", () => {
     const summary = buildSummary([], null, null);
     render(<InsightsView summary={summary} rows={[]} account={null} platform={null} error={false} />);

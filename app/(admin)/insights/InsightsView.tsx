@@ -102,6 +102,16 @@ export function InsightsView({
         </div>
       </div>
 
+      {account === null ? (
+        <p
+          data-testid="pool-notice"
+          className="mb-6 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500"
+        >
+          現在は全アカウント・両プラットフォームを混ぜた<strong className="font-semibold">プール平均</strong>です（並べる比較ではありません）。
+          アカウント別に見るには上のフィルタで1つずつ絞り込んでください。
+        </p>
+      ) : null}
+
       <section data-testid="kpi-cards" className="mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <KpiCard label="累計 views" value={formatInt(summary.totals.totalViews)} />

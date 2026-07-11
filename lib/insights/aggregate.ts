@@ -15,6 +15,10 @@ function num(value: number | null | undefined): number {
 /**
  * エンゲージメント率 = (likes+replies+reposts+quotes+saves) / views。
  * views が 0 または欠損なら null（ゼロ除算を避ける・虚偽の 0 率を作らない）。
+ *
+ * W-c: X では saves = bookmark_count（adapter でマップ）。つまり X 率は bookmark を分子に含む。
+ * これは Threads の saves と対称にして横断比較を成立させるための意図的定義で、
+ * 既存 x-analyst の X 率（bookmark 非含）とは一致しない（README「W-c」参照）。
  */
 export function engagementRate(row: MetricRow): number | null {
   const views = row.views;
