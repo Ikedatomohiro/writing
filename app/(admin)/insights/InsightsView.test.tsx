@@ -42,9 +42,50 @@ describe("InsightsView", () => {
     const rows = [tRow()];
     const summary = buildSummary(rows, null, null);
     render(<InsightsView summary={summary} rows={rows} account={null} platform={null} error={false} />);
-    expect(screen.getByText(/パターン別/)).toBeInTheDocument();
-    expect(screen.getByText(/テーマ別/)).toBeInTheDocument();
-    expect(screen.getByText(/時間帯別/)).toBeInTheDocument();
+    expect(screen.getByText(/パターン別 平均エンゲージメント率/)).toBeInTheDocument();
+    expect(screen.getByText(/テーマ別 平均エンゲージメント率/)).toBeInTheDocument();
+    expect(screen.getByText(/時間帯別 平均エンゲージメント率/)).toBeInTheDocument();
+  });
+
+  it("テーマ別・アカウント別の views(リーチ) グラフを表示する（C）", () => {
+    const rows = [
+      tRow({ platform: "threads", account: "pao-pao-cho", theme: "資産形成", views: 10000, post_id: "T1" }),
+      tRow({ platform: "x", account: "tomohiro", theme: null, views: 200, post_id: "X1" }),
+    ];
+    const summary = buildSummary(rows, null, null);
+    render(<InsightsView summary={summary} rows={rows} account={null} platform={null} error={false} />);
+    expect(screen.getByText(/テーマ別 リーチ/)).toBeInTheDocument();
+    expect(screen.getByText(/アカウント別 リーチ/)).toBeInTheDocument();
+    // views 規模が出ている（資産形成 10000。views パネルとテーブルの両方に出うる）
+    expect(screen.getAllByText("10,000").length).toBeGreaterThan(0);
+  });
+
+  it("リーチと刺さり度の軸の意味を説明するラベルがある（C）", () => {
+    const summary = buildSummary([], null, null);
+    render(<InsightsView summary={summary} rows={[]} account={null} platform={null} error={false} />);
+    expect(screen.getAllByText(/リーチ.*views/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/刺さり度.*率/)).toBeInTheDocument();
+  });
+
+  it("views(リーチ) が主役・率が補助である事を明示する（C確定方針）", () => {
+    const summary = buildSummary([], null, null);
+    render(<InsightsView summary={summary} rows={[]} account={null} platform={null} error={false} />);
+    // 主役セクションに testid、補助セクションに「補助」明示
+    expect(screen.getByTestId("reach-primary")).toBeInTheDocument();
+    expect(screen.getByTestId("rate-secondary")).toBeInTheDocument();
+    expect(screen.getByText(/補助/)).toBeInTheDocument();
+    expect(screen.getByText(/拡散力ではない|拡散/)).toBeInTheDocument();
+  });
+
+  it("DOM順で リーチ(主役) が 率(補助) より前に来る（3秒で読める配置）", () => {
+    const summary = buildSummary([], null, null);
+    const { container } = render(
+      <InsightsView summary={summary} rows={[]} account={null} platform={null} error={false} />,
+    );
+    const primary = container.querySelector('[data-testid="reach-primary"]')!;
+    const secondary = container.querySelector('[data-testid="rate-secondary"]')!;
+    // compareDocumentPosition: primary が secondary より前なら FOLLOWING ビットが立つ
+    expect(primary.compareDocumentPosition(secondary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("error 時はエラーバナーを表示する", () => {

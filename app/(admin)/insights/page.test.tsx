@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
+// unstable_cache は Next ランタイム外では動かないため、テストでは passthrough にする
+// （本番では next/cache の実体がキャッシュする）。
+vi.mock("next/cache", () => ({
+  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createServerClient: () => ({}),
 }));

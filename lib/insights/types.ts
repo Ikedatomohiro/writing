@@ -28,6 +28,19 @@ export interface GroupStat {
   n: number;
   /** n < MIN_SAMPLE_SIZE のとき true（参考値として淡色表示）。 */
   provisional: boolean;
+  /** グループ内の平均 views（リーチ）。率の信頼性判断に併用。 */
+  avgViews: number;
+  /** avgViews < MIN_VIEWS_FOR_RATE のとき true。低リーチで率が過大に出やすい印。 */
+  lowReach: boolean;
+}
+
+/** カテゴリ別の views（リーチ）合計とサンプル数。刺さり度（率）と別軸の規模指標。 */
+export interface ViewStat {
+  key: string;
+  /** views 合計（リーチの規模）。 */
+  totalViews: number;
+  /** 投稿数。 */
+  n: number;
 }
 
 /** 全体感の虚栄指標（従）。 */
@@ -41,9 +54,13 @@ export interface Totals {
 export interface InsightsSummary {
   account: string | null;
   platform: Platform | null;
+  /** 刺さり度（平均エンゲージメント率）。 */
   patternStats: GroupStat[];
   themeStats: GroupStat[];
   hourlyStats: GroupStat[];
+  /** リーチ（views 合計）。率と別軸で並置する規模指標。 */
+  themeViews: ViewStat[];
+  accountViews: ViewStat[];
   totals: Totals;
   rowCount: number;
 }

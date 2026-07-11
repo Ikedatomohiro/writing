@@ -43,15 +43,33 @@ JSON を直接読まずに全体像とアカウント別・プラットフォー
 - 取得元テーブル: Supabase `sns_metrics`（`writing/supabase/migrations/20260711000000_sns_metrics.sql`）
 - 代表窓: Threads=`24h` / X=`latest`（1h/6h は初回スコープ外）
 - ingest スクリプト: `content-pipeline/threads-creator/scripts/`
-  - `backfill_sns_metrics.py` — 全アカウント一括の一回性 backfill（`--dry-run` 可）
-  - `upsert_sns_metrics.py` — 日次 recurring upsert（`ACTIVE_ACCOUNT`）
+  - `backfill_sns_metrics.py` — 全アカウント一括 backfill（冪等・`--dry-run` 可・件数検証付き）
+- **日次自動同期（A）**: `run_sns_metrics_sync.sh` を launchd `com.contentmgmt.sns-metrics-sync`（毎日 10:00・fetcher 群の後）が実行し、content-data 履歴 → `sns_metrics` を同期。件数不一致時は Slack 通知。
+
+## 表示のキャッシュ（B1）
+
+`page.tsx` はデータ取得＋集計を `unstable_cache`（revalidate 3600秒）でキャッシュする。
+`sns_metrics` は日次更新の低頻度データのため 1h の陳腐化は許容範囲。これで cold start と
+毎訪問の全件フェッチを消す。認証は middleware がリクエスト毎に実行するのでキャッシュ対象外。
+恒久スケール策（集計 view/RPC）は issue #578。
 
 ## 指標定義
 
-- **エンゲージメント率（主）** = `(likes + replies + reposts + quotes + saves) / views`。
-  `views=0` は率 = null（「—」表示）。0 扱いはしない（虚偽の 0% を作らない）。
-- **パターン別／テーマ別**（Threads のみ。X は該当次元を持たない）
-- **時間帯別**（JST 変換・両プラットフォーム）
+2つの軸を明確に分けて表示する（C・体感ズレ対策）。**リーチ（views）を主役、率を補助**に配置する
+（ユーザーの体感＝金融≫エンジニア≫HSP と第一印象を一致させるため。既定画面はまずリーチが目に入る）。
+
+- **【主役】リーチ（views 合計）= どれだけ読まれたか**。テーマ別・アカウント別の views 合計を棒グラフで
+  画面上部に表示。規模・到達の指標。「一番読まれたのは何か」はここで 3 秒で読める。
+- **【補助】刺さり度（エンゲージメント率）= 見た人がどれだけ反応したか** = `(likes + replies + reposts + quotes + saves) / views`。
+  **拡散力（リーチ）ではない**。`views=0` は率 = null（「—」）。パターン別/テーマ別（Threads のみ）・時間帯別（JST・両PF）。
+  分析価値（morita 系の高エンゲージ発見など）があるため削除はせず、補助軸として残す。
+
+> **重要**: リーチと刺さり度は**別軸で順位が逆転しうる**。例: 金融系はリーチ最大だが率は控えめ、
+> HSP 系はリーチ小だが率は高い。**リーチが小さい投稿は率が 100% を超えることがある**（反応数が
+> 表示回数を上回るため）。率チャートでは平均 views < `MIN_VIEWS_FOR_RATE`(=300) のカテゴリを
+> 「低リーチ」として淡色表示し、率の過大評価を注意喚起する（除外はしない。低リーチ×高エンゲージは
+> 実在の有効な信号のため）。
+
 - **累計 views/likes・投稿数**（虚栄指標・従）
 
 各カテゴリ集計には n（サンプル数）を併記。`n < MIN_SAMPLE_SIZE`（暫定 5）のカテゴリは
