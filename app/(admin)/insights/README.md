@@ -41,7 +41,11 @@ JSON を直接読まずに全体像とアカウント別・プラットフォー
 ## データフロー
 
 - 取得元テーブル: Supabase `sns_metrics`（`writing/supabase/migrations/20260711000000_sns_metrics.sql`）
-- 代表窓: Threads=`24h` / X=`latest`（1h/6h は初回スコープ外）
+- **代表窓への畳み込み（#578 F-1/W-b）**: 取得は窓で絞らず全窓を引き、`dedupeToRepresentative` が
+  投稿ごと（`platform`+`account`+`post_id`）に代表窓 1 行へ畳む（Threads 24h>6h>1h / X latest）。
+  これで views の二重加算を防ぎ（F-1）、24h が欠損し 1h/6h しか無い投稿も落とさない（W-b）。
+- 取得は `PAGE_SIZE=500` でページング（Supabase 既定 max-rows 1000 と同値だと上限低下時に沈黙
+  under-read するため安全マージン）。
 - ingest スクリプト: `content-pipeline/threads-creator/scripts/`
   - `backfill_sns_metrics.py` — 全アカウント一括 backfill（冪等・`--dry-run` 可・件数検証付き）
 - **日次自動同期（A）**: `run_sns_metrics_sync.sh` を launchd `com.contentmgmt.sns-metrics-sync`（毎日 10:00・fetcher 群の後）が実行し、content-data 履歴 → `sns_metrics` を同期。件数不一致時は Slack 通知。
