@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { XPostEditor } from "@/components/x/XPostEditor";
+import { xPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 import { X_CHAR_LIMIT, countXChars } from "@/lib/types/x";
 import type { XSeriesWithPosts, XPost } from "@/lib/types/x";
 
@@ -80,6 +81,7 @@ export function XSeriesEditor({ seriesId, onClose, onAfterDelete }: Props) {
         const errBody = await res.json().catch(() => ({}));
         throw new Error(errBody?.error ?? `HTTP ${res.status}`);
       }
+      xPostUpdatedChannel.emit({ seriesId, postId: post.id, text: post.text });
       setSaveMessage({ postId: post.id, kind: "success", text: "保存しました" });
     } catch (e) {
       setSaveMessage({

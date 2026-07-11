@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/sns/StatusBadge";
 import { PostEditor } from "@/components/sns/PostEditor";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useToastContext } from "@/components/common/ToastProvider";
+import { threadsPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 import type { SnsSeries, SnsSeriesWithPosts, SnsPost, SnsPostType } from "@/lib/types/sns";
 
 interface Props {
@@ -77,11 +78,21 @@ export function ThreadsSeriesEditor({ seriesId, onClose, onAfterDelete }: Props)
     if (isDisabled) return;
     setIsSaving(true);
     try {
-      await fetch(`/api/threads/series/${seriesId}/posts/${post.id}`, {
+      const res = await fetch(`/api/threads/series/${seriesId}/posts/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: post.text, type: post.type }),
       });
+      if (!res.ok) throw new Error();
+      threadsPostUpdatedChannel.emit({
+        seriesId,
+        postId: post.id,
+        text: post.text,
+        type: post.type,
+      });
+      toast.success("保存しました");
+    } catch {
+      toast.error("保存に失敗しました");
     } finally {
       setIsSaving(false);
     }
