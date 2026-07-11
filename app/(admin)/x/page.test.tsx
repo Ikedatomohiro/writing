@@ -13,6 +13,7 @@ vi.mock("next/navigation", () => ({
 
 import { useSearchParams } from "next/navigation";
 import XPage from "./page";
+import { xPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -336,6 +337,48 @@ describe("XPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Xテストテーマ1")).toBeInTheDocument();
+    });
+  });
+
+  describe("モーダル編集後のライブ反映", () => {
+    it("xPostUpdatedChannel の通知を受けて、リロードなしでカード本文が更新される", async () => {
+      render(<XPage />);
+      await waitFor(() => {
+        expect(screen.getByText("X投稿テキスト")).toBeInTheDocument();
+      });
+
+      const fetchCallsBefore = mockFetch.mock.calls.length;
+
+      xPostUpdatedChannel.emit({
+        seriesId: "x1",
+        postId: "xp1",
+        text: "モーダルで更新したX本文",
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("モーダルで更新したX本文")).toBeInTheDocument();
+      });
+      expect(screen.queryByText("X投稿テキスト")).not.toBeInTheDocument();
+      expect(mockFetch.mock.calls.length).toBe(fetchCallsBefore);
+      expect(screen.queryByText("読み込み中...")).not.toBeInTheDocument();
+    });
+
+    it("別シリーズIDの通知では該当カードに影響しない", async () => {
+      render(<XPage />);
+      await waitFor(() => {
+        expect(screen.getByText("X投稿テキスト")).toBeInTheDocument();
+      });
+
+      xPostUpdatedChannel.emit({
+        seriesId: "unknown-series",
+        postId: "unknown-post",
+        text: "無関係な更新",
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("X投稿テキスト")).toBeInTheDocument();
+      });
+      expect(screen.queryByText("無関係な更新")).not.toBeInTheDocument();
     });
   });
 

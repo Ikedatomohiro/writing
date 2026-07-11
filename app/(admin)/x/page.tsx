@@ -20,6 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { getAccountLabel } from "@/lib/constants/labels";
+import { xPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingIndicator } from "@/components/common/LoadingIndicator";
 import { ErrorState } from "@/components/common/ErrorState";
@@ -148,6 +149,23 @@ function XPageContent() {
       window.removeEventListener("focus", revalidate);
     };
   }, [loadSeries]);
+
+  // モーダル編集（XSeriesEditor）で投稿保存に成功したら、
+  // リロードや再フェッチなしで該当カードの本文をローカル反映する。
+  useEffect(() => {
+    return xPostUpdatedChannel.subscribe(({ seriesId, postId, text }) => {
+      setSeries((prev) =>
+        prev.map((s) =>
+          s.id !== seriesId
+            ? s
+            : {
+                ...s,
+                posts: (s.posts ?? []).map((p) => (p.id === postId ? { ...p, text } : p)),
+              }
+        )
+      );
+    });
+  }, []);
 
   const baseFiltered =
     activeTab === "all"

@@ -14,6 +14,7 @@ vi.mock("next/navigation", () => ({
 import { useSearchParams } from "next/navigation";
 import SnsPage from "./page";
 import { ToastProvider } from "@/components/common/ToastProvider";
+import { threadsPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 
 function renderWithToast(ui: React.ReactElement) {
   return render(<ToastProvider>{ui}</ToastProvider>);
@@ -347,6 +348,51 @@ describe("SnsPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("テストテーマ1")).toBeInTheDocument();
+    });
+  });
+
+  describe("モーダル編集後のライブ反映", () => {
+    it("threadsPostUpdatedChannel の通知を受けて、リロードなしでカード本文が更新される", async () => {
+      renderWithToast(<SnsPage />);
+      await waitFor(() => {
+        expect(screen.getByText("テスト投稿テキスト")).toBeInTheDocument();
+      });
+
+      const fetchCallsBefore = mockFetch.mock.calls.length;
+
+      threadsPostUpdatedChannel.emit({
+        seriesId: "1",
+        postId: "p1",
+        text: "モーダルで更新した本文",
+        type: "normal",
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("モーダルで更新した本文")).toBeInTheDocument();
+      });
+      expect(screen.queryByText("テスト投稿テキスト")).not.toBeInTheDocument();
+      // 再フェッチ・全体ローディングを起こさずローカル state のみ更新する
+      expect(mockFetch.mock.calls.length).toBe(fetchCallsBefore);
+      expect(screen.queryByText("読み込み中...")).not.toBeInTheDocument();
+    });
+
+    it("別シリーズIDの通知では該当カードに影響しない", async () => {
+      renderWithToast(<SnsPage />);
+      await waitFor(() => {
+        expect(screen.getByText("テスト投稿テキスト")).toBeInTheDocument();
+      });
+
+      threadsPostUpdatedChannel.emit({
+        seriesId: "unknown-series",
+        postId: "unknown-post",
+        text: "無関係な更新",
+        type: "normal",
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("テスト投稿テキスト")).toBeInTheDocument();
+      });
+      expect(screen.queryByText("無関係な更新")).not.toBeInTheDocument();
     });
   });
 

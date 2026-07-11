@@ -26,6 +26,7 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { getAccountLabel } from "@/lib/constants/labels";
+import { threadsPostUpdatedChannel } from "@/lib/events/seriesPostUpdated";
 import type { SnsSeriesWithPosts, SnsPost, SnsSeriesStatus } from "@/lib/types/sns";
 
 const PAGE_SIZE = 20;
@@ -148,6 +149,27 @@ function SnsPageContent() {
       window.removeEventListener("focus", revalidate);
     };
   }, [loadSeries]);
+
+  // モーダル編集（ThreadsSeriesEditor）で投稿保存に成功したら、
+  // リロードや再フェッチなしで該当カードの本文をローカル反映する。
+  useEffect(() => {
+    return threadsPostUpdatedChannel.subscribe(({ seriesId, postId, text, type }) => {
+      setSeries((prev) =>
+        prev.map((s) =>
+          s.id !== seriesId
+            ? s
+            : {
+                ...s,
+                posts: (s.posts ?? []).map((p) =>
+                  p.id === postId
+                    ? { ...p, text, type: (type as SnsPost["type"]) ?? p.type }
+                    : p
+                ),
+              }
+        )
+      );
+    });
+  }, []);
 
   const handleDelete = (id: string) => {
     setDeleteTarget(id);
