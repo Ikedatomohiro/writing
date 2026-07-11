@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MetricRow, Platform } from "./types";
 
 const TABLE = "sns_metrics";
@@ -10,25 +11,12 @@ export interface QueryFilter {
   platform?: Platform | null;
 }
 
-/** 最小限の supabase クエリビルダ型（テストでモックしやすいよう狭く定義）。 */
-interface QueryBuilder {
-  select(cols: string): QueryBuilder;
-  eq(col: string, val: string): QueryBuilder;
-  in(col: string, vals: string[]): QueryBuilder;
-  then(
-    onfulfilled: (res: { data: unknown; error: unknown }) => unknown,
-  ): unknown;
-}
-interface SupabaseLike {
-  from(table: string): QueryBuilder;
-}
-
 /**
  * sns_metrics から集計対象行を取得する。
  * platform 未指定なら Threads(24h) と X(latest) の代表窓のみ取得（1h/6h は除外）。
  */
 export async function fetchMetricRows(
-  client: SupabaseLike,
+  client: SupabaseClient,
   filter: QueryFilter = {},
 ): Promise<MetricRow[]> {
   let q = client.from(TABLE).select("*");

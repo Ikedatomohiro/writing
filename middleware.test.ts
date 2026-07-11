@@ -16,7 +16,7 @@ function makeReq(path: string, loggedIn: boolean): FakeReq {
 
 async function run(path: string, loggedIn: boolean) {
   const mod = await import("./middleware");
-  const mw = mod.default as (req: FakeReq) => Response;
+  const mw = mod.default as unknown as (req: FakeReq) => Response;
   return mw(makeReq(path, loggedIn));
 }
 
