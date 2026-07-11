@@ -32,6 +32,13 @@ const PLATFORM_CARDS: PlatformCard[] = [
     icon: "alternate_email",
     color: "bg-slate-700",
   },
+  {
+    label: "エンゲージメント解析",
+    description: "Threads/X 横断の投稿パフォーマンス可視化",
+    href: "/insights",
+    icon: "insights",
+    color: "bg-indigo-500",
+  },
 ];
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
