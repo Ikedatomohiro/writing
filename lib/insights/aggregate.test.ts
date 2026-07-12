@@ -8,6 +8,7 @@ import {
   dailySeries,
   totals,
   buildSummary,
+  SERVICE_START_DATE,
 } from "./aggregate";
 import type { MetricRow } from "./types";
 
@@ -158,6 +159,20 @@ describe("dailySeries", () => {
   it("null 値は 0 扱いで合計する", () => {
     const rows = [row({ posted_at: "2026-04-02T02:00:00+00:00", views: null, likes: null })];
     expect(dailySeries(rows)).toEqual([{ date: "2026-04-02", views: 0, likes: 0 }]);
+  });
+
+  it("SERVICE_START_DATE より前の日付は除外する（転用 X アカウントの古い投稿の異常値対策）", () => {
+    const rows = [
+      row({ platform: "x", posted_at: "2010-06-27T09:00:00+00:00", views: null, likes: 0 }),
+      row({ platform: "x", posted_at: "2025-10-29T10:00:00+00:00", views: 15, likes: 1 }),
+      row({ posted_at: "2026-04-02T02:00:00+00:00", views: 100, likes: 5 }),
+    ];
+    expect(dailySeries(rows)).toEqual([{ date: "2026-04-02", views: 100, likes: 5 }]);
+  });
+
+  it("SERVICE_START_DATE 当日は残す（境界は inclusive）", () => {
+    const rows = [row({ posted_at: `${SERVICE_START_DATE}T02:00:00+00:00`, views: 7, likes: 1 })];
+    expect(dailySeries(rows)).toEqual([{ date: SERVICE_START_DATE, views: 7, likes: 1 }]);
   });
 });
 
