@@ -9,6 +9,7 @@ import {
   ArticleIcon,
   ThreadsIcon,
   XIcon,
+  InsightsIcon,
   LogoutIcon,
   PlusIcon,
   ChevronLeftIcon,
@@ -22,6 +23,7 @@ const NAV_ITEMS: { Icon: IconComponent; label: string; href: string }[] = [
   { Icon: ArticleIcon, label: "記事", href: "/articles" },
   { Icon: ThreadsIcon, label: "Threads", href: "/threads" },
   { Icon: XIcon, label: "X", href: "/x" },
+  { Icon: InsightsIcon, label: "エンゲージメント解析", href: "/insights" },
 ];
 
 export function AdminSidebar({

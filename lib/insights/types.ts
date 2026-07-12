@@ -43,6 +43,16 @@ export interface ViewStat {
   n: number;
 }
 
+/** 公開日（JST）別の views/likes 合計。日次推移グラフの1点。 */
+export interface DailyPoint {
+  /** JST の公開日。"YYYY-MM-DD"。 */
+  date: string;
+  /** その日に公開された投稿の views 合計。 */
+  views: number;
+  /** その日に公開された投稿の likes 合計。 */
+  likes: number;
+}
+
 /** 全体感の虚栄指標（従）。 */
 export interface Totals {
   totalViews: number;
@@ -61,6 +71,8 @@ export interface InsightsSummary {
   /** リーチ（views 合計）。率と別軸で並置する規模指標。 */
   themeViews: ViewStat[];
   accountViews: ViewStat[];
+  /** 公開日（JST）別の views/likes 合計。日付昇順。 */
+  dailySeries: DailyPoint[];
   totals: Totals;
   rowCount: number;
 }
