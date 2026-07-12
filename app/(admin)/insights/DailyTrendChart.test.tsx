@@ -12,6 +12,17 @@ function points(...over: Partial<DailyPoint>[]): DailyPoint[] {
   return over.length ? (over as DailyPoint[]) : base;
 }
 
+/** from から n 日ぶんの連続した日次点を生成（昇順）。 */
+function wideSeries(from: string, n: number): DailyPoint[] {
+  const out: DailyPoint[] = [];
+  for (let i = 0; i < n; i++) {
+    const ms = Date.parse(`${from}T00:00:00Z`) + i * 86400000;
+    const date = new Date(ms).toISOString().slice(0, 10);
+    out.push({ date, views: 100 + i, likes: i });
+  }
+  return out;
+}
+
 describe("DailyTrendChart", () => {
   afterEach(() => cleanup());
 
@@ -50,17 +61,16 @@ describe("DailyTrendChart", () => {
     expect(dots.length).toBe(1);
   });
 
-  it("月ごとの横軸目盛ラベルを描画する", () => {
-    const data: DailyPoint[] = [
-      { date: "2026-03-31", views: 10, likes: 1 },
-      { date: "2026-04-01", views: 20, likes: 2 },
-      { date: "2026-05-01", views: 30, likes: 3 },
-    ];
-    render(<DailyTrendChart data={data} />);
+  it("全期間では月ごとの横軸目盛ラベル（YYYY-MM）を描画する", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    fireEvent.click(screen.getByTestId("period-option-all"));
     const panel = screen.getByTestId("daily-trend-views");
-    const xLabels = panel.querySelectorAll('[data-testid="x-tick"]');
-    const texts = Array.from(xLabels).map((el) => el.textContent);
-    expect(texts).toEqual(["2026-03", "2026-04", "2026-05"]);
+    const texts = Array.from(
+      panel.querySelectorAll('[data-testid="x-tick"]'),
+    ).map((el) => el.textContent);
+    // 100日=複数月 → YYYY-MM ラベル
+    expect(texts.every((t) => /^\d{4}-\d{2}$/.test(t ?? ""))).toBe(true);
+    expect(texts).toContain("2026-03");
   });
 
   it("左に縦軸目盛（0 と最大を含む複数段）を描画する", () => {
@@ -108,5 +118,53 @@ describe("DailyTrendChart", () => {
 
     fireEvent.mouseLeave(svg);
     expect(panel.querySelector('[data-testid="trend-tooltip"]')).toBeNull();
+  });
+
+  // --- 期間セレクタ -------------------------------------------------------
+  function dotCount(): number {
+    return screen
+      .getByTestId("daily-trend-views")
+      .querySelectorAll('[data-testid="trend-dot"]').length;
+  }
+
+  it("期間セレクタ（30日/90日/全期間）を描画し、既定は30日", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    const selector = screen.getByTestId("period-selector");
+    expect(selector).toBeInTheDocument();
+    expect(screen.getByTestId("period-option-30")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("period-option-90")).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByTestId("period-option-all")).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("既定表示は最新日から過去30日ぶんのみ", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    // 100点あっても既定は30点だけ
+    expect(dotCount()).toBe(30);
+  });
+
+  it("全期間に切り替えると全点が表示される", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    expect(dotCount()).toBe(30);
+    fireEvent.click(screen.getByTestId("period-option-all"));
+    expect(dotCount()).toBe(100);
+    expect(screen.getByTestId("period-option-all")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("period-option-30")).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("90日に切り替えると過去90日ぶんが表示される", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    fireEvent.click(screen.getByTestId("period-option-90"));
+    expect(dotCount()).toBe(90);
+  });
+
+  it("期間切替後もツールチップが機能する", () => {
+    render(<DailyTrendChart data={wideSeries("2026-03-01", 100)} />);
+    fireEvent.click(screen.getByTestId("period-option-all"));
+    const panel = screen.getByTestId("daily-trend-views");
+    const bands = panel.querySelectorAll('[data-testid="trend-hover-band"]');
+    fireEvent.mouseEnter(bands[0]);
+    const tooltip = panel.querySelector('[data-testid="trend-tooltip"]');
+    expect(tooltip).not.toBeNull();
+    expect(tooltip?.textContent).toContain("2026-03-01");
   });
 });
