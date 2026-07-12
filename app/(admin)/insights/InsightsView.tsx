@@ -4,6 +4,7 @@ import { formatInt } from "@/lib/insights/format";
 import { MIN_SAMPLE_SIZE, MIN_VIEWS_FOR_RATE } from "@/lib/insights/aggregate";
 import type { InsightsSummary, MetricRow, Platform } from "@/lib/insights/types";
 import { BarChartPanel, ViewsBarPanel } from "./InsightsCharts";
+import { DailyTrendChart } from "./DailyTrendChart";
 import { MetricsTable } from "./MetricsTable";
 
 const ACCOUNTS = ["pao-pao-cho", "matsumoto_sho", "morita_rin"] as const;
@@ -128,6 +129,18 @@ export function InsightsView({
             keyFormatter={getAccountLabel}
           />
         </div>
+      </section>
+
+      {/* ── 日次推移: 公開日別の views / likes ── */}
+      <section data-testid="daily-trend" className="mb-8">
+        <h3 className="text-base font-bold text-slate-900 mb-1">
+          日次推移（公開日別の views / likes）
+        </h3>
+        <p className="text-xs text-slate-500 mb-4">
+          各投稿を<strong className="font-semibold">公開日（JST）</strong>で束ね、その日に公開された投稿の views / likes を合計したもの。
+          時間経過での累積成長ではなく「いつ出した投稿がどれだけ伸びたか」を見る。views と likes はスケールが桁違いのため別グラフで並べる。
+        </p>
+        <DailyTrendChart data={summary.dailySeries} />
       </section>
 
       <section data-testid="kpi-cards" className="mb-8">

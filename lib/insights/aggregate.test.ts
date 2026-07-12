@@ -5,6 +5,7 @@ import {
   isProvisional,
   groupAverageRate,
   hourlyAverageRate,
+  dailySeries,
   totals,
   buildSummary,
 } from "./aggregate";
@@ -122,6 +123,41 @@ describe("hourlyAverageRate", () => {
 
   it("posted_at が null の行は無視する", () => {
     expect(hourlyAverageRate([row({ posted_at: null })])).toEqual([]);
+  });
+});
+
+describe("dailySeries", () => {
+  it("posted_at(JST) の日付別に views/likes を合計する", () => {
+    const rows = [
+      row({ post_id: "A", posted_at: "2026-04-02T02:00:00+00:00", views: 100, likes: 5 }),
+      row({ post_id: "B", posted_at: "2026-04-02T06:00:00+00:00", views: 30, likes: 2 }),
+    ];
+    const series = dailySeries(rows);
+    expect(series).toEqual([{ date: "2026-04-02", views: 130, likes: 7 }]);
+  });
+
+  it("複数日は日付昇順で返す", () => {
+    const rows = [
+      row({ post_id: "B", posted_at: "2026-04-03T02:00:00+00:00", views: 10, likes: 1 }),
+      row({ post_id: "A", posted_at: "2026-04-01T02:00:00+00:00", views: 20, likes: 2 }),
+    ];
+    expect(dailySeries(rows).map((d) => d.date)).toEqual(["2026-04-01", "2026-04-03"]);
+  });
+
+  it("日付跨ぎ: UTC 15:30 は JST 翌日 00:30 として翌日に集計する", () => {
+    // UTC 2026-04-01T15:30 -> JST 2026-04-02T00:30
+    const rows = [row({ posted_at: "2026-04-01T15:30:00+00:00", views: 40, likes: 3 })];
+    expect(dailySeries(rows)[0].date).toBe("2026-04-02");
+  });
+
+  it("posted_at が null / 不正な行は無視する", () => {
+    expect(dailySeries([row({ posted_at: null })])).toEqual([]);
+    expect(dailySeries([row({ posted_at: "not-a-date" })])).toEqual([]);
+  });
+
+  it("null 値は 0 扱いで合計する", () => {
+    const rows = [row({ posted_at: "2026-04-02T02:00:00+00:00", views: null, likes: null })];
+    expect(dailySeries(rows)).toEqual([{ date: "2026-04-02", views: 0, likes: 0 }]);
   });
 });
 
@@ -312,5 +348,14 @@ describe("buildSummary は dedup 済みで集計する（F-1）", () => {
     expect(s.totals.totalViews).toBe(100);
     expect(s.themeViews.find((v) => v.key === "金融")!.totalViews).toBe(100);
     expect(s.totals.postCount).toBe(1);
+  });
+
+  it("日次推移も代表窓 1 行のみを数える（複数窓を二重加算しない）", () => {
+    const rows = [
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", posted_at: "2026-04-02T02:00:00+00:00", metric_window: "1h", views: 10, likes: 1 }),
+      row({ platform: "threads", account: "pao-pao-cho", post_id: "T1", posted_at: "2026-04-02T02:00:00+00:00", metric_window: "24h", views: 100, likes: 8 }),
+    ];
+    const s = buildSummary(rows, null, null);
+    expect(s.dailySeries).toEqual([{ date: "2026-04-02", views: 100, likes: 8 }]);
   });
 });

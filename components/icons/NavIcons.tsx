@@ -50,6 +50,15 @@ export function XIcon(props: IconProps) {
   );
 }
 
+export function InsightsIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props} aria-hidden="true">
+      <path d="M3 3v18h18" />
+      <path d="M7 14l4-4 3 3 5-6" />
+    </svg>
+  );
+}
+
 export function LogoutIcon(props: IconProps) {
   return (
     <svg {...base} {...props} aria-hidden="true">
