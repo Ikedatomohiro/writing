@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { DailyTrendChart } from "./DailyTrendChart";
 import type { DailyPoint } from "@/lib/insights/types";
 
@@ -74,14 +74,39 @@ describe("DailyTrendChart", () => {
     expect(texts).toContain("300");
   });
 
-  it("日付ごとにホバー用の当たり判定（title 付き）を描画する", () => {
+  it("日付ごとにホバー用の当たり判定（縦帯）を描画する", () => {
     render(<DailyTrendChart data={points()} />);
     const bands = screen
       .getByTestId("daily-trend-views")
       .querySelectorAll('[data-testid="trend-hover-band"]');
     expect(bands.length).toBe(3);
-    // 各バンドは「日付: 値」の title を持つ
-    const firstTitle = bands[0].querySelector("title");
-    expect(firstTitle?.textContent).toContain("2026-04-01");
+  });
+
+  it("バンドにホバーするとツールチップに日付と値が表示される", () => {
+    render(<DailyTrendChart data={points()} />);
+    const panel = screen.getByTestId("daily-trend-views");
+    // ホバー前はツールチップ非表示
+    expect(panel.querySelector('[data-testid="trend-tooltip"]')).toBeNull();
+
+    const bands = panel.querySelectorAll('[data-testid="trend-hover-band"]');
+    fireEvent.mouseEnter(bands[1]); // 2番目の点（2026-04-02 / views 300）
+
+    const tooltip = panel.querySelector('[data-testid="trend-tooltip"]');
+    expect(tooltip).not.toBeNull();
+    expect(tooltip?.textContent).toContain("2026-04-02");
+    expect(tooltip?.textContent).toContain("300");
+  });
+
+  it("ホバー解除でツールチップが消える", () => {
+    render(<DailyTrendChart data={points()} />);
+    const panel = screen.getByTestId("daily-trend-views");
+    const svg = panel.querySelector("svg")!;
+    const bands = panel.querySelectorAll('[data-testid="trend-hover-band"]');
+
+    fireEvent.mouseEnter(bands[0]);
+    expect(panel.querySelector('[data-testid="trend-tooltip"]')).not.toBeNull();
+
+    fireEvent.mouseLeave(svg);
+    expect(panel.querySelector('[data-testid="trend-tooltip"]')).toBeNull();
   });
 });

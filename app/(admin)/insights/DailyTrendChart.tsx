@@ -1,15 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import type { DailyPoint } from "@/lib/insights/types";
 import { formatInt } from "@/lib/insights/format";
 import { monthlyTicks, yAxisTicks } from "@/lib/insights/chartAxis";
 
-// 依存ゼロの SVG 折れ線。InsightsCharts と同じ方針でサーバーコンポーネントのまま動作し、
-// "use client" や react-is override（Recharts の要件）を必要としない。
-// view と like はスケールが桁違いのため、共有軸に重ねず「別グラフを縦に並列」する
-// （各メトリクスが自身の y 軸で最大化される）。
+// 依存ゼロの SVG 折れ線。view と like はスケールが桁違いのため、共有軸に重ねず
+// 「別グラフを縦に並列」する（各メトリクスが自身の y 軸で最大化される）。
 //
-// 軸ラベルは SVG 内 <text> ではなく HTML 要素で描く。viewBox は preserveAspectRatio="none"
-// で横に引き伸ばされるため、SVG 内テキストは水平方向に歪む。ラベルを SVG の外側に HTML で
-// 重ねれば歪まない（グリッド線は水平/垂直のみなので SVG 内 <line> で問題ない）。
+// ホバーで値を出すツールチップのため、このコンポーネントのみクライアントアイランド化している
+// （insights ページ初のクライアント化）。当初はネイティブ SVG <title> で実装したが、本番で
+// 表示まで約1秒の遅延・発見性の低さがあり UX として不十分だったため、React state 駆動の
+// 即時ツールチップに切り替えた。データ取得・集計はサーバー側のまま（page.tsx）で、
+// ハイドレートするのは折れ線パネルの描画のみ。
+//
+// 軸ラベルは SVG 内 <text> ではなく HTML で描く。viewBox は preserveAspectRatio="none" で
+// 横に引き伸ばされ、SVG 内テキストは水平方向に歪むため。グリッド線は水平/垂直のみなので
+// SVG 内 <line> で問題ない。
 
 const VIEW_BOX_W = 640;
 const VIEW_BOX_H = 160;
@@ -28,6 +35,8 @@ interface MetricPanelProps {
 
 /** 単一メトリクスの折れ線パネル。max を上端、0 を下端に正規化する。 */
 function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+
   const max = Math.max(0, ...series.map((s) => s.value));
   const innerW = VIEW_BOX_W - PAD_X * 2;
   const innerH = VIEW_BOX_H - PAD_Y * 2;
@@ -46,8 +55,9 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
   const yTicks = yAxisTicks(max, Y_STEPS);
   const xTicks = monthlyTicks(series.map((s) => s.date));
   // ホバー用の当たり判定は各点を中心とした縦帯。点(r=3)より広く取り、密な日次点でも
-  // 狙いやすくする（透明矩形は fill="transparent" で pointer を受け、<title> を出す）。
+  // 狙いやすくする（透明矩形は fill="transparent" で pointer を受ける）。
   const bandW = series.length > 1 ? innerW / (series.length - 1) : innerW;
+  const hovered = hoverIdx !== null ? series[hoverIdx] : null;
 
   return (
     <div
@@ -83,14 +93,15 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
             ))}
           </div>
 
-          {/* プロット列（SVG + 横軸ラベル）。幅は viewBox 幅 = 100% に対応。 */}
-          <div className="flex-1 min-w-0">
+          {/* プロット列（SVG + ツールチップ + 横軸ラベル）。幅は viewBox 幅 = 100% に対応。 */}
+          <div className="flex-1 min-w-0 relative">
             <svg
               viewBox={`0 0 ${VIEW_BOX_W} ${VIEW_BOX_H}`}
               className="w-full h-40"
               role="img"
               aria-label={`${title}の日次推移`}
               preserveAspectRatio="none"
+              onMouseLeave={() => setHoverIdx(null)}
             >
               {/* 横グリッド線（縦軸目盛位置）。 */}
               {yTicks.map((v) => (
@@ -122,11 +133,11 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
                   data-testid="trend-dot"
                   cx={xAt(i)}
                   cy={yAt(s.value)}
-                  r={3}
+                  r={hoverIdx === i ? 4.5 : 3}
                   fill={color}
                 />
               ))}
-              {/* ホバー当たり判定（透明・点より広い縦帯）。ネイティブ <title> ツールチップ。 */}
+              {/* ホバー当たり判定（透明・点より広い縦帯）。onMouseEnter で state 更新。 */}
               {series.map((s, i) => (
                 <rect
                   key={s.date}
@@ -136,11 +147,25 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
                   width={bandW}
                   height={VIEW_BOX_H}
                   fill="transparent"
-                >
-                  <title>{`${s.date}: ${formatInt(s.value)}`}</title>
-                </rect>
+                  onMouseEnter={() => setHoverIdx(i)}
+                />
               ))}
             </svg>
+
+            {/* ツールチップ（HTML）。ホバー中の点の直上に日付＋値を即時表示。 */}
+            {hovered && (
+              <div
+                data-testid="trend-tooltip"
+                className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-md bg-slate-900 px-2 py-1 text-center text-[11px] leading-tight text-white shadow-lg"
+                style={{
+                  left: `${(xAt(hoverIdx!) / VIEW_BOX_W) * 100}%`,
+                  top: `calc(${(yAt(hovered.value) / VIEW_BOX_H) * 100}% - 6px)`,
+                }}
+              >
+                <div className="font-semibold tabular-nums whitespace-nowrap">{hovered.date}</div>
+                <div className="tabular-nums">{formatInt(hovered.value)}</div>
+              </div>
+            )}
 
             {/* 横軸ラベル（HTML）。月初の点に "YYYY-MM" を配置。 */}
             <div className="relative h-4 mt-1">
