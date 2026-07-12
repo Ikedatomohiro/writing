@@ -49,4 +49,39 @@ describe("DailyTrendChart", () => {
       .querySelectorAll('[data-testid="trend-dot"]');
     expect(dots.length).toBe(1);
   });
+
+  it("月ごとの横軸目盛ラベルを描画する", () => {
+    const data: DailyPoint[] = [
+      { date: "2026-03-31", views: 10, likes: 1 },
+      { date: "2026-04-01", views: 20, likes: 2 },
+      { date: "2026-05-01", views: 30, likes: 3 },
+    ];
+    render(<DailyTrendChart data={data} />);
+    const panel = screen.getByTestId("daily-trend-views");
+    const xLabels = panel.querySelectorAll('[data-testid="x-tick"]');
+    const texts = Array.from(xLabels).map((el) => el.textContent);
+    expect(texts).toEqual(["2026-03", "2026-04", "2026-05"]);
+  });
+
+  it("左に縦軸目盛（0 と最大を含む複数段）を描画する", () => {
+    render(<DailyTrendChart data={points()} />);
+    const panel = screen.getByTestId("daily-trend-views");
+    const yLabels = panel.querySelectorAll('[data-testid="y-tick"]');
+    expect(yLabels.length).toBeGreaterThanOrEqual(3);
+    const texts = Array.from(yLabels).map((el) => el.textContent);
+    // views 最大 300 → 0 と 300 を含む
+    expect(texts).toContain("0");
+    expect(texts).toContain("300");
+  });
+
+  it("日付ごとにホバー用の当たり判定（title 付き）を描画する", () => {
+    render(<DailyTrendChart data={points()} />);
+    const bands = screen
+      .getByTestId("daily-trend-views")
+      .querySelectorAll('[data-testid="trend-hover-band"]');
+    expect(bands.length).toBe(3);
+    // 各バンドは「日付: 値」の title を持つ
+    const firstTitle = bands[0].querySelector("title");
+    expect(firstTitle?.textContent).toContain("2026-04-01");
+  });
 });
