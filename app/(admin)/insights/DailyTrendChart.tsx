@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { DailyPoint } from "@/lib/insights/types";
 import { formatInt } from "@/lib/insights/format";
-import { monthlyTicks, yAxisTicks } from "@/lib/insights/chartAxis";
+import { dateTicks, yAxisTicks, filterByPeriod } from "@/lib/insights/chartAxis";
 
 // 依存ゼロの SVG 折れ線。view と like はスケールが桁違いのため、共有軸に重ねず
 // 「別グラフを縦に並列」する（各メトリクスが自身の y 軸で最大化される）。
@@ -53,7 +53,7 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
 
   const linePoints = series.map((s, i) => `${xAt(i)},${yAt(s.value)}`).join(" ");
   const yTicks = yAxisTicks(max, Y_STEPS);
-  const xTicks = monthlyTicks(series.map((s) => s.date));
+  const xTicks = dateTicks(series.map((s) => s.date));
   // ホバー用の当たり判定は各点を中心とした縦帯。点(r=3)より広く取り、密な日次点でも
   // 狙いやすくする（透明矩形は fill="transparent" で pointer を受ける）。
   const bandW = series.length > 1 ? innerW / (series.length - 1) : innerW;
@@ -81,16 +81,22 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
         <div className="flex gap-1.5">
           {/* 縦軸ラベル（HTML）。SVG と同じ高さで % 配置し目盛線に揃える。 */}
           <div className="relative w-10 h-40 shrink-0">
-            {yTicks.map((v) => (
-              <span
-                key={v}
-                data-testid="y-tick"
-                className="absolute right-0 -translate-y-1/2 text-[10px] text-slate-400 tabular-nums"
-                style={{ top: `${(yAt(v) / VIEW_BOX_H) * 100}%` }}
-              >
-                {formatInt(Math.round(v))}
-              </span>
-            ))}
+            {yTicks.map((v, i) => {
+              // 低 max（例: max=3）だと丸め後に隣接ラベルが重複（0,1,2,2,3）しうるので、
+              // 直前と同じ丸め値のラベルは描かない（目盛線は別途 SVG 側で全段引く）。
+              const rounded = Math.round(v);
+              if (i > 0 && rounded === Math.round(yTicks[i - 1])) return null;
+              return (
+                <span
+                  key={v}
+                  data-testid="y-tick"
+                  className="absolute right-0 -translate-y-1/2 text-[10px] text-slate-400 tabular-nums"
+                  style={{ top: `${(yAt(v) / VIEW_BOX_H) * 100}%` }}
+                >
+                  {formatInt(rounded)}
+                </span>
+              );
+            })}
           </div>
 
           {/* プロット列（SVG + ツールチップ + 横軸ラベル）。幅は viewBox 幅 = 100% に対応。 */}
@@ -187,24 +193,78 @@ function MetricPanel({ testId, title, color, series }: MetricPanelProps) {
   );
 }
 
+/** 期間プリセット。days=null は全期間。デフォルトは 30 日。 */
+const PERIOD_PRESETS: { id: string; label: string; days: number | null }[] = [
+  { id: "30", label: "30日", days: 30 },
+  { id: "90", label: "90日", days: 90 },
+  { id: "all", label: "全期間", days: null },
+];
+const DEFAULT_PERIOD_DAYS = 30;
+
+interface PeriodSelectorProps {
+  value: number | null;
+  onChange: (days: number | null) => void;
+}
+
+/** 期間切替のセグメントコントロール（views/likes 両グラフに共通で効く）。 */
+function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
+  return (
+    <div
+      data-testid="period-selector"
+      role="group"
+      aria-label="表示期間"
+      className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5"
+    >
+      {PERIOD_PRESETS.map((p) => {
+        const active = p.days === value;
+        return (
+          <button
+            key={p.id}
+            type="button"
+            data-testid={`period-option-${p.id}`}
+            aria-pressed={active}
+            onClick={() => onChange(p.days)}
+            className={
+              "rounded-md px-3 py-1 text-xs font-medium transition-colors " +
+              (active
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700")
+            }
+          >
+            {p.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
  * 公開日別の views / likes 推移を縦に並列表示する。
  * データは日付昇順の DailyPoint[]（buildSummary.dailySeries）。
+ * 期間セレクタで表示範囲を絞る（既定=過去30日）。フィルタはクライアント state で行い、
+ * サーバー再取得は不要（y 軸・目盛は絞った系列から都度再計算されるため期間に追従する）。
  */
 export function DailyTrendChart({ data }: { data: DailyPoint[] }) {
+  const [periodDays, setPeriodDays] = useState<number | null>(DEFAULT_PERIOD_DAYS);
+  const visible = filterByPeriod(data, periodDays);
+
   return (
     <div className="grid grid-cols-1 gap-4">
+      <div className="flex justify-end">
+        <PeriodSelector value={periodDays} onChange={setPeriodDays} />
+      </div>
       <MetricPanel
         testId="daily-trend-views"
         title="日次 views（公開日別・合計）"
         color="#10b981"
-        series={data.map((d) => ({ date: d.date, value: d.views }))}
+        series={visible.map((d) => ({ date: d.date, value: d.views }))}
       />
       <MetricPanel
         testId="daily-trend-likes"
         title="日次 likes（公開日別・合計）"
         color="#6366f1"
-        series={data.map((d) => ({ date: d.date, value: d.likes }))}
+        series={visible.map((d) => ({ date: d.date, value: d.likes }))}
       />
     </div>
   );
