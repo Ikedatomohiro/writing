@@ -22,7 +22,11 @@ const getCachedInsights = unstable_cache(
     const rows = await fetchMetricRows(client, { account, platform });
     return { summary: buildSummary(rows, account, platform), rows };
   },
-  ["insights-summary-v1"],
+  // キャッシュキーの版番号。Vercel の Data Cache はデプロイをまたいで永続するため、
+  // 集計ロジックを変えたら版を上げて旧エントリを捨てる（さもないと revalidate(1h)まで
+  // 旧集計の値が配信されうる）。v2: dailySeries に運用開始前(2010〜2025 の古い X 投稿)を
+  // 除外する SERVICE_START_DATE フィルタを導入したため、v1 の陳腐化エントリを破棄する。
+  ["insights-summary-v2"],
   { revalidate: CACHE_TTL_SECONDS, tags: ["insights"] },
 );
 
