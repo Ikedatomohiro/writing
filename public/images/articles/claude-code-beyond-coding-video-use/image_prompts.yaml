@@ -1,0 +1,236 @@
+- kind: thumbnail
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: still
+  scene: an isometric illustration of an abstract video editing timeline floating
+    above a minimal terminal window, the timeline built from rectangular film-strip
+    segments in deep navy and teal cyan, two segments lifted out along thin dashed
+    cut lines to suggest automated trimming, a small pair of rounded caption blocks
+    beneath the timeline hinting at burned-in subtitles, a single thin connecting
+    line rising from the terminal prompt to the timeline to suggest text-driven editing,
+    clean geometric shapes with subtle grain texture, off-white background, diffused
+    daylight with soft gray-blue ambient shadows, generous negative space in the lower
+    third
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: an isometric illustration of an abstract video editing timeline floating
+    above a minimal terminal window, the timeline built from rectangular film-strip
+    segments in deep navy and teal cyan, two segments lifted out along thin dashed
+    cut lines to suggest automated trimming, a small pair of rounded caption blocks
+    beneath the timeline hinting at burned-in subtitles, a single thin connecting
+    line rising from the terminal prompt to the timeline to suggest text-driven editing,
+    clean geometric shapes with subtle grain texture, off-white background, diffused
+    daylight with soft gray-blue ambient shadows, generous negative space in the lower
+    third
+
+
+    mood: still — time has completely stopped, no motion, silence
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as thumbnail),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_a
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '4:3'
+  mood: watching
+  scene: a flat vector diagram arranged in two layered planes, a central abstract
+    terminal panel surrounded by three floating task tiles, one tile showing a film-strip
+    icon, one showing a simplified browser frame, one showing a document sheet with
+    lines, solid thin lines connecting two tiles to the terminal while the third hangs
+    apart with a dashed line, illustrating which tasks connect easily and which stay
+    out of reach, muted slate gray with teal cyan accents on deep navy shapes, soft
+    diffused daylight with gray-blue shadows, off-white background, composition balanced
+    with generous negative space on the right
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: a flat vector diagram arranged in two layered planes, a central abstract
+    terminal panel surrounded by three floating task tiles, one tile showing a film-strip
+    icon, one showing a simplified browser frame, one showing a document sheet with
+    lines, solid thin lines connecting two tiles to the terminal while the third hangs
+    apart with a dashed line, illustrating which tasks connect easily and which stay
+    out of reach, muted slate gray with teal cyan accents on deep navy shapes, soft
+    diffused daylight with gray-blue shadows, off-white background, composition balanced
+    with generous negative space on the right
+
+
+    mood: watching — someone unseen is observing quietly from outside the frame
+
+
+    Aspect ratio 4:3 (suitable for blog article card and hero image as illustration_a),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
+- kind: illustration_b
+  channel: blog
+  account: pao-pao-cho
+  model: gemini-2.5-flash-image
+  aspect: '16:9'
+  mood: receiving
+  scene: a flat frontal vector illustration of a tidy three-step horizontal flow,
+    on the left an open folder holding small film-strip cards, in the middle a rounded
+    prompt card with abstract text lines feeding into a gear, on the right a single
+    finished video frame with a play triangle and a small checkmark badge, thin arrows
+    linking the three steps left to right, deep navy and teal cyan palette with one
+    warm amber accent on the checkmark, clean minimal geometry, diffused daylight
+    with soft gray-blue shadows, off-white background, generous negative space below
+    the flow
+  prompt: 'A modern editorial illustration for a technology blog,
+
+    flat-vector style with subtle painterly texture and soft grain,
+
+    clean geometric composition with clear focal point,
+
+    contemporary cool palette (deep navy blue, teal cyan, slate gray,
+
+    soft off-white background, warm amber accent used sparingly),
+
+    diffused daylight with gentle ambient shadows,
+
+    calm and intellectually curious atmosphere,
+
+    minimal and confident, reminiscent of The Verge or Stripe Press illustration,
+
+    subtle paper grain and pixel-perfect edges,
+
+    no text, no logos, no brand marks, no UI screenshots,
+
+    no hyper-realistic photography, no 3D render, no cartoon highlights,
+
+    no crowded composition, no neon colors, no gradient explosions,
+
+    abstract objects / desks / tools / diagrams / silhouettes allowed,
+
+    no human faces, no full human figures,
+
+    composition balanced with generous negative space on one side.
+
+
+    Scene: a flat frontal vector illustration of a tidy three-step horizontal flow,
+    on the left an open folder holding small film-strip cards, in the middle a rounded
+    prompt card with abstract text lines feeding into a gear, on the right a single
+    finished video frame with a play triangle and a small checkmark badge, thin arrows
+    linking the three steps left to right, deep navy and teal cyan palette with one
+    warm amber accent on the checkmark, clean minimal geometry, diffused daylight
+    with soft gray-blue shadows, off-white background, generous negative space below
+    the flow
+
+
+    mood: receiving — something has just been placed, arrived, or handed over
+
+
+    Aspect ratio 16:9 (suitable for blog article card and hero image as illustration_b),
+
+    main subject positioned slightly off-center with generous negative space,
+
+    composition must remain recognizable when displayed at small size,
+
+    no human faces, no full human figures,
+
+    only objects, spaces, hands, backs, or silhouettes allowed.
+
+
+    Negative: no cartoon style, no anime highlights, no neon colors,
+
+    no text overlays, no modern gadgets unless narratively required,
+
+    no crowded composition, no harsh shadows, no photorealistic human faces,
+
+    no 3D render, no glossy AI skin textures, no children''s book style,
+
+    no text of any language visible on books or paper.'
