@@ -31,6 +31,31 @@ export default tseslint.config(
   },
   prettier,
   {
+    // Node.js 実行の CommonJS スクリプト（scripts/*.js）
+    files: ["scripts/**/*.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: {
+        require: "readonly",
+        module: "writable",
+        __dirname: "readonly",
+        __filename: "readonly",
+        process: "readonly",
+        console: "readonly",
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    // e2e のベストエフォート処理（失敗しても続行する try/catch）を許容
+    files: ["e2e/**/*.ts"],
+    rules: {
+      "no-empty": ["error", { allowEmptyCatch: true }],
+    },
+  },
+  {
     ignores: [".next/", "node_modules/", "out/", "tools/", "next-env.d.ts"],
   }
 );
